@@ -18,7 +18,7 @@
  */
 package net.uiqui.couchdb.api;
 
-import net.uiqui.couchdb.api.impl.ret.Fail;
+import net.uiqui.couchdb.protocol.Fail;
 
 public class CouchFailException extends CouchException {
 	private static final long serialVersionUID = -8427579930139524635L;

@@ -23,7 +23,7 @@ import java.net.URL;
 
 import net.uiqui.couchdb.api.CouchException;
 import net.uiqui.couchdb.api.CouchFailException;
-import net.uiqui.couchdb.api.impl.ret.Fail;
+import net.uiqui.couchdb.protocol.Fail;
 
 public class ExceptionFactory {
 	public static CouchException build(final String method, final URL url, final IOException error) {

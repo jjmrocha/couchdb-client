@@ -21,7 +21,7 @@ package net.uiqui.couchdb.rest;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
-public class KeyEncoder {
+public class Encoder {
 	public static String encode(final String key) {
 		try {
 			return URLEncoder.encode(key, "UTF-8");
