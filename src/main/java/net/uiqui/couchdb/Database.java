@@ -99,13 +99,13 @@ public class Database {
 
 	public void put(final Document doc) throws CouchException {
 		if (doc.getId() != null) {
-			putDoc(doc);
+			update(doc);
 		} else {
-			postDoc(doc);
+			insert(doc);
 		}
 	}
 
-	private void postDoc(final Document doc) throws CouchException {
+	public void insert(final Document doc) throws CouchException {
 		final Node node = cluster.currentNode();
 		final URL url = POST_DOC.build(node.server(), node.port(), db);
 		final String json = gson.toJson(doc);
@@ -127,7 +127,7 @@ public class Database {
 		}
 	}
 
-	private void putDoc(final Document doc) throws CouchException {
+	public void update(final Document doc) throws CouchException {
 		final Node node = cluster.currentNode();
 		final String id = KeyEncoder.encode(doc.getId());
 		final URL url = PUT_DOC.build(node.server(), node.port(), db, id);
