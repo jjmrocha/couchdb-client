@@ -21,21 +21,23 @@ package net.uiqui.couchdb.protocol;
 import java.io.IOException;
 import java.net.URL;
 
-import net.uiqui.couchdb.Document;
-import net.uiqui.couchdb.api.Cluster;
+import com.google.gson.Gson;
+
 import net.uiqui.couchdb.api.CouchException;
-import net.uiqui.couchdb.api.Node;
+import net.uiqui.couchdb.api.Document;
+import net.uiqui.couchdb.api.ViewRequest;
 import net.uiqui.couchdb.api.ViewResult;
-import net.uiqui.couchdb.api.impl.ExceptionFactory;
-import net.uiqui.couchdb.api.impl.ViewArgs;
+import net.uiqui.couchdb.impl.Cluster;
+import net.uiqui.couchdb.impl.ExceptionFactory;
+import net.uiqui.couchdb.impl.Node;
+import net.uiqui.couchdb.protocol.model.Fail;
+import net.uiqui.couchdb.protocol.model.SucessUpdate;
 import net.uiqui.couchdb.rest.Encoder;
 import net.uiqui.couchdb.rest.RestClient;
 import net.uiqui.couchdb.rest.RestOutput;
 import net.uiqui.couchdb.rest.URLBuilder;
 
-import com.google.gson.Gson;
-
-public class API {
+public class CouchAPI {
 	private static final URLBuilder PUT_DOC = new URLBuilder("http://%s:%s/%s/%s");
 	private static final URLBuilder GET_DOC = new URLBuilder("http://%s:%s/%s/%s");
 	private static final URLBuilder DELETE_DOC = new URLBuilder("http://%s:%s/%s/%s?rev=%s");
@@ -47,7 +49,7 @@ public class API {
 	private RestClient client = null;
 	private String db = null;
 	
-	public API(final Cluster cluster, final String db) {
+	public CouchAPI(final Cluster cluster, final String db) {
 		this.cluster = cluster;
 		this.db = db;
 		
@@ -139,10 +141,10 @@ public class API {
 		}
 	}
 	
-	public ViewResult execute(final String designDoc, final String viewName, final ViewArgs args) throws CouchException {
+	public ViewResult execute(final String designDoc, final String viewName, final ViewRequest request) throws CouchException {
 		final Node node = cluster.currentNode();
 		final URL url = POST_VIEW.build(node.server(), node.port(), db, designDoc, viewName);
-		final String json = gson.toJson(args);
+		final String json = gson.toJson(request);
 
 		try {
 			final RestOutput output = client.post(url, json);

@@ -16,19 +16,16 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package net.uiqui.couchdb;
+package net.uiqui.couchdb.api;
 
-import net.uiqui.couchdb.api.Cluster;
-import net.uiqui.couchdb.api.CouchException;
-import net.uiqui.couchdb.api.ViewRequest;
-import net.uiqui.couchdb.api.ViewResult;
-import net.uiqui.couchdb.protocol.API;
+import net.uiqui.couchdb.impl.Cluster;
+import net.uiqui.couchdb.protocol.CouchAPI;
 
 public class Database {
-	private API api = null;
+	private CouchAPI api = null;
 	
-	protected Database(final Cluster cluster, final String db) {
-		this.api = new API(cluster, db);
+	public Database(final Cluster cluster, final String db) {
+		this.api = new CouchAPI(cluster, db);
 	}
 	
 	public void delete(final Document doc) throws CouchException {
@@ -59,17 +56,7 @@ public class Database {
 		api.update(doc);
 	}
 	
-	public ViewResult view(final String designDoc, final String viewName, final Object...keys) throws CouchException {
-		final ViewRequest request = view(designDoc, viewName);
-	
-		for (Object key : keys) {
-			request.addKey(key);
-		}
-		
-		return request.execute();
-	}
-	
-	public ViewRequest view(final String designDoc, final String viewName) {
-		return new ViewRequest(api, designDoc, viewName);
+	public ViewResult view(final String designDoc, final String viewName, final ViewRequest request) throws CouchException {
+		return api.execute(designDoc, viewName, request);
 	}
 }

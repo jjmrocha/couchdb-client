@@ -21,10 +21,11 @@ package net.uiqui.couchdb;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.uiqui.couchdb.api.Cluster;
-import net.uiqui.couchdb.api.Node;
-import net.uiqui.couchdb.api.impl.MultiNodeCluster;
-import net.uiqui.couchdb.api.impl.SingleNodeCluster;
+import net.uiqui.couchdb.api.Database;
+import net.uiqui.couchdb.impl.Cluster;
+import net.uiqui.couchdb.impl.MultiNodeCluster;
+import net.uiqui.couchdb.impl.Node;
+import net.uiqui.couchdb.impl.SingleNodeCluster;
 
 public class CouchDB {
 	private Cluster cluster = null;

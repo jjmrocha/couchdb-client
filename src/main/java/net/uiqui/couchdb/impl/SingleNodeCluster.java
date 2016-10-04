@@ -16,24 +16,23 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package net.uiqui.couchdb.api.impl;
+package net.uiqui.couchdb.impl;
 
-import net.uiqui.couchdb.api.Cluster;
-
-public abstract class AbstractCluster implements Cluster {
-	private String user = null;
-	private String password = null;
+public class SingleNodeCluster extends AbstractCluster {
+	private Node node = null;
 	
-	public AbstractCluster(final String user, final String password) {
-		this.user = user;
-		this.password = password;
+	public SingleNodeCluster(final String user, final String password, final Node node) {
+		super(user, password);
+		
+		this.node = node;
 	}
 
-	public String user() {
-		return user;
+	public Node currentNode() {
+		return node;
 	}
 
-	public String password() {
-		return password;
+	public Node nextNode() {
+		return node;
 	}
+
 }

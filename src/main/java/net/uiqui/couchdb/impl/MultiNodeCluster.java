@@ -16,12 +16,10 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package net.uiqui.couchdb.api.impl;
+package net.uiqui.couchdb.impl;
 
 import java.util.Collections;
 import java.util.List;
-
-import net.uiqui.couchdb.api.Node;
 
 public class MultiNodeCluster extends AbstractCluster {
 	private Ring ringOfNodes = null;

@@ -16,7 +16,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package net.uiqui.couchdb.api;
+package net.uiqui.couchdb.impl;
 
 public class Node {
 	private String server = null;

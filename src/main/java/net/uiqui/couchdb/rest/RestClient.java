@@ -22,14 +22,14 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.concurrent.TimeUnit;
 
-import net.uiqui.couchdb.api.Cluster;
-
 import com.squareup.okhttp.Credentials;
 import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.Response;
+
+import net.uiqui.couchdb.impl.Cluster;
 
 public class RestClient {
 	public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");

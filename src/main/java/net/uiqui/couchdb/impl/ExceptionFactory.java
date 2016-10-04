@@ -16,37 +16,27 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package net.uiqui.couchdb.protocol;
+package net.uiqui.couchdb.impl;
 
-public class Fail {
-	private String error = null;
-	private String reason = null;
+import java.io.IOException;
+import java.net.URL;
 
-	public String getError() {
-		return error;
-	}
+import net.uiqui.couchdb.api.CouchException;
+import net.uiqui.couchdb.api.CouchFailException;
+import net.uiqui.couchdb.protocol.model.Fail;
 
-	public void setError(String error) {
-		this.error = error;
-	}
-
-	public String getReason() {
-		return reason;
-	}
-
-	public void setReason(String reason) {
-		this.reason = reason;
-	}
-
-	@Override
-	public String toString() {
+public class ExceptionFactory {
+	public static CouchException build(final String method, final URL url, final IOException error) {
 		final StringBuilder builder = new StringBuilder();
-		builder.append("(error='");
-		builder.append(error);
-		builder.append("', reason='");
-		builder.append(reason);
-		builder.append("')");
-
-		return builder.toString();
+		builder.append("Error invoking: ");
+		builder.append(method);
+		builder.append(" ");
+		builder.append(url.toString());
+		
+		return new CouchException(builder.toString(), error);
 	}
+	
+	public static CouchException build(final int status, final Fail fail) {
+		return new CouchFailException(status, fail);
+	}	
 }

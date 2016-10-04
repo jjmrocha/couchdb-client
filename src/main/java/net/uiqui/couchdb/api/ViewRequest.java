@@ -21,139 +21,202 @@ package net.uiqui.couchdb.api;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.uiqui.couchdb.api.impl.ViewArgs;
-import net.uiqui.couchdb.protocol.API;
+import com.google.gson.annotations.SerializedName;
 
 public class ViewRequest {
-	private API api = null;
-	private String designDoc = null;
-	private String viewName = null;
-
+	@SerializedName("descending")
 	private Boolean descending = null;
+	@SerializedName("endkey")
 	private Object endKey = null;
+	@SerializedName("endkey_docid")
 	private String endKeyDocId = null;
+	@SerializedName("inclusive_end")
 	private Boolean inclusiveEnd = null;
-	private List<Object> keys = new ArrayList<Object>();
+	@SerializedName("keys")
+	private Object[] keys = null;
+	@SerializedName("limit")
 	private Long limit = null;
+	@SerializedName("reduce")
 	private Boolean reduce = null;
+	@SerializedName("skip")
 	private Long skip = null;
+	@SerializedName("sorted")
 	private Boolean sorted = null;
+	@SerializedName("startkey")
 	private Object startKey = null;
+	@SerializedName("startkey_docid")
 	private String startKeyDocId = null;
 
-	public ViewRequest(final API api, final String designDoc, final String viewName) {
-		this.api = api;
-		this.designDoc = designDoc;
-		this.viewName = viewName;
+	private ViewRequest() {
 	}
 
-	public ViewRequest designDoc(final String designDoc) {
-		this.designDoc = designDoc;
-		return this;
+	public Boolean descending() {
+		return descending;
 	}
 
-	public ViewRequest descending(final boolean descending) {
-		this.descending = descending;
-		return this;
+	public Object endKey() {
+		return endKey;
 	}
 
-	public ViewRequest endKey(final Object endKey) {
-		this.endKey = endKey;
-		return this;
+	public String endKeyDocId() {
+		return endKeyDocId;
 	}
 
-	public ViewRequest endKeyDocId(final String endKeyDocId) {
-		this.endKeyDocId = endKeyDocId;
-		return this;
+	public Boolean inclusiveEnd() {
+		return inclusiveEnd;
 	}
 
-	public ViewRequest inclusiveEnd(final boolean inclusiveEnd) {
-		this.inclusiveEnd = inclusiveEnd;
-		return this;
+	public Object[] keys() {
+		return keys;
 	}
 
-	public ViewRequest limit(final long limit) {
-		this.limit = limit;
-		return this;
+	public Long limit() {
+		return limit;
 	}
 
-	public ViewRequest reduce(final boolean reduce) {
-		this.reduce = reduce;
-		return this;
+	public Boolean reduce() {
+		return reduce;
 	}
 
-	public ViewRequest skip(final long skip) {
-		this.skip = skip;
-		return this;
+	public Long skip() {
+		return skip;
 	}
 
-	public ViewRequest sorted(final boolean sorted) {
-		this.sorted = sorted;
-		return this;
+	public Boolean sorted() {
+		return sorted;
 	}
 
-	public ViewRequest startKey(final Object startKey) {
-		this.startKey = startKey;
-		return this;
+	public Object startKey() {
+		return startKey;
 	}
 
-	public ViewRequest startKeyDocId(final String startKeyDocId) {
-		this.startKeyDocId = startKeyDocId;
-		return this;
+	public String startKeyDocId() {
+		return startKeyDocId;
 	}
 
-	public ViewRequest addKey(final Object key) {
-		keys.add(key);
-		return this;
+	public static Builder builder() {
+		return new Builder();
 	}
 
-	public ViewResult execute() throws CouchException {
-		final ViewArgs args = new ViewArgs();
+	public static class Builder {
+		private Boolean descending = null;
+		private Object endKey = null;
+		private String endKeyDocId = null;
+		private Boolean inclusiveEnd = null;
+		private List<Object> keys = new ArrayList<Object>();
+		private Long limit = null;
+		private Boolean reduce = null;
+		private Long skip = null;
+		private Boolean sorted = null;
+		private Object startKey = null;
+		private String startKeyDocId = null;
 
-		if (descending != null) {
-			args.setDescending(descending);
+		private Builder() {
 		}
 
-		if (endKey != null) {
-			args.setEndKey(endKey);
-		}
-		
-		if (endKeyDocId != null) {
-			args.setEndKeyDocId(endKeyDocId);
-		}
-		
-		if (inclusiveEnd != null) {
-			args.setInclusiveEnd(inclusiveEnd);
-		}
-		
-		if (!keys.isEmpty()) {
-			args.setKeys(keys.toArray(new Object[keys.size()]));
-		}
-		
-		if (limit != null) {
-			args.setLimit(limit);
-		}
-		
-		if (reduce != null) {
-			args.setReduce(reduce);
-		}
-		
-		if (skip != null) {
-			args.setSkip(skip);
-		}
-		
-		if (sorted != null) {
-			args.setSorted(sorted);
-		}
-		
-		if (startKey != null) {
-			args.setStartKey(startKey);
-		}
-		
-		if (startKeyDocId != null) {
-			args.setStartKeyDocId(startKeyDocId);
+		public Builder descending(final boolean descending) {
+			this.descending = descending;
+			return this;
 		}
 
-		return api.execute(designDoc, viewName, args);
+		public Builder endKey(final Object endKey) {
+			this.endKey = endKey;
+			return this;
+		}
+
+		public Builder endKeyDocId(final String endKeyDocId) {
+			this.endKeyDocId = endKeyDocId;
+			return this;
+		}
+
+		public Builder inclusiveEnd(final boolean inclusiveEnd) {
+			this.inclusiveEnd = inclusiveEnd;
+			return this;
+		}
+
+		public Builder limit(final long limit) {
+			this.limit = limit;
+			return this;
+		}
+
+		public Builder reduce(final boolean reduce) {
+			this.reduce = reduce;
+			return this;
+		}
+
+		public Builder skip(final long skip) {
+			this.skip = skip;
+			return this;
+		}
+
+		public Builder sorted(final boolean sorted) {
+			this.sorted = sorted;
+			return this;
+		}
+
+		public Builder startKey(final Object startKey) {
+			this.startKey = startKey;
+			return this;
+		}
+
+		public Builder startKeyDocId(final String startKeyDocId) {
+			this.startKeyDocId = startKeyDocId;
+			return this;
+		}
+
+		public Builder addKey(final Object key) {
+			keys.add(key);
+			return this;
+		}
+
+		public ViewRequest build() {
+			final ViewRequest request = new ViewRequest();
+
+			if (descending != null) {
+				request.descending = descending;
+			}
+
+			if (endKey != null) {
+				request.endKey = endKey;
+			}
+
+			if (endKeyDocId != null) {
+				request.endKeyDocId = endKeyDocId;
+			}
+
+			if (inclusiveEnd != null) {
+				request.inclusiveEnd = inclusiveEnd;
+			}
+
+			if (!keys.isEmpty()) {
+				request.keys = keys.toArray(new Object[keys.size()]);
+			}
+
+			if (limit != null) {
+				request.limit = limit;
+			}
+
+			if (reduce != null) {
+				request.reduce = reduce;
+			}
+
+			if (skip != null) {
+				request.skip = skip;
+			}
+
+			if (sorted != null) {
+				request.sorted = sorted;
+			}
+
+			if (startKey != null) {
+				request.startKey = startKey;
+			}
+
+			if (startKeyDocId != null) {
+				request.startKeyDocId = startKeyDocId;
+			}
+
+			return request;
+		}
 	}
 }

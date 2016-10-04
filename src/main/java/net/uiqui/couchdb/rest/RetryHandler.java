@@ -22,8 +22,8 @@ import java.io.IOException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
 
-import net.uiqui.couchdb.api.Cluster;
-import net.uiqui.couchdb.api.Node;
+import net.uiqui.couchdb.impl.Cluster;
+import net.uiqui.couchdb.impl.Node;
 
 import com.squareup.okhttp.Interceptor;
 import com.squareup.okhttp.Request;

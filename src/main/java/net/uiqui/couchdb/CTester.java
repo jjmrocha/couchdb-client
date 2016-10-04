@@ -1,6 +1,8 @@
 package net.uiqui.couchdb;
 
 import net.uiqui.couchdb.api.CouchException;
+import net.uiqui.couchdb.api.Database;
+import net.uiqui.couchdb.api.ViewRequest;
 import net.uiqui.couchdb.api.ViewResult;
 
 public class CTester {
@@ -10,7 +12,9 @@ public class CTester {
 		
 		Database database = couchDB.database("test");
 		
-		ViewResult result = database.view("test", "name", "Joaquim", "Rocha");
+		ViewRequest request = ViewRequest.builder().addKey("Joaquim").build();
+		
+		ViewResult result = database.view("test", "name", request);
 		
 		System.out.println(result);
 	}

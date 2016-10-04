@@ -16,25 +16,37 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package net.uiqui.couchdb.api.impl;
+package net.uiqui.couchdb.protocol.model;
 
-import net.uiqui.couchdb.api.Node;
+public class Fail {
+	private String error = null;
+	private String reason = null;
 
-public class SingleNodeCluster extends AbstractCluster {
-	private Node node = null;
-	
-	public SingleNodeCluster(final String user, final String password, final Node node) {
-		super(user, password);
-		
-		this.node = node;
+	public String getError() {
+		return error;
 	}
 
-	public Node currentNode() {
-		return node;
+	public void setError(String error) {
+		this.error = error;
 	}
 
-	public Node nextNode() {
-		return node;
+	public String getReason() {
+		return reason;
 	}
 
+	public void setReason(String reason) {
+		this.reason = reason;
+	}
+
+	@Override
+	public String toString() {
+		final StringBuilder builder = new StringBuilder();
+		builder.append("(error='");
+		builder.append(error);
+		builder.append("', reason='");
+		builder.append(reason);
+		builder.append("')");
+
+		return builder.toString();
+	}
 }
