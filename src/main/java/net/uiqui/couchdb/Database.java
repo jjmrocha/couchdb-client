@@ -20,6 +20,8 @@ package net.uiqui.couchdb;
 
 import net.uiqui.couchdb.api.Cluster;
 import net.uiqui.couchdb.api.CouchException;
+import net.uiqui.couchdb.api.ViewRequest;
+import net.uiqui.couchdb.api.ViewResult;
 import net.uiqui.couchdb.protocol.API;
 
 public class Database {
@@ -55,5 +57,19 @@ public class Database {
 
 	public void update(final Document doc) throws CouchException {
 		api.update(doc);
+	}
+	
+	public ViewResult view(final String designDoc, final String viewName, final Object...keys) throws CouchException {
+		final ViewRequest request = view(designDoc, viewName);
+	
+		for (Object key : keys) {
+			request.addKey(key);
+		}
+		
+		return request.execute();
+	}
+	
+	public ViewRequest view(final String designDoc, final String viewName) {
+		return new ViewRequest(api, designDoc, viewName);
 	}
 }

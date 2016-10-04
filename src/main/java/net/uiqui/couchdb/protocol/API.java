@@ -25,7 +25,9 @@ import net.uiqui.couchdb.Document;
 import net.uiqui.couchdb.api.Cluster;
 import net.uiqui.couchdb.api.CouchException;
 import net.uiqui.couchdb.api.Node;
+import net.uiqui.couchdb.api.ViewResult;
 import net.uiqui.couchdb.api.impl.ExceptionFactory;
+import net.uiqui.couchdb.api.impl.ViewArgs;
 import net.uiqui.couchdb.rest.Encoder;
 import net.uiqui.couchdb.rest.RestClient;
 import net.uiqui.couchdb.rest.RestOutput;
@@ -38,6 +40,7 @@ public class API {
 	private static final URLBuilder GET_DOC = new URLBuilder("http://%s:%s/%s/%s");
 	private static final URLBuilder DELETE_DOC = new URLBuilder("http://%s:%s/%s/%s?rev=%s");
 	private static final URLBuilder POST_DOC = new URLBuilder("http://%s:%s/%s");
+	private static final URLBuilder POST_VIEW = new URLBuilder("http://%s:%s/%s/_design/%s/_view/%s");
 	
 	private final Gson gson = new Gson();
 	private Cluster cluster = null;
@@ -133,6 +136,26 @@ public class API {
 			}
 		} catch (IOException e) {
 			throw ExceptionFactory.build("PUT", url, e);
+		}
+	}
+	
+	public ViewResult execute(final String designDoc, final String viewName, final ViewArgs args) throws CouchException {
+		final Node node = cluster.currentNode();
+		final URL url = POST_VIEW.build(node.server(), node.port(), db, designDoc, viewName);
+		final String json = gson.toJson(args);
+
+		try {
+			final RestOutput output = client.post(url, json);
+			
+			if (output.status() == 200) {
+				return gson.fromJson(output.json(), ViewResult.class);
+			} else {
+				final Fail fail = gson.fromJson(output.json(), Fail.class);
+				
+				throw ExceptionFactory.build(output.status(), fail);
+			}
+		} catch (IOException e) {
+			throw ExceptionFactory.build("POST", url, e);
 		}
 	}
 }
