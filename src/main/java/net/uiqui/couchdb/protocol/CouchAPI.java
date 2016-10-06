@@ -20,6 +20,7 @@ package net.uiqui.couchdb.protocol;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.Map.Entry;
 
 import com.google.gson.Gson;
 
@@ -30,8 +31,8 @@ import net.uiqui.couchdb.api.ViewResult;
 import net.uiqui.couchdb.impl.Cluster;
 import net.uiqui.couchdb.impl.ExceptionFactory;
 import net.uiqui.couchdb.impl.Node;
-import net.uiqui.couchdb.protocol.model.Fail;
-import net.uiqui.couchdb.protocol.model.SucessUpdate;
+import net.uiqui.couchdb.protocol.model.Failure;
+import net.uiqui.couchdb.protocol.model.Sucess;
 import net.uiqui.couchdb.rest.Encoder;
 import net.uiqui.couchdb.rest.RestClient;
 import net.uiqui.couchdb.rest.RestOutput;
@@ -42,7 +43,10 @@ public class CouchAPI {
 	private static final URLBuilder GET_DOC = new URLBuilder("http://%s:%s/%s/%s");
 	private static final URLBuilder DELETE_DOC = new URLBuilder("http://%s:%s/%s/%s?rev=%s");
 	private static final URLBuilder POST_DOC = new URLBuilder("http://%s:%s/%s");
-	private static final URLBuilder POST_VIEW = new URLBuilder("http://%s:%s/%s/_design/%s/_view/%s");
+	private static final URLBuilder POST_VIEW_NO_QUERY = new URLBuilder("http://%s:%s/%s/_design/%s/_view/%s");
+	private static final URLBuilder POST_VIEW_WITH_QUERY = new URLBuilder("http://%s:%s/%s/_design/%s/_view/%s?%s");
+	private static final URLBuilder GET_VIEW_NO_QUERY = new URLBuilder("http://%s:%s/%s/_design/%s/_view/%s");
+	private static final URLBuilder GET_VIEW_WITH_QUERY = new URLBuilder("http://%s:%s/%s/_design/%s/_view/%s?%s");
 	
 	private final Gson gson = new Gson();
 	private Cluster cluster = null;
@@ -66,7 +70,7 @@ public class CouchAPI {
 			final RestOutput output = client.delete(url);
 			
 			if (output.status() != 200 && output.status() != 202) {
-				final Fail fail = gson.fromJson(output.json(), Fail.class);
+				final Failure fail = gson.fromJson(output.json(), Failure.class);
 				
 				throw ExceptionFactory.build(output.status(), fail);
 			}
@@ -88,7 +92,7 @@ public class CouchAPI {
 			} else if (output.status() == 404) {
 				return null;
 			} else {
-				final Fail fail = gson.fromJson(output.json(), Fail.class);
+				final Failure fail = gson.fromJson(output.json(), Failure.class);
 				
 				throw ExceptionFactory.build(output.status(), fail);
 			}
@@ -106,11 +110,11 @@ public class CouchAPI {
 			final RestOutput output = client.post(url, json);
 			
 			if (output.status() == 201 || output.status() == 202) {
-				final SucessUpdate sucess = gson.fromJson(output.json(), SucessUpdate.class);
-				doc.setId(sucess.getId());
-				doc.setRevision(sucess.getRev());
+				final Sucess sucess = gson.fromJson(output.json(), Sucess.class);
+				doc.setId(sucess.id());
+				doc.setRevision(sucess.rev());
 			} else {
-				final Fail fail = gson.fromJson(output.json(), Fail.class);
+				final Failure fail = gson.fromJson(output.json(), Failure.class);
 				
 				throw ExceptionFactory.build(output.status(), fail);
 			}
@@ -129,10 +133,10 @@ public class CouchAPI {
 			final RestOutput output = client.put(url, json);
 			
 			if (output.status() == 201 || output.status() == 202) {
-				final SucessUpdate sucess = gson.fromJson(output.json(), SucessUpdate.class);
-				doc.setRevision(sucess.getRev());
+				final Sucess sucess = gson.fromJson(output.json(), Sucess.class);
+				doc.setRevision(sucess.rev());
 			} else {
-				final Fail fail = gson.fromJson(output.json(), Fail.class);
+				final Failure fail = gson.fromJson(output.json(), Failure.class);
 				
 				throw ExceptionFactory.build(output.status(), fail);
 			}
@@ -141,23 +145,82 @@ public class CouchAPI {
 		}
 	}
 	
-	public ViewResult execute(final String designDoc, final String viewName, final ViewRequest request) throws CouchException {
+	public ViewResult view(final ViewRequest request) throws CouchException {
+		final StringBuilder queryBuilder = new StringBuilder();
+		
+		for (Entry<String, Object> entry : request.params().entrySet()) {
+			if (queryBuilder.length() > 0) {
+				queryBuilder.append("&");
+			}
+			
+			queryBuilder.append(entry.getKey());
+			queryBuilder.append("=");
+			queryBuilder.append(Encoder.encode(gson.toJson(entry.getValue())));
+		}
+		
+		final String query = queryBuilder.length() == 0? null: queryBuilder.toString();
+		
+		if (request.keys() == null || request.keys().length == 0) {
+			return viewGET(request.designDoc(), request.viewName(), query);
+		} else {
+			final StringBuilder bodyBuilder = new StringBuilder();
+			bodyBuilder.append("{\"keys\": ");
+			bodyBuilder.append(gson.toJson(request.keys()));
+			bodyBuilder.append("}");
+			
+			final String body = bodyBuilder.toString();
+			
+			return viewPOST(request.designDoc(), request.viewName(), body, query);
+		}
+	}
+	
+	private ViewResult viewPOST(final String designDoc, final String viewName, final String body, final String query) throws CouchException {
 		final Node node = cluster.currentNode();
-		final URL url = POST_VIEW.build(node.server(), node.port(), db, designDoc, viewName);
-		final String json = gson.toJson(request);
+		URL url = null;
+		
+		if (query == null) {
+			url = POST_VIEW_NO_QUERY.build(node.server(), node.port(), db, designDoc, viewName);
+		} else {
+			url = POST_VIEW_WITH_QUERY.build(node.server(), node.port(), db, designDoc, viewName, query);
+		}
 
 		try {
-			final RestOutput output = client.post(url, json);
+			final RestOutput output = client.post(url, body);
 			
 			if (output.status() == 200) {
 				return gson.fromJson(output.json(), ViewResult.class);
 			} else {
-				final Fail fail = gson.fromJson(output.json(), Fail.class);
+				final Failure fail = gson.fromJson(output.json(), Failure.class);
 				
 				throw ExceptionFactory.build(output.status(), fail);
 			}
 		} catch (IOException e) {
 			throw ExceptionFactory.build("POST", url, e);
+		}
+	}	
+	
+	private ViewResult viewGET(final String designDoc, final String viewName, final String query) throws CouchException {
+		final Node node = cluster.currentNode();
+		URL url = null;
+		
+		if (query == null) {
+			url = GET_VIEW_NO_QUERY.build(node.server(), node.port(), db, designDoc, viewName);
+		} else {
+			url = GET_VIEW_WITH_QUERY.build(node.server(), node.port(), db, designDoc, viewName, query);
+		}
+
+		try {
+			final RestOutput output = client.get(url);
+			
+			if (output.status() == 200) {
+				return gson.fromJson(output.json(), ViewResult.class);
+			} else {
+				final Failure fail = gson.fromJson(output.json(), Failure.class);
+				
+				throw ExceptionFactory.build(output.status(), fail);
+			}
+		} catch (IOException e) {
+			throw ExceptionFactory.build("GET", url, e);
 		}
 	}
 }

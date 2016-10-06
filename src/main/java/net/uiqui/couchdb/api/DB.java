@@ -21,10 +21,10 @@ package net.uiqui.couchdb.api;
 import net.uiqui.couchdb.impl.Cluster;
 import net.uiqui.couchdb.protocol.CouchAPI;
 
-public class Database {
+public class DB {
 	private CouchAPI api = null;
 	
-	public Database(final Cluster cluster, final String db) {
+	public DB(final Cluster cluster, final String db) {
 		this.api = new CouchAPI(cluster, db);
 	}
 	
@@ -56,7 +56,7 @@ public class Database {
 		api.update(doc);
 	}
 	
-	public ViewResult view(final String designDoc, final String viewName, final ViewRequest request) throws CouchException {
-		return api.execute(designDoc, viewName, request);
+	public ViewResult execute(final ViewRequest request) throws CouchException {
+		return api.view(request);
 	}
 }

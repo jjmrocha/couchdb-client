@@ -19,99 +19,78 @@
 package net.uiqui.couchdb.api;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-
-import com.google.gson.annotations.SerializedName;
+import java.util.Map;
 
 public class ViewRequest {
-	@SerializedName("descending")
-	private Boolean descending = null;
-	@SerializedName("endkey")
-	private Object endKey = null;
-	@SerializedName("endkey_docid")
-	private String endKeyDocId = null;
-	@SerializedName("inclusive_end")
-	private Boolean inclusiveEnd = null;
-	@SerializedName("keys")
+	private String designDoc = null;
+	private String viewName = null;
+	private final Map<String, Object> params = new HashMap<String, Object>();
 	private Object[] keys = null;
-	@SerializedName("limit")
-	private Long limit = null;
-	@SerializedName("reduce")
-	private Boolean reduce = null;
-	@SerializedName("skip")
-	private Long skip = null;
-	@SerializedName("sorted")
-	private Boolean sorted = null;
-	@SerializedName("startkey")
-	private Object startKey = null;
-	@SerializedName("startkey_docid")
-	private String startKeyDocId = null;
 
-	private ViewRequest() {
+	private ViewRequest(final String designDoc, final String viewName) {
+		this.designDoc = designDoc;
+		this.viewName = viewName;
 	}
-
-	public Boolean descending() {
-		return descending;
+	
+	public String designDoc() {
+		return designDoc;
 	}
-
-	public Object endKey() {
-		return endKey;
+	
+	public String viewName() {
+		return viewName;
 	}
-
-	public String endKeyDocId() {
-		return endKeyDocId;
-	}
-
-	public Boolean inclusiveEnd() {
-		return inclusiveEnd;
+	
+	public Map<String, Object> params() {
+		return params;
 	}
 
 	public Object[] keys() {
 		return keys;
 	}
-
-	public Long limit() {
-		return limit;
+	
+	@Override
+	public String toString() {
+		final StringBuilder builder = new StringBuilder();
+		builder.append("ViewRequest(designDoc=");
+		builder.append(designDoc);
+		builder.append(", viewName=");
+		builder.append(viewName);
+		builder.append(", params=");
+		builder.append(params);
+		builder.append(", keys=");
+		builder.append(keys);
+		builder.append(")");
+		return builder.toString();
 	}
 
-	public Boolean reduce() {
-		return reduce;
-	}
-
-	public Long skip() {
-		return skip;
-	}
-
-	public Boolean sorted() {
-		return sorted;
-	}
-
-	public Object startKey() {
-		return startKey;
-	}
-
-	public String startKeyDocId() {
-		return startKeyDocId;
-	}
-
-	public static Builder builder() {
-		return new Builder();
+	public static Builder builder(final String designDoc, final String viewName) {
+		return new Builder(designDoc, viewName);
 	}
 
 	public static class Builder {
+		private String designDoc = null;
+		private String viewName = null;
+		
 		private Boolean descending = null;
 		private Object endKey = null;
 		private String endKeyDocId = null;
 		private Boolean inclusiveEnd = null;
-		private List<Object> keys = new ArrayList<Object>();
 		private Long limit = null;
 		private Boolean reduce = null;
 		private Long skip = null;
 		private Boolean sorted = null;
 		private Object startKey = null;
 		private String startKeyDocId = null;
+		private Boolean group = null;
+		private Integer groupLevel = null;
+		
+		private List<Object> keys = new ArrayList<Object>();
 
-		private Builder() {
+		private Builder(final String designDoc, final String viewName) {
+			this.designDoc = designDoc;
+			this.viewName = viewName;
 		}
 
 		public Builder descending(final boolean descending) {
@@ -163,57 +142,83 @@ public class ViewRequest {
 			this.startKeyDocId = startKeyDocId;
 			return this;
 		}
-
+		
+		public Builder group(final boolean group) {
+			this.group = group;
+			return this;
+		}
+		
+		public Builder groupLevel(final Integer groupLevel) {
+			this.groupLevel = groupLevel;
+			return this;
+		}
+		
 		public Builder addKey(final Object key) {
 			keys.add(key);
 			return this;
 		}
+		
+		public Builder keys(final Object...args) {
+			for (Object key : args) {
+				keys.add(key);
+			}
+			
+			return this;
+		}
 
 		public ViewRequest build() {
-			final ViewRequest request = new ViewRequest();
+			final ViewRequest request = new ViewRequest(designDoc, viewName);
 
 			if (descending != null) {
-				request.descending = descending;
+				request.params.put("descending", descending);
 			}
 
 			if (endKey != null) {
-				request.endKey = endKey;
+				request.params.put("endkey", endKey);
 			}
 
 			if (endKeyDocId != null) {
-				request.endKeyDocId = endKeyDocId;
+				request.params.put("endkey_docid", endKeyDocId);
 			}
 
 			if (inclusiveEnd != null) {
-				request.inclusiveEnd = inclusiveEnd;
-			}
-
-			if (!keys.isEmpty()) {
-				request.keys = keys.toArray(new Object[keys.size()]);
+				request.params.put("inclusive_end", inclusiveEnd);
 			}
 
 			if (limit != null) {
-				request.limit = limit;
+				request.params.put("limit", limit);
 			}
 
 			if (reduce != null) {
-				request.reduce = reduce;
+				request.params.put("reduce", reduce);
 			}
 
 			if (skip != null) {
-				request.skip = skip;
+				request.params.put("skip", skip);
 			}
 
 			if (sorted != null) {
-				request.sorted = sorted;
+				request.params.put("sorted", sorted);
 			}
 
 			if (startKey != null) {
-				request.startKey = startKey;
+				request.params.put("startkey", startKey);
 			}
 
 			if (startKeyDocId != null) {
-				request.startKeyDocId = startKeyDocId;
+				request.params.put("startkey_docid", startKeyDocId);
+			}
+			
+			if (group != null) {
+				request.params.put("group", group);
+			}
+			
+			if (groupLevel != null) {
+				request.params.put("group_level", groupLevel);
+			}		
+			
+			if (!keys.isEmpty()) {
+				request.keys = keys.toArray(new Object[keys.size()]);
 			}
 
 			return request;

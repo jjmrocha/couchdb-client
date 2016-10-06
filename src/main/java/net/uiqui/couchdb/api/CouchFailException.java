@@ -18,15 +18,15 @@
  */
 package net.uiqui.couchdb.api;
 
-import net.uiqui.couchdb.protocol.model.Fail;
+import net.uiqui.couchdb.protocol.model.Failure;
 
 public class CouchFailException extends CouchException {
 	private static final long serialVersionUID = -8427579930139524635L;
 	
 	private int status = 0;
-	private Fail fail = null;
+	private Failure fail = null;
 	
-	public CouchFailException(final int status, final Fail fail) {
+	public CouchFailException(final int status, final Failure fail) {
 		super(buildMessage(status, fail));
 		
 		this.status = status;
@@ -37,11 +37,11 @@ public class CouchFailException extends CouchException {
 		return status;
 	}
 
-	public Fail getFail() {
+	public Failure getFail() {
 		return fail;
 	}
 
-	private static String buildMessage(final int status, final Fail fail) {
+	private static String buildMessage(final int status, final Failure fail) {
 		final StringBuilder builder = new StringBuilder();
 		builder.append("CouchDB return: statusCode=");
 		builder.append(status);

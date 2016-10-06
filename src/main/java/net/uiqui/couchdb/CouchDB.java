@@ -21,7 +21,9 @@ package net.uiqui.couchdb;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.uiqui.couchdb.api.Database;
+import net.uiqui.couchdb.api.DB;
+import net.uiqui.couchdb.api.Document;
+import net.uiqui.couchdb.api.TypedDB;
 import net.uiqui.couchdb.impl.Cluster;
 import net.uiqui.couchdb.impl.MultiNodeCluster;
 import net.uiqui.couchdb.impl.Node;
@@ -38,9 +40,13 @@ public class CouchDB {
 		}
 	}
 	
-	public Database database(final String db) {
-		return new Database(cluster, db);
+	public DB database(final String db) {
+		return new DB(cluster, db);
 	}
+	
+	public <T extends Document> TypedDB<T> database(final String db, final Class<T> type) {
+		return new TypedDB<T>(cluster, db, type);
+	}	
 	
 	public static class Builder {
 		private String user = null;

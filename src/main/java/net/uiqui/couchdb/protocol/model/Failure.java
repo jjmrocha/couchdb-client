@@ -18,23 +18,23 @@
  */
 package net.uiqui.couchdb.protocol.model;
 
-public class Fail {
+public class Failure {
 	private String error = null;
 	private String reason = null;
 
-	public String getError() {
+	public String error() {
 		return error;
 	}
 
-	public void setError(String error) {
+	public void error(String error) {
 		this.error = error;
 	}
 
-	public String getReason() {
+	public String reason() {
 		return reason;
 	}
 
-	public void setReason(String reason) {
+	public void reason(String reason) {
 		this.reason = reason;
 	}
 
