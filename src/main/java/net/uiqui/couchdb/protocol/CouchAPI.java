@@ -24,6 +24,7 @@ import java.util.Map.Entry;
 
 import com.google.gson.Gson;
 
+import net.uiqui.couchdb.api.BatchResult;
 import net.uiqui.couchdb.api.CouchException;
 import net.uiqui.couchdb.api.Document;
 import net.uiqui.couchdb.api.ViewRequest;
@@ -31,7 +32,6 @@ import net.uiqui.couchdb.api.ViewResult;
 import net.uiqui.couchdb.impl.Cluster;
 import net.uiqui.couchdb.impl.ExceptionFactory;
 import net.uiqui.couchdb.impl.Node;
-import net.uiqui.couchdb.protocol.model.BatchResult;
 import net.uiqui.couchdb.protocol.model.Failure;
 import net.uiqui.couchdb.protocol.model.Success;
 import net.uiqui.couchdb.rest.Encoder;

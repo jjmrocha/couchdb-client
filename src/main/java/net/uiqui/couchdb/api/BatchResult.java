@@ -1,4 +1,4 @@
-package net.uiqui.couchdb.protocol.model;
+package net.uiqui.couchdb.api;
 
 import com.google.gson.annotations.SerializedName;
 

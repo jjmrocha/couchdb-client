@@ -21,7 +21,6 @@ package net.uiqui.couchdb.api;
 import net.uiqui.couchdb.impl.Cluster;
 import net.uiqui.couchdb.protocol.CouchAPI;
 import net.uiqui.couchdb.protocol.DeleteDoc;
-import net.uiqui.couchdb.protocol.model.BatchResult;
 
 public class DB {
 	private CouchAPI api = null;
