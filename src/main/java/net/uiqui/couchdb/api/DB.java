@@ -20,6 +20,8 @@ package net.uiqui.couchdb.api;
 
 import net.uiqui.couchdb.impl.Cluster;
 import net.uiqui.couchdb.protocol.CouchAPI;
+import net.uiqui.couchdb.protocol.DeleteDoc;
+import net.uiqui.couchdb.protocol.model.BatchResult;
 
 public class DB {
 	private CouchAPI api = null;
@@ -32,9 +34,21 @@ public class DB {
 		delete(doc.getId(), doc.getRevision());
 	}
 	
+	public BatchResult[] delete(final Document...docs) throws CouchException {
+		return batch(DeleteDoc.from(docs));
+	}
+	
 	public void delete(final String docId, final String revision) throws CouchException {
 		api.delete(docId, revision);
 	}
+	
+	public void delete(final String docId) throws CouchException {
+		final Document doc = get(docId, Document.class);
+		
+		if (doc != null) {
+			delete(doc);
+		}
+	}	
 	
 	public <T> T get(final String docId, final Class<T> clazz) throws CouchException {
 		return api.get(docId, clazz);
@@ -51,12 +65,24 @@ public class DB {
 	public void insert(final Document doc) throws CouchException {
 		api.insert(doc);
 	}
+	
+	public BatchResult[] insert(final Document...docs) throws CouchException {
+		return batch(docs);
+	}	
 
 	public void update(final Document doc) throws CouchException {
 		api.update(doc);
 	}
 	
+	public BatchResult[] update(final Document...docs) throws CouchException {
+		return batch(docs);
+	}
+	
 	public ViewResult execute(final ViewRequest request) throws CouchException {
 		return api.view(request);
+	}
+	
+	public BatchResult[] batch(final Document[] docs) throws CouchException {
+		return api.bulk(docs);
 	}
 }

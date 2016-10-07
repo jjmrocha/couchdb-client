@@ -22,7 +22,7 @@ import java.io.Serializable;
 
 import com.google.gson.annotations.SerializedName;
 
-public abstract class Document implements Comparable<Document>, Serializable {
+public class Document implements Comparable<Document>, Serializable {
 	private static final long serialVersionUID = -8352773631948437124L;
 	
 	@SerializedName("_id") private String id = null;

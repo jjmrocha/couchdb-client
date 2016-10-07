@@ -31,8 +31,9 @@ import net.uiqui.couchdb.api.ViewResult;
 import net.uiqui.couchdb.impl.Cluster;
 import net.uiqui.couchdb.impl.ExceptionFactory;
 import net.uiqui.couchdb.impl.Node;
+import net.uiqui.couchdb.protocol.model.BatchResult;
 import net.uiqui.couchdb.protocol.model.Failure;
-import net.uiqui.couchdb.protocol.model.Sucess;
+import net.uiqui.couchdb.protocol.model.Success;
 import net.uiqui.couchdb.rest.Encoder;
 import net.uiqui.couchdb.rest.RestClient;
 import net.uiqui.couchdb.rest.RestOutput;
@@ -47,6 +48,7 @@ public class CouchAPI {
 	private static final URLBuilder POST_VIEW_WITH_QUERY = new URLBuilder("http://%s:%s/%s/_design/%s/_view/%s?%s");
 	private static final URLBuilder GET_VIEW_NO_QUERY = new URLBuilder("http://%s:%s/%s/_design/%s/_view/%s");
 	private static final URLBuilder GET_VIEW_WITH_QUERY = new URLBuilder("http://%s:%s/%s/_design/%s/_view/%s?%s");
+	private static final URLBuilder POST_BULK = new URLBuilder("http://%s:%s/%s/_bulk_docs");
 	
 	private final Gson gson = new Gson();
 	private Cluster cluster = null;
@@ -110,7 +112,7 @@ public class CouchAPI {
 			final RestOutput output = client.post(url, json);
 			
 			if (output.status() == 201 || output.status() == 202) {
-				final Sucess sucess = gson.fromJson(output.json(), Sucess.class);
+				final Success sucess = gson.fromJson(output.json(), Success.class);
 				doc.setId(sucess.id());
 				doc.setRevision(sucess.rev());
 			} else {
@@ -133,7 +135,7 @@ public class CouchAPI {
 			final RestOutput output = client.put(url, json);
 			
 			if (output.status() == 201 || output.status() == 202) {
-				final Sucess sucess = gson.fromJson(output.json(), Sucess.class);
+				final Success sucess = gson.fromJson(output.json(), Success.class);
 				doc.setRevision(sucess.rev());
 			} else {
 				final Failure fail = gson.fromJson(output.json(), Failure.class);
@@ -221,6 +223,31 @@ public class CouchAPI {
 			}
 		} catch (IOException e) {
 			throw ExceptionFactory.build("GET", url, e);
+		}
+	}
+	
+	public BatchResult[] bulk(final Document[] docs) throws CouchException {
+		final Node node = cluster.currentNode();
+		final URL url = POST_BULK.build(node.server(), node.port(), db);
+		
+		final StringBuilder bodyBuilder = new StringBuilder();
+		bodyBuilder.append("{\"docs\": ");
+		bodyBuilder.append(gson.toJson(docs));
+		bodyBuilder.append("}");
+		final String json = bodyBuilder.toString();
+		
+		try {
+			final RestOutput output = client.post(url, json);
+			
+			if (output.status() == 201) {
+				return gson.fromJson(output.json(), BatchResult[].class);
+			} else {
+				final Failure fail = gson.fromJson(output.json(), Failure.class);
+				
+				throw ExceptionFactory.build(output.status(), fail);
+			}
+		} catch (IOException e) {
+			throw ExceptionFactory.build("POST", url, e);
 		}
 	}
 }

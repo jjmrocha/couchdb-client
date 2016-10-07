@@ -18,7 +18,7 @@
  */
 package net.uiqui.couchdb.protocol.model;
 
-public class Sucess {
+public class Success {
 	private String id = null;
 	private String rev = null;
 
