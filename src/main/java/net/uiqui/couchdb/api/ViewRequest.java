@@ -29,9 +29,61 @@ public class ViewRequest {
 	private final Map<String, Object> params = new HashMap<String, Object>();
 	private Object[] keys = null;
 
-	private ViewRequest(final String designDoc, final String viewName) {
-		this.designDoc = designDoc;
-		this.viewName = viewName;
+	private ViewRequest(final Builder builder) {
+		this.designDoc = builder.designDoc;
+		this.viewName = builder.viewName;
+		
+		if (builder.descending != null) {
+			this.params.put("descending", builder.descending);
+		}
+
+		if (builder.endKey != null) {
+			this.params.put("endkey", builder.endKey);
+		}
+
+		if (builder.endKeyDocId != null) {
+			this.params.put("endkey_docid", builder.endKeyDocId);
+		}
+
+		if (builder.inclusiveEnd != null) {
+			this.params.put("inclusive_end", builder.inclusiveEnd);
+		}
+
+		if (builder.limit != null) {
+			this.params.put("limit", builder.limit);
+		}
+
+		if (builder.reduce != null) {
+			this.params.put("reduce", builder.reduce);
+		}
+
+		if (builder.skip != null) {
+			this.params.put("skip", builder.skip);
+		}
+
+		if (builder.sorted != null) {
+			this.params.put("sorted", builder.sorted);
+		}
+
+		if (builder.startKey != null) {
+			this.params.put("startkey", builder.startKey);
+		}
+
+		if (builder.startKeyDocId != null) {
+			this.params.put("startkey_docid", builder.startKeyDocId);
+		}
+		
+		if (builder.group != null) {
+			this.params.put("group", builder.group);
+		}
+		
+		if (builder.groupLevel != null) {
+			this.params.put("group_level", builder.groupLevel);
+		}		
+		
+		if (!builder.keys.isEmpty()) {
+			this.keys = builder.keys.toArray(new Object[builder.keys.size()]);
+		}
 	}
 	
 	public String designDoc() {
@@ -68,6 +120,10 @@ public class ViewRequest {
 	public static Builder builder(final String designDoc, final String viewName) {
 		return new Builder(designDoc, viewName);
 	}
+	
+	public static ViewRequest build(final String designDoc, final String viewName, final Object...keys) {
+		return builder(designDoc, viewName).keys(keys).build();
+	}	
 
 	public static class Builder {
 		private String designDoc = null;
@@ -167,61 +223,7 @@ public class ViewRequest {
 		}
 
 		public ViewRequest build() {
-			final ViewRequest request = new ViewRequest(designDoc, viewName);
-
-			if (descending != null) {
-				request.params.put("descending", descending);
-			}
-
-			if (endKey != null) {
-				request.params.put("endkey", endKey);
-			}
-
-			if (endKeyDocId != null) {
-				request.params.put("endkey_docid", endKeyDocId);
-			}
-
-			if (inclusiveEnd != null) {
-				request.params.put("inclusive_end", inclusiveEnd);
-			}
-
-			if (limit != null) {
-				request.params.put("limit", limit);
-			}
-
-			if (reduce != null) {
-				request.params.put("reduce", reduce);
-			}
-
-			if (skip != null) {
-				request.params.put("skip", skip);
-			}
-
-			if (sorted != null) {
-				request.params.put("sorted", sorted);
-			}
-
-			if (startKey != null) {
-				request.params.put("startkey", startKey);
-			}
-
-			if (startKeyDocId != null) {
-				request.params.put("startkey_docid", startKeyDocId);
-			}
-			
-			if (group != null) {
-				request.params.put("group", group);
-			}
-			
-			if (groupLevel != null) {
-				request.params.put("group_level", groupLevel);
-			}		
-			
-			if (!keys.isEmpty()) {
-				request.keys = keys.toArray(new Object[keys.size()]);
-			}
-
-			return request;
+			return new ViewRequest(this);
 		}
 	}
 }

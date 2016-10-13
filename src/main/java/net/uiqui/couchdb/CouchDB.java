@@ -40,6 +40,30 @@ public class CouchDB {
 		}
 	}
 	
+	public static Builder builder() {
+		return new Builder();
+	}
+	
+	public static CouchDB build(final String server) {
+		return builder()
+				.addNode(server)
+				.build();
+	}
+	
+	public static CouchDB build(final String server, final int port) {
+		return builder()
+				.addNode(server, port)
+				.build();
+	}
+	
+	public static CouchDB build(final String server, final int port, final String user, final String password) {
+		return builder()
+				.addNode(server, port)
+				.user(user)
+				.password(password)
+				.build();
+	}
+	
 	public DB database(final String db) {
 		return new DB(cluster, db);
 	}
@@ -77,8 +101,4 @@ public class CouchDB {
 			return new CouchDB(this);
 		}
 	}
-	
-	public static Builder builder() {
-		return new Builder();
-}
 }
