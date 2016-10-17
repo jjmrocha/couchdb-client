@@ -193,8 +193,8 @@ To have access to the CRUD operations we must identify the database by creating 
 	System.out.println("- STEP 6 -");
 	
 	// Lets delete the documents
-	userDB.delete("admin");
-	userDB.delete(oper1); // We can delete the object, by providing the only the ID or by providing the ID and the REVISION
+	userDB.delete("admin"); // We can delete the object, by providing the only the ID or by providing the ID and the REVISION
+	userDB.delete(oper1); 
 	
 	// Lets check id the admin user still exists on the database
 	System.out.println(userDB.exists("admin")); 
