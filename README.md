@@ -34,8 +34,8 @@ Single node cluster:
 	CouchDB couchDB = CouchDB.build("localhost", 5984, "user", "password");
 	 ```
 	 
-	Multi node cluster:
-	 ```java
+Multi node cluster:
+ ```java
 	CouchDB couchDB = CouchDB.builder()
 			.addNode("node1", 5984)
 			.addNode("node2") // Use default port
