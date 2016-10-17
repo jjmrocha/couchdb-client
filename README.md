@@ -32,7 +32,7 @@ Single node cluster:
 	
 	// Full control
 	CouchDB couchDB = CouchDB.build("localhost", 5984, "user", "password");
-	 ```
+ ```
 	 
 Multi node cluster:
  ```java
