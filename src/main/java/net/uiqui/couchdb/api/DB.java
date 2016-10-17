@@ -49,6 +49,10 @@ public class DB {
 		}
 	}	
 	
+	public boolean exists(final String docId) throws CouchException {
+		return api.exists(docId);
+	}
+	
 	public <T> T get(final String docId, final Class<T> clazz) throws CouchException {
 		return api.get(docId, clazz);
 	}

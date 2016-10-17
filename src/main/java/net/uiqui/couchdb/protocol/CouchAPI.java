@@ -42,6 +42,7 @@ import com.google.gson.Gson;
 public class CouchAPI {
 	private static final URLBuilder PUT_DOC = new URLBuilder("http://%s:%s/%s/%s");
 	private static final URLBuilder GET_DOC = new URLBuilder("http://%s:%s/%s/%s");
+	private static final URLBuilder HEAD_DOC = new URLBuilder("http://%s:%s/%s/%s");
 	private static final URLBuilder DELETE_DOC = new URLBuilder("http://%s:%s/%s/%s?rev=%s");
 	private static final URLBuilder POST_DOC = new URLBuilder("http://%s:%s/%s");
 	private static final URLBuilder POST_VIEW_NO_QUERY = new URLBuilder("http://%s:%s/%s/_design/%s/_view/%s");
@@ -78,6 +79,30 @@ public class CouchAPI {
 			}
 		} catch (IOException e) {
 			throw ExceptionFactory.build("DELETE", url, e);
+		}
+	}
+	
+	public boolean exists(final String docId) throws CouchException {
+		final Node node = cluster.currentNode();
+		final String id = Encoder.encode(docId);
+		final URL url = HEAD_DOC.build(node.server(), node.port(), db, id);
+
+		try {
+			final int status = client.head(url);
+
+			if (status == 200 || status == 304) {
+				return true;
+			} else if (status == 404) {
+				return false;
+			} else {
+				final Failure fail = new Failure();
+				fail.error("unauthorized");
+				fail.reason("You are not authorized to access this db.");
+
+				throw ExceptionFactory.build(status, fail);
+			}
+		} catch (IOException e) {
+			throw ExceptionFactory.build("HEAD", url, e);
 		}
 	}
 

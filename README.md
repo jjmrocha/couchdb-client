@@ -11,11 +11,11 @@ couchdb-client
 Maven dependency:
  
  ```xml
-<dependency>
-    <groupId>net.uiqui</groupId>
-    <artifactId>couchdb-client</artifactId>
-    <version>0.5.0</version>
-</dependency>
+	<dependency>
+	    <groupId>net.uiqui</groupId>
+	    <artifactId>couchdb-client</artifactId>
+	    <version>0.5.0</version>
+	</dependency>
  ```
  
 ##Usage
@@ -24,24 +24,24 @@ Maven dependency:
 
 Single node cluster:
  ```java
-// Using default port and no credentials
-CouchDB couchDB = CouchDB.build("localhost");
-
-// No credentials
-CouchDB couchDB = CouchDB.build("localhost", 5984);
-
-// Full control
-CouchDB couchDB = CouchDB.build("localhost", 5984, "user", "password");
- ```
- 
-Multi node cluster:
- ```java
-CouchDB couchDB = CouchDB.builder()
-		.addNode("node1", 5984)
-		.addNode("node2") // Use default port
-		.user("admin")
-		.password("admin")
-		.build();
+	// Using default port and no credentials
+	CouchDB couchDB = CouchDB.build("localhost");
+	
+	// No credentials
+	CouchDB couchDB = CouchDB.build("localhost", 5984);
+	
+	// Full control
+	CouchDB couchDB = CouchDB.build("localhost", 5984, "user", "password");
+	 ```
+	 
+	Multi node cluster:
+	 ```java
+	CouchDB couchDB = CouchDB.builder()
+			.addNode("node1", 5984)
+			.addNode("node2") // Use default port
+			.user("admin")
+			.password("admin")
+			.build();
  ```
 When supplied more than one node the API will choose randomly one node as the active node.
 If case of a SocketTimeoutException exception the API will try another node (transparently).
@@ -50,163 +50,175 @@ If case of a SocketTimeoutException exception the API will try another node (tra
 
 To have access to the CRUD operations we must identify the database by creating a net.uiqui.couchdb.api.DB object.
  ```java
-DB testDB = couchDB.database("test");
-
-// Of the database object will be used only to manipulate a specific object type, we can use the TypedDB class instead
-TypedDB<User> userDB = couchDB.database("users", User.class);
+	DB testDB = couchDB.database("test");
+	
+	// Of the database object will be used only to manipulate a specific object type, we can use the TypedDB class instead
+	TypedDB<User> userDB = couchDB.database("users", User.class);
  ```
 
 #### Creating documents
 
 The documents to be saved on CouchDB must extend the net.uiqui.couchdb.api.Document class, this class provides to fields the ID and REVISION representing the "_id" and "_rev" fields on CouchDB.
  ```java
-public class User extends Document {
-	private String email = null;
-	private String name = null;
-	private List<String> roles = new ArrayList<String>();
+	public class User extends Document {
+		private String email = null;
+		private String name = null;
+		private List<String> roles = new ArrayList<String>();
+		
+		public User() {
+			super();
+		}
 	
-	public User() {
-		super();
-	}
-
-	public User(String id, String revision) {
-		super(id, revision);
-	}
-
-	public User(String id) {
-		super(id);
-	}
-
-	public String getEmail() {
-		return email;
-	}
-
-	public void setEmail(String email) {
-		this.email = email;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public List<String> getRoles() {
-		return roles;
-	}
+		public User(String id, String revision) {
+			super(id, revision);
+		}
 	
-	public void addRole(String role) {
-		roles.add(role);
-	}
+		public User(String id) {
+			super(id);
+		}
 	
-	@Override
-	public String toString() {
-		StringBuilder builder = new StringBuilder();
-		builder.append("User(id=");
-		builder.append(getId());
-		builder.append(", revision=");
-		builder.append(getRevision());
-		builder.append(", email=");
-		builder.append(email);
-		builder.append(", name=");
-		builder.append(name);
-		builder.append(", roles=");
-		builder.append(roles);
-		builder.append(")");
-		return builder.toString();
-	}	
-}
+		public String getEmail() {
+			return email;
+		}
+	
+		public void setEmail(String email) {
+			this.email = email;
+		}
+	
+		public String getName() {
+			return name;
+		}
+	
+		public void setName(String name) {
+			this.name = name;
+		}
+	
+		public List<String> getRoles() {
+			return roles;
+		}
+		
+		public void addRole(String role) {
+			roles.add(role);
+		}
+		
+		@Override
+		public String toString() {
+			StringBuilder builder = new StringBuilder();
+			builder.append("User(id=");
+			builder.append(getId());
+			builder.append(", revision=");
+			builder.append(getRevision());
+			builder.append(", email=");
+			builder.append(email);
+			builder.append(", name=");
+			builder.append(name);
+			builder.append(", roles=");
+			builder.append(roles);
+			builder.append(")");
+			return builder.toString();
+		}	
+	}
  ```
  
- #### CRUD Operations
+#### CRUD Operations
 
 To have access to the CRUD operations we must identify the database by creating a net.uiqui.couchdb.api.DB object.
  ```java
-System.out.println("- STEP 1 -");
-
-// Lets create some User objects
-User admin = new User();
-admin.setName("System Admin");
-admin.setEmail("admin@uiqui.net");
-admin.addRole("admin");
-admin.addRole("user");
-
-User oper1 = new User();
-oper1.setId("1"); // We can set the document ID
-oper1.setName("Operator 1");
-oper1.setEmail("operator1@uiqui.net");
-oper1.addRole("operations");
-oper1.addRole("user");
-
-// Lets see the objects 
-System.out.println(admin); // No values for ID and REVISION
-System.out.println(oper1); // No values for REVISION
-
-System.out.println("- STEP 2 -");
-
-// Add the objects to the database
-userDB.insert(admin);
-userDB.insert(oper1);
-
-// The object now already has values for ID and REVISION
-System.out.println(admin);
-System.out.println(oper1);
-
-System.out.println("- STEP 3 -");
-
-// Lets retrieve the object from the database
-User oper = userDB.get("1");
-
-// Same object than oper1
-System.out.println(oper);
-
-System.out.println("- STEP 4 -");
-
-//Lets change the objects
-admin.addRole("support");
-oper.addRole("support");
-
-// And update objects on the database
-userDB.update(admin);
-userDB.update(oper);
-
-// The REVISION field was changed
-System.out.println(admin);
-System.out.println(oper);
-
-System.out.println("- STEP 5 -");
-
-// Lets retrive the object again
-User tmp = userDB.get("1");
-
-// Same object than oper
-System.out.println(tmp);
-
-System.out.println("- STEP 6 -");
-
-// Lets delete the documents
-userDB.delete(admin);
-userDB.delete("1"); // We can delete the object, by providing the only the ID or by providing the ID and the REVISION
+	System.out.println("- STEP 1 -");
+	
+	// Lets check id the admin user already exists
+	System.out.println(userDB.exists("admin")); 
+	
+	// Lets create some User objects
+	User admin = new User();
+	admin.setId("admin"); // We can set the document ID
+	admin.setName("System Admin");
+	admin.setEmail("admin@uiqui.net");
+	admin.addRole("admin");
+	admin.addRole("user");
+	
+	User oper1 = new User(); // If we don't provide a value for the ID, CouchDB will provide a unique ID
+	oper1.setName("Operator 1");
+	oper1.setEmail("operator1@uiqui.net");
+	oper1.addRole("operations");
+	oper1.addRole("user");
+	
+	// Lets see the objects 
+	System.out.println(admin); // No value for REVISION
+	System.out.println(oper1); // No values for ID and REVISION
+	
+	System.out.println("- STEP 2 -");
+	
+	// Add the objects to the database
+	userDB.insert(admin);
+	userDB.insert(oper1);
+	
+	// The object now already has values for ID and REVISION
+	System.out.println(admin);
+	System.out.println(oper1);
+	
+	// Lets check id the admin user already exists on the database
+	System.out.println(userDB.exists("admin")); 
+	
+	System.out.println("- STEP 3 -");
+	
+	// Lets retrieve the object from the database
+	User administrator = userDB.get("admin");
+	
+	// Same object than admin
+	System.out.println(administrator);
+	
+	System.out.println("- STEP 4 -");
+	
+	//Lets change the objects
+	administrator.addRole("support");
+	oper1.addRole("support");
+	
+	// And update objects on the database
+	userDB.update(admin);
+	userDB.update(oper1);
+	
+	// The REVISION field was changed
+	System.out.println(admin);
+	System.out.println(oper1);
+	
+	System.out.println("- STEP 5 -");
+	
+	// Lets retrieve the object again
+	User tmp = userDB.get("admin");
+	
+	// Same object than oper
+	System.out.println(tmp);
+	
+	System.out.println("- STEP 6 -");
+	
+	// Lets delete the documents
+	userDB.delete("admin");
+	userDB.delete(oper1); // We can delete the object, by providing the only the ID or by providing the ID and the REVISION
+	
+	// Lets check id the admin user still exists on the database
+	System.out.println(userDB.exists("admin")); 
  ```
 
 And the output:
  ```
-- STEP 1 -
-User(id=null, revision=null, email=admin@uiqui.net, name=System Admin, roles=[admin, user])
-User(id=1, revision=null, email=operator1@uiqui.net, name=Operator 1, roles=[operations, user])
-- STEP 2 -
-User(id=21639faca07a48a02a905d6cfe000cb2, revision=1-258c707dc942964c0ccb4d5c2b235c5f, email=admin@uiqui.net, name=System Admin, roles=[admin, user])
-User(id=1, revision=4-2f58eb8ef518a00c6029e1b7db5bda4b, email=operator1@uiqui.net, name=Operator 1, roles=[operations, user])
-- STEP 3 -
-User(id=1, revision=4-2f58eb8ef518a00c6029e1b7db5bda4b, email=operator1@uiqui.net, name=Operator 1, roles=[operations, user])
-- STEP 4 -
-User(id=21639faca07a48a02a905d6cfe000cb2, revision=2-9f1f0c40efaa845337edbf49a9c73ff4, email=admin@uiqui.net, name=System Admin, roles=[admin, user, support])
-User(id=1, revision=5-0811e0afe1f3af735ce12173f1deab38, email=operator1@uiqui.net, name=Operator 1, roles=[operations, user, support])
-- STEP 5 -
-User(id=1, revision=5-0811e0afe1f3af735ce12173f1deab38, email=operator1@uiqui.net, name=Operator 1, roles=[operations, user, support])
-- STEP 6 -
+	- STEP 1 -
+	false
+	User(id=admin, revision=null, email=admin@uiqui.net, name=System Admin, roles=[admin, user])
+	User(id=null, revision=null, email=operator1@uiqui.net, name=Operator 1, roles=[operations, user])
+	- STEP 2 -
+	User(id=admin, revision=15-723fb4317336edfdbcca68e9490bbd23, email=admin@uiqui.net, name=System Admin, roles=[admin, user])
+	User(id=21639faca07a48a02a905d6cfe002d33, revision=1-e0eadad7c6127f2bd9d0f6f2234e1929, email=operator1@uiqui.net, name=Operator 1, roles=[operations, user])
+	true
+	- STEP 3 -
+	User(id=admin, revision=15-723fb4317336edfdbcca68e9490bbd23, email=admin@uiqui.net, name=System Admin, roles=[admin, user])
+	- STEP 4 -
+	User(id=admin, revision=16-2e71da8ace356ea126eb0538793ef2c7, email=admin@uiqui.net, name=System Admin, roles=[admin, user])
+	User(id=21639faca07a48a02a905d6cfe002d33, revision=2-80922fc0581053a218048c8a6853505f, email=operator1@uiqui.net, name=Operator 1, roles=[operations, user, support])
+	- STEP 5 -
+	User(id=admin, revision=16-2e71da8ace356ea126eb0538793ef2c7, email=admin@uiqui.net, name=System Admin, roles=[admin, user])
+	- STEP 6 -
+	false
  ```
  
 ##License

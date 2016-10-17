@@ -116,7 +116,7 @@ public class RestClient {
 		return RestOutput.parse(response);
 	}	
 	
-	public RestOutput head(final URL url) throws IOException {
+	public int head(final URL url) throws IOException {
 		final Request.Builder builder = new Request.Builder();
 		builder.url(url);
 		
@@ -129,6 +129,6 @@ public class RestClient {
 		final Request request = builder.build();
 		final Response response = client.newCall(request).execute();
 
-		return RestOutput.parse(response);
+		return response.code();
 	}		
 }
