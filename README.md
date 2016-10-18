@@ -221,5 +221,51 @@ And the output:
 	false
  ```
  
+#### Use views
+
+To execute a view we must create a ViewRequest:
+ ```java
+	// Number of user by role
+	ViewRequest request1 = ViewRequest.builder("test", "roles")
+			.group(true)
+			.build();
+	
+	ViewResult result1 = userDB.execute(request1);
+
+	System.out.println("Users by role:");
+	
+	for (Row row : result1.rows()) {
+		System.out.println(row.key() + " - " + row.value());
+	}
+	
+	// Number of user by role
+	ViewRequest request2 = ViewRequest.builder("test", "roles")
+			.reduce(false)
+			.keys("user")
+			.build();
+	
+	ViewResult result2 = userDB.execute(request2);
+
+	System.out.println("Users with role 'user':");
+	
+	for (Row row : result2.rows()) {
+		User user = userDB.get(row.id());
+		System.out.println(user);
+	}
+ ```
+ 
+And the output:
+ ```
+	Users by role:
+	admin - 1.0
+	operations - 1.0
+	support - 2.0
+	user - 2.0
+	
+	Users with role 'user':
+	User(id=admin, revision=34-390fb1ace6d6dd28e43d870dcbe19505, email=admin@uiqui.net, name=System Admin, roles=[admin, user, support])
+	User(id=oper1, revision=11-b08b7cc75a0da78ad86504608e27a76e, email=operator1@uiqui.net, name=Operator 1, roles=[operations, user, support])
+ ``` 
+ 
 ##License
 [Apache License Version 2.0](http://www.apache.org/licenses/LICENSE-2.0.html)
