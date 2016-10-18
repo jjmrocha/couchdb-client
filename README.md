@@ -221,7 +221,7 @@ And the output:
 	false
  ```
  
-#### Use views
+#### Using views
 
 To execute a view we must create a ViewRequest:
  ```java

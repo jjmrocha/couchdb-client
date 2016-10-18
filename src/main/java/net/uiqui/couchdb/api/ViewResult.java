@@ -66,8 +66,9 @@ public class ViewResult {
 			return key;
 		}
 
-		public Object value() {
-			return value;
+		@SuppressWarnings("unchecked")
+		public <T> T value() {
+			return (T) value;
 		}
 
 		@Override
