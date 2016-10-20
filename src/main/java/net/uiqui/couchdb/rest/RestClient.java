@@ -41,9 +41,9 @@ public class RestClient {
 	public RestClient(final Cluster cluster) {
 		client = new OkHttpClient();
 		
-		client.setConnectTimeout(5, TimeUnit.SECONDS);
-	    client.setWriteTimeout(5, TimeUnit.SECONDS);
-	    client.setReadTimeout(5, TimeUnit.SECONDS);
+		client.setConnectTimeout(30, TimeUnit.SECONDS);
+	    client.setWriteTimeout(30, TimeUnit.SECONDS);
+	    client.setReadTimeout(30, TimeUnit.SECONDS);
 	    
 		client.interceptors().add(new RetryHandler(cluster));
 		
