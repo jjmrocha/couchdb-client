@@ -53,24 +53,24 @@ public class CouchAPI {
 
 	private final Gson gson = new Gson();
 	private Cluster cluster = null;
-	private RestClient client = null;
-	private String db = null;
+	private RestClient restClient = null;
+	private String dbName = null;
 
 	public CouchAPI(final Cluster cluster, final String db) {
 		this.cluster = cluster;
-		this.db = db;
+		this.dbName = db;
 
-		client = new RestClient(cluster);
+		restClient = new RestClient(cluster);
 	}
 
 	public void delete(final String docId, final String revision) throws CouchException {
 		final Node node = cluster.currentNode();
 		final String id = Encoder.encode(docId);
 		final String rev = Encoder.encode(revision);
-		final URL url = DELETE_DOC.build(node.server(), node.port(), db, id, rev);
+		final URL url = DELETE_DOC.build(node.server(), node.port(), dbName, id, rev);
 
 		try {
-			final RestOutput output = client.delete(url);
+			final RestOutput output = restClient.delete(url);
 
 			if (output.status() != 200 && output.status() != 202) {
 				final Failure fail = gson.fromJson(output.json(), Failure.class);
@@ -85,37 +85,33 @@ public class CouchAPI {
 	public boolean exists(final String docId) throws CouchException {
 		final Node node = cluster.currentNode();
 		final String id = Encoder.encode(docId);
-		final URL url = HEAD_DOC.build(node.server(), node.port(), db, id);
+		final URL url = HEAD_DOC.build(node.server(), node.port(), dbName, id);
 
 		try {
-			final int status = client.head(url);
+			final int status = restClient.head(url);
 
 			if (status == 200 || status == 304) {
 				return true;
 			} else if (status == 404) {
 				return false;
 			} else {
-				final Failure fail = new Failure();
-				fail.error("unauthorized");
-				fail.reason("You are not authorized to access this db.");
-
-				throw ExceptionFactory.build(status, fail);
+				throw ExceptionFactory.unauthorized(status);
 			}
 		} catch (IOException e) {
 			throw ExceptionFactory.build("HEAD", url, e);
 		}
 	}
 
-	public <T> T get(final String docId, final Class<T> clazz) throws CouchException {
+	public <T> T get(final String docId, final Class<T> type) throws CouchException {
 		final Node node = cluster.currentNode();
 		final String id = Encoder.encode(docId);
-		final URL url = GET_DOC.build(node.server(), node.port(), db, id);
+		final URL url = GET_DOC.build(node.server(), node.port(), dbName, id);
 
 		try {
-			final RestOutput output = client.get(url);
+			final RestOutput output = restClient.get(url);
 
 			if (output.status() == 200) {
-				return gson.fromJson(output.json(), clazz);
+				return gson.fromJson(output.json(), type);
 			} else if (output.status() == 404) {
 				return null;
 			} else {
@@ -130,11 +126,11 @@ public class CouchAPI {
 
 	public void insert(final Document doc) throws CouchException {
 		final Node node = cluster.currentNode();
-		final URL url = POST_DOC.build(node.server(), node.port(), db);
+		final URL url = POST_DOC.build(node.server(), node.port(), dbName);
 		final String json = gson.toJson(doc);
 
 		try {
-			final RestOutput output = client.post(url, json);
+			final RestOutput output = restClient.post(url, json);
 
 			if (output.status() == 201 || output.status() == 202) {
 				final Success sucess = gson.fromJson(output.json(), Success.class);
@@ -153,11 +149,11 @@ public class CouchAPI {
 	public void update(final Document doc) throws CouchException {
 		final Node node = cluster.currentNode();
 		final String id = Encoder.encode(doc.getId());
-		final URL url = PUT_DOC.build(node.server(), node.port(), db, id);
+		final URL url = PUT_DOC.build(node.server(), node.port(), dbName, id);
 		final String json = gson.toJson(doc);
 
 		try {
-			final RestOutput output = client.put(url, json);
+			final RestOutput output = restClient.put(url, json);
 
 			if (output.status() == 201 || output.status() == 202) {
 				final Success sucess = gson.fromJson(output.json(), Success.class);
@@ -206,13 +202,13 @@ public class CouchAPI {
 		URL url = null;
 
 		if (query == null) {
-			url = POST_VIEW_NO_QUERY.build(node.server(), node.port(), db, designDoc, viewName);
+			url = POST_VIEW_NO_QUERY.build(node.server(), node.port(), dbName, designDoc, viewName);
 		} else {
-			url = POST_VIEW_WITH_QUERY.build(node.server(), node.port(), db, designDoc, viewName, query);
+			url = POST_VIEW_WITH_QUERY.build(node.server(), node.port(), dbName, designDoc, viewName, query);
 		}
 
 		try {
-			final RestOutput output = client.post(url, body);
+			final RestOutput output = restClient.post(url, body);
 
 			if (output.status() == 200) {
 				return gson.fromJson(output.json(), ViewResult.class);
@@ -231,13 +227,13 @@ public class CouchAPI {
 		URL url = null;
 
 		if (query == null) {
-			url = GET_VIEW_NO_QUERY.build(node.server(), node.port(), db, designDoc, viewName);
+			url = GET_VIEW_NO_QUERY.build(node.server(), node.port(), dbName, designDoc, viewName);
 		} else {
-			url = GET_VIEW_WITH_QUERY.build(node.server(), node.port(), db, designDoc, viewName, query);
+			url = GET_VIEW_WITH_QUERY.build(node.server(), node.port(), dbName, designDoc, viewName, query);
 		}
 
 		try {
-			final RestOutput output = client.get(url);
+			final RestOutput output = restClient.get(url);
 
 			if (output.status() == 200) {
 				return gson.fromJson(output.json(), ViewResult.class);
@@ -253,7 +249,7 @@ public class CouchAPI {
 
 	public BatchResult[] bulk(final Document[] docs) throws CouchException {
 		final Node node = cluster.currentNode();
-		final URL url = POST_BULK.build(node.server(), node.port(), db);
+		final URL url = POST_BULK.build(node.server(), node.port(), dbName);
 
 		final StringBuilder bodyBuilder = new StringBuilder();
 		bodyBuilder.append("{\"docs\": ");
@@ -262,7 +258,7 @@ public class CouchAPI {
 		final String json = bodyBuilder.toString();
 
 		try {
-			final RestOutput output = client.post(url, json);
+			final RestOutput output = restClient.post(url, json);
 
 			if (output.status() == 201) {
 				return gson.fromJson(output.json(), BatchResult[].class);

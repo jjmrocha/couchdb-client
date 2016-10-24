@@ -45,9 +45,8 @@ public class RetryHandler implements Interceptor {
 			final Node node = cluster.nextNode();
 			final URL url = URLBuilder.change(request.url(), node.server(), node.port());
 			final Request retry = request.newBuilder().url(url).build();
-			
+
 			return chain.proceed(retry);
 		}
 	}
-
 }

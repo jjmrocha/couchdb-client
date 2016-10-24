@@ -24,50 +24,50 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class URLBuilder {
-    private final List<String> parts = new ArrayList<String>();
+	private final List<String> parts = new ArrayList<String>();
 
-    public URLBuilder(final String url) {
-           final String[] frags = url.split("%s");
+	public URLBuilder(final String url) {
+		final String[] frags = url.split("%s");
 
-           for (String s : frags) {
-                  parts.add(s);
-           }
-    }
+		for (String s : frags) {
+			parts.add(s);
+		}
+	}
 
-    public URL build(final Object... args) {
-           final StringBuilder builder = new StringBuilder();
+	public URL build(final Object... args) {
+		final StringBuilder builder = new StringBuilder();
 
-           int index = 0;
+		int index = 0;
 
-           for (String s : parts) {
-                  builder.append(s);
+		for (String s : parts) {
+			builder.append(s);
 
-                  if (index < args.length) {
-                        builder.append(args[index]);
-                        index++;
-                  }
-           }
+			if (index < args.length) {
+				builder.append(args[index]);
+				index++;
+			}
+		}
 
-           try {
-                  return new URL(builder.toString());
-           } catch (MalformedURLException e) {
-                  throw new RuntimeException(e);
-           }
-    }
-   
-    public static URL change(final URL url, final String host, final int port) {
-           final StringBuilder builder = new StringBuilder();
-           builder.append(url.getProtocol());
-           builder.append("://");
-           builder.append(host);
-           builder.append(":");
-           builder.append(port);
-           builder.append(url.getFile());
-          
-           try {
-                  return new URL(builder.toString());
-           } catch (MalformedURLException e) {
-                  throw new RuntimeException(e);
-           }
-    }
+		try {
+			return new URL(builder.toString());
+		} catch (MalformedURLException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public static URL change(final URL url, final String host, final int port) {
+		final StringBuilder builder = new StringBuilder();
+		builder.append(url.getProtocol());
+		builder.append("://");
+		builder.append(host);
+		builder.append(":");
+		builder.append(port);
+		builder.append(url.getFile());
+
+		try {
+			return new URL(builder.toString());
+		} catch (MalformedURLException e) {
+			throw new RuntimeException(e);
+		}
+	}
 }

@@ -53,8 +53,8 @@ public class DB {
 		return api.exists(docId);
 	}
 	
-	public <T> T get(final String docId, final Class<T> clazz) throws CouchException {
-		return api.get(docId, clazz);
+	public <T> T get(final String docId, final Class<T> type) throws CouchException {
+		return api.get(docId, type);
 	}
 
 	public void put(final Document doc) throws CouchException {

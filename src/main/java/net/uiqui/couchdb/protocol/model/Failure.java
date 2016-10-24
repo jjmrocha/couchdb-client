@@ -21,6 +21,14 @@ package net.uiqui.couchdb.protocol.model;
 public class Failure {
 	private String error = null;
 	private String reason = null;
+	
+	public Failure() {
+	}
+	
+	public Failure(String error, String reason) {
+		this.error = error;
+		this.reason = reason;
+	}
 
 	public String error() {
 		return error;

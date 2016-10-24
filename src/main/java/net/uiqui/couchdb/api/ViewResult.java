@@ -42,7 +42,7 @@ public class ViewResult {
 
 	@Override
 	public String toString() {
-		StringBuilder builder = new StringBuilder();
+		final StringBuilder builder = new StringBuilder();
 		builder.append("ViewResult(offset=");
 		builder.append(offset);
 		builder.append(", rows=");

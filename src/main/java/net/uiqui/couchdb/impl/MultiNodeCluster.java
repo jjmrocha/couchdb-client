@@ -45,17 +45,13 @@ public class MultiNodeCluster extends AbstractCluster {
 
 		private Ring(final List<Node> nodes) {
 			for (Node server : nodes) {
-				add(server);
-			}
-		}
-
-		private void add(final Node value) {
-			if (current == null) {
-				current = new RingNode(value, null);
-				current.next = current;
-			} else {
-				RingNode next = current.next;
-				current.next = new RingNode(value, next);
+				if (current == null) {
+					current = new RingNode(server, null);
+					current.next = current;
+				} else {
+					RingNode next = current.next;
+					current.next = new RingNode(server, next);
+				}
 			}
 		}
 
