@@ -188,7 +188,7 @@ public class CouchAPI {
 		} else {
 			final StringBuilder bodyBuilder = new StringBuilder();
 			bodyBuilder.append("{\"keys\": ");
-			bodyBuilder.append(gson.toJson(request.keys()));
+			gson.toJson(request.keys(), bodyBuilder);
 			bodyBuilder.append("}");
 
 			final String body = bodyBuilder.toString();
@@ -253,7 +253,7 @@ public class CouchAPI {
 
 		final StringBuilder bodyBuilder = new StringBuilder();
 		bodyBuilder.append("{\"docs\": ");
-		bodyBuilder.append(gson.toJson(docs));
+		gson.toJson(docs, bodyBuilder);
 		bodyBuilder.append("}");
 		final String json = bodyBuilder.toString();
 
