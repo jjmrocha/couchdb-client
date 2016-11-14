@@ -18,6 +18,8 @@
  */
 package net.uiqui.couchdb.protocol;
 
+import java.util.Collection;
+
 import net.uiqui.couchdb.api.Document;
 
 import com.google.gson.annotations.SerializedName;
@@ -52,6 +54,10 @@ public class DeleteDoc extends Document {
 		return builder.toString();
 	}
 	
+	public static DeleteDoc from(final String id, final String revision) {
+		return new DeleteDoc(id, revision);
+	}
+	
 	public static DeleteDoc from(final Document doc) {
 		return new DeleteDoc(doc);
 	}
@@ -65,4 +71,15 @@ public class DeleteDoc extends Document {
 		
 		return dels;
 	}
+	
+	public static DeleteDoc[] from(final Collection<Document> docs) {
+		final DeleteDoc[] dels = new DeleteDoc[docs.size()];
+		int i = 0;
+		
+		for (Document doc : docs) {
+			dels[i++] = from(doc);
+		}
+		
+		return dels;
+	}	
 }

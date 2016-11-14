@@ -18,6 +18,10 @@
  */
 package net.uiqui.couchdb.api;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 import net.uiqui.couchdb.impl.Cluster;
 import net.uiqui.couchdb.protocol.CouchAPI;
 import net.uiqui.couchdb.protocol.DeleteDoc;
@@ -29,12 +33,24 @@ public class DB {
 		this.api = new CouchAPI(cluster, db);
 	}
 	
-	public void delete(final Document doc) throws CouchException {
-		delete(doc.getId(), doc.getRevision());
+	public boolean exists(final String docId) throws CouchException {
+		return api.exists(docId);
 	}
 	
-	public BatchResult[] delete(final Document...docs) throws CouchException {
-		return batch(DeleteDoc.from(docs));
+	public <T> T get(final String docId, final Class<T> type) throws CouchException {
+		return api.get(docId, type);
+	}
+
+	public void insert(final Document doc) throws CouchException {
+		api.insert(doc);
+	}
+
+	public void update(final Document doc) throws CouchException {
+		api.update(doc);
+	}
+	
+	public void delete(final Document doc) throws CouchException {
+		delete(doc.getId(), doc.getRevision());
 	}
 	
 	public void delete(final String docId, final String revision) throws CouchException {
@@ -49,40 +65,62 @@ public class DB {
 		}
 	}	
 	
-	public boolean exists(final String docId) throws CouchException {
-		return api.exists(docId);
-	}
-	
-	public <T> T get(final String docId, final Class<T> type) throws CouchException {
-		return api.get(docId, type);
-	}
-
-	public void put(final Document doc) throws CouchException {
-		if (doc.getId() != null) {
-			update(doc);
-		} else {
-			insert(doc);
-		}
-	}
-
-	public void insert(final Document doc) throws CouchException {
-		api.insert(doc);
-	}
-	
-	public BatchResult[] insert(final Document...docs) throws CouchException {
-		return batch(docs);
-	}	
-
-	public void update(final Document doc) throws CouchException {
-		api.update(doc);
-	}
-	
-	public BatchResult[] update(final Document...docs) throws CouchException {
-		return batch(docs);
-	}
-	
 	public ViewResult execute(final ViewRequest request) throws CouchException {
 		return api.view(request);
+	}
+	
+	public Collection<BatchResult> batchInsert(final Collection<Document> docs) throws CouchException {
+		final Document[] inputs = docs.toArray(new Document[docs.size()]);
+		final BatchResult[] results = batch(inputs);
+		final List<BatchResult> output = new ArrayList<BatchResult>();
+		
+		for (int i = 0; i < inputs.length; i++) {
+			final BatchResult result = results[i];
+			
+			if (result.isSuccess()) {
+				final Document input = inputs[i];
+				
+				input.setId(result.id());
+				input.setRevision(result.rev());
+			} else {
+				output.add(result);
+			}
+		}
+		
+		return output;
+	}
+	
+	public Collection<BatchResult> batchUpdate(final Collection<Document> docs) throws CouchException {
+		final Document[] inputs = docs.toArray(new Document[docs.size()]);
+		final BatchResult[] results = batch(inputs);
+		final List<BatchResult> output = new ArrayList<BatchResult>();
+		
+		for (int i = 0; i < inputs.length; i++) {
+			final BatchResult result = results[i];
+			
+			if (result.isSuccess()) {
+				inputs[i].setRevision(result.rev());
+			} else {
+				output.add(result);
+			}
+		}
+		
+		return output;
+	}
+	
+	public Collection<BatchResult> batchDelete(final Collection<Document> docs) throws CouchException {
+		final BatchResult[] results = batch(DeleteDoc.from(docs));
+		final List<BatchResult> output = new ArrayList<BatchResult>();
+		
+		for (int i = 0; i < results.length; i++) {
+			final BatchResult result = results[i];
+			
+			if (!result.isSuccess()) {
+				output.add(result);
+			}
+		}
+		
+		return output;
 	}
 	
 	public BatchResult[] batch(final Document[] docs) throws CouchException {

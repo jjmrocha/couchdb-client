@@ -25,11 +25,13 @@ import java.util.Map.Entry;
 import net.uiqui.couchdb.api.BatchResult;
 import net.uiqui.couchdb.api.CouchException;
 import net.uiqui.couchdb.api.Document;
+import net.uiqui.couchdb.api.QueryResult;
 import net.uiqui.couchdb.api.ViewRequest;
 import net.uiqui.couchdb.api.ViewResult;
 import net.uiqui.couchdb.impl.Cluster;
 import net.uiqui.couchdb.impl.ExceptionFactory;
 import net.uiqui.couchdb.impl.Node;
+import net.uiqui.couchdb.json.QueryResultDeserializer;
 import net.uiqui.couchdb.protocol.model.Failure;
 import net.uiqui.couchdb.protocol.model.Success;
 import net.uiqui.couchdb.rest.Encoder;
@@ -38,6 +40,7 @@ import net.uiqui.couchdb.rest.RestOutput;
 import net.uiqui.couchdb.rest.URLBuilder;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 public class CouchAPI {
 	private static final URLBuilder PUT_DOC = new URLBuilder("http://%s:%s/%s/%s");
@@ -51,7 +54,9 @@ public class CouchAPI {
 	private static final URLBuilder GET_VIEW_WITH_QUERY = new URLBuilder("http://%s:%s/%s/_design/%s/_view/%s?%s");
 	private static final URLBuilder POST_BULK = new URLBuilder("http://%s:%s/%s/_bulk_docs");
 
-	private final Gson gson = new Gson();
+	private final Gson gson = new GsonBuilder()
+		.registerTypeAdapter(QueryResult.class, new QueryResultDeserializer())
+		.create();
 	private Cluster cluster = null;
 	private RestClient restClient = null;
 	private String dbName = null;
