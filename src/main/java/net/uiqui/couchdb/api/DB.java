@@ -25,6 +25,7 @@ import java.util.List;
 import net.uiqui.couchdb.impl.Cluster;
 import net.uiqui.couchdb.protocol.CouchAPI;
 import net.uiqui.couchdb.protocol.DeleteDoc;
+import net.uiqui.couchdb.protocol.model.QueryResult;
 
 public class DB {
 	private CouchAPI api = null;
@@ -67,6 +68,11 @@ public class DB {
 	
 	public ViewResult execute(final ViewRequest request) throws CouchException {
 		return api.view(request);
+	}
+	
+	public <T> List<T> execute(final QueryRequest request, final Class<T> type) throws CouchException {
+		final QueryResult queryResult = api.query(request);
+		return queryResult.resultAsListOf(type);
 	}
 	
 	public Collection<BatchResult> batchInsert(final Collection<Document> docs) throws CouchException {

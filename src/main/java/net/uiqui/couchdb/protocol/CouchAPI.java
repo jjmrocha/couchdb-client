@@ -25,6 +25,7 @@ import java.util.Map.Entry;
 import net.uiqui.couchdb.api.BatchResult;
 import net.uiqui.couchdb.api.CouchException;
 import net.uiqui.couchdb.api.Document;
+import net.uiqui.couchdb.api.QueryRequest;
 import net.uiqui.couchdb.api.ViewRequest;
 import net.uiqui.couchdb.api.ViewResult;
 import net.uiqui.couchdb.impl.Cluster;
@@ -32,6 +33,7 @@ import net.uiqui.couchdb.impl.ExceptionFactory;
 import net.uiqui.couchdb.impl.Node;
 import net.uiqui.couchdb.json.JSON;
 import net.uiqui.couchdb.protocol.model.Failure;
+import net.uiqui.couchdb.protocol.model.QueryResult;
 import net.uiqui.couchdb.protocol.model.Success;
 import net.uiqui.couchdb.rest.Encoder;
 import net.uiqui.couchdb.rest.RestClient;
@@ -49,6 +51,7 @@ public class CouchAPI {
 	private static final URLBuilder GET_VIEW_NO_QUERY = new URLBuilder("http://%s:%s/%s/_design/%s/_view/%s");
 	private static final URLBuilder GET_VIEW_WITH_QUERY = new URLBuilder("http://%s:%s/%s/_design/%s/_view/%s?%s");
 	private static final URLBuilder POST_BULK = new URLBuilder("http://%s:%s/%s/_bulk_docs");
+	private static final URLBuilder POST_FIND = new URLBuilder("http://%s:%s/%s/_find");
 
 	private Cluster cluster = null;
 	private RestClient restClient = null;
@@ -239,6 +242,26 @@ public class CouchAPI {
 			throw ExceptionFactory.build("GET", url, e);
 		}
 	}
+	
+	public QueryResult query(final QueryRequest request) throws CouchException {
+		final Node node = cluster.currentNode();
+		final URL url = POST_FIND.build(node.server(), node.port(), dbName);
+		final String json = JSON.toJson(request);
+		
+		try {
+			final RestOutput output = restClient.post(url, json);
+
+			if (output.status() == 200) {
+				return JSON.fromJson(output.json(), QueryResult.class);
+			} else {
+				final Failure fail = JSON.fromJson(output.json(), Failure.class);
+
+				throw ExceptionFactory.build(output.status(), fail);
+			}
+		} catch (IOException e) {
+			throw ExceptionFactory.build("POST", url, e);
+		}
+	}	
 
 	public BatchResult[] bulk(final Document[] docs) throws CouchException {
 		final Node node = cluster.currentNode();

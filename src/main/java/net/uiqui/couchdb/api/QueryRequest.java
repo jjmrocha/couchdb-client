@@ -18,23 +18,6 @@
  */
 package net.uiqui.couchdb.api;
 
-import java.util.List;
+public class QueryRequest {
 
-import net.uiqui.couchdb.impl.Cluster;
-
-public class TypedDB<T extends Document> extends DB {
-	private Class<T> type = null;
-	
-	public TypedDB(final Cluster cluster, final String db, final Class<T> type) {
-		super(cluster, db);
-		this.type = type;
-	}
-
-	public T get(final String docId) throws CouchException {
-		return super.get(docId, type);
-	}
-	
-	public List<T> execute(final QueryRequest request) throws CouchException {
-		return super.execute(request, type);
-	}
 }
