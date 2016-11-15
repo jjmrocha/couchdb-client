@@ -124,10 +124,10 @@ The documents to be saved on CouchDB must extend the net.uiqui.couchdb.api.Docum
 
 To have access to the CRUD operations we must identify the database by creating a net.uiqui.couchdb.api.DB object.
  ```java
-	System.out.println("- STEP 1 -");
-	
+ 
 	// Lets check id the admin user already exists
 	System.out.println(userDB.exists("admin")); 
+	// Output: false
 	
 	// Lets create some User objects
 	User admin = new User();
@@ -145,9 +145,10 @@ To have access to the CRUD operations we must identify the database by creating 
 	
 	// Lets see the objects 
 	System.out.println(admin); // No value for REVISION
-	System.out.println(oper1); // No values for ID and REVISION
+	// Output: User(id=admin, revision=null, email=admin@uiqui.net, name=System Admin, roles=[admin, user])
 	
-	System.out.println("- STEP 2 -");
+	System.out.println(oper1); // No values for ID and REVISION
+	// Output: User(id=null, revision=null, email=operator1@uiqui.net, name=Operator 1, roles=[operations, user])
 	
 	// Add the objects to the database
 	userDB.insert(admin);
@@ -155,21 +156,22 @@ To have access to the CRUD operations we must identify the database by creating 
 	
 	// The object now already has values for ID and REVISION
 	System.out.println(admin);
+	// Output: User(id=admin, revision=15-723fb4317336edfdbcca68e9490bbd23, email=admin@uiqui.net, name=System Admin, roles=[admin, user])
+	
 	System.out.println(oper1);
+	// Output: User(id=21639faca07a48a02a905d6cfe002d33, revision=1-e0eadad7c6127f2bd9d0f6f2234e1929, email=operator1@uiqui.net, name=Operator 1, roles=[operations, user])
 	
 	// Lets check id the admin user already exists on the database
 	System.out.println(userDB.exists("admin")); 
-	
-	System.out.println("- STEP 3 -");
+	// Output: true
 	
 	// Lets retrieve the object from the database
 	User administrator = userDB.get("admin");
 	
 	// Same object than admin
 	System.out.println(administrator);
-	
-	System.out.println("- STEP 4 -");
-	
+	// Output: User(id=admin, revision=15-723fb4317336edfdbcca68e9490bbd23, email=admin@uiqui.net, name=System Admin, roles=[admin, user])
+
 	//Lets change the objects
 	administrator.addRole("support");
 	oper1.addRole("support");
@@ -180,17 +182,17 @@ To have access to the CRUD operations we must identify the database by creating 
 	
 	// The REVISION field was changed
 	System.out.println(admin);
-	System.out.println(oper1);
+	// Output: User(id=admin, revision=16-2e71da8ace356ea126eb0538793ef2c7, email=admin@uiqui.net, name=System Admin, roles=[admin, user])
 	
-	System.out.println("- STEP 5 -");
+	System.out.println(oper1);
+	// Output: User(id=21639faca07a48a02a905d6cfe002d33, revision=2-80922fc0581053a218048c8a6853505f, email=operator1@uiqui.net, name=Operator 1, roles=[operations, user, support])
 	
 	// Lets retrieve the object again
 	User tmp = userDB.get("admin");
 	
 	// Same object than oper
 	System.out.println(tmp);
-	
-	System.out.println("- STEP 6 -");
+	// Output: User(id=admin, revision=16-2e71da8ace356ea126eb0538793ef2c7, email=admin@uiqui.net, name=System Admin, roles=[admin, user])
 	
 	// Lets delete the documents
 	userDB.delete("admin"); // We can delete the object, by providing the only the ID or by providing the ID and the REVISION
@@ -198,33 +200,14 @@ To have access to the CRUD operations we must identify the database by creating 
 	
 	// Lets check id the admin user still exists on the database
 	System.out.println(userDB.exists("admin")); 
- ```
-
-And the output:
- ```
-	- STEP 1 -
-	false
-	User(id=admin, revision=null, email=admin@uiqui.net, name=System Admin, roles=[admin, user])
-	User(id=null, revision=null, email=operator1@uiqui.net, name=Operator 1, roles=[operations, user])
-	- STEP 2 -
-	User(id=admin, revision=15-723fb4317336edfdbcca68e9490bbd23, email=admin@uiqui.net, name=System Admin, roles=[admin, user])
-	User(id=21639faca07a48a02a905d6cfe002d33, revision=1-e0eadad7c6127f2bd9d0f6f2234e1929, email=operator1@uiqui.net, name=Operator 1, roles=[operations, user])
-	true
-	- STEP 3 -
-	User(id=admin, revision=15-723fb4317336edfdbcca68e9490bbd23, email=admin@uiqui.net, name=System Admin, roles=[admin, user])
-	- STEP 4 -
-	User(id=admin, revision=16-2e71da8ace356ea126eb0538793ef2c7, email=admin@uiqui.net, name=System Admin, roles=[admin, user])
-	User(id=21639faca07a48a02a905d6cfe002d33, revision=2-80922fc0581053a218048c8a6853505f, email=operator1@uiqui.net, name=Operator 1, roles=[operations, user, support])
-	- STEP 5 -
-	User(id=admin, revision=16-2e71da8ace356ea126eb0538793ef2c7, email=admin@uiqui.net, name=System Admin, roles=[admin, user])
-	- STEP 6 -
-	false
+	// Output: false
  ```
  
 #### Using views
 
 To execute a view we must create a ViewRequest:
  ```java
+ 
 	// Number of user by role
 	ViewRequest request1 = ViewRequest.builder("test", "roles")
 			.group(true)
@@ -238,7 +221,15 @@ To execute a view we must create a ViewRequest:
 		System.out.println(row.key() + " - " + row.value());
 	}
 	
-	// Number of user by role
+	/* Output:
+			Users by role:
+			admin - 1.0
+			operations - 1.0
+			support - 2.0
+			user - 2.0
+	 */
+	
+	// List of users with role "user"
 	ViewRequest request2 = ViewRequest.builder("test", "roles")
 			.reduce(false)
 			.keys("user")
@@ -252,20 +243,13 @@ To execute a view we must create a ViewRequest:
 		User user = userDB.get(row.id());
 		System.out.println(user);
 	}
- ```
- 
-And the output:
- ```
-	Users by role:
-	admin - 1.0
-	operations - 1.0
-	support - 2.0
-	user - 2.0
 	
-	Users with role 'user':
-	User(id=admin, revision=34-390fb1ace6d6dd28e43d870dcbe19505, email=admin@uiqui.net, name=System Admin, roles=[admin, user, support])
-	User(id=oper1, revision=11-b08b7cc75a0da78ad86504608e27a76e, email=operator1@uiqui.net, name=Operator 1, roles=[operations, user, support])
- ``` 
+	/* Output:
+		Users with role 'user':
+		User(id=admin, revision=34-390fb1ace6d6dd28e43d870dcbe19505, email=admin@uiqui.net, name=System Admin, roles=[admin, user, support])
+		User(id=oper1, revision=11-b08b7cc75a0da78ad86504608e27a76e, email=operator1@uiqui.net, name=Operator 1, roles=[operations, user, support])
+	 */	
+ ```
  
 ##License
 [Apache License Version 2.0](http://www.apache.org/licenses/LICENSE-2.0.html)
