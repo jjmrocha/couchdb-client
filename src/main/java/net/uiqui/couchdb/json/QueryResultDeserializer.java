@@ -19,19 +19,31 @@
 package net.uiqui.couchdb.json;
 
 import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
 
-import net.uiqui.couchdb.api.QueryResult;
+import net.uiqui.couchdb.protocol.model.QueryResult;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 
 public class QueryResultDeserializer implements JsonDeserializer<QueryResult> {
 
 	public QueryResult deserialize(final JsonElement json, final Type typeOfT, final JsonDeserializationContext context) throws JsonParseException {
-		// TODO Auto-generated method stub
-		return null;
-	}
+		final JsonObject jsonObject = json.getAsJsonObject();
+		final JsonArray jsonArray = jsonObject.getAsJsonArray("docs");
+		final List<JsonElement> results = new ArrayList<JsonElement>();
 
+		if (jsonArray != null) {
+			for (JsonElement jsonElement : jsonArray) {
+				results.add(jsonElement);
+			}
+		}
+
+		return new QueryResult(results);
+	}
 }

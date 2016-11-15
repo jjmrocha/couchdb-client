@@ -83,4 +83,15 @@ public class Document implements Comparable<Document>, Serializable {
 	public int compareTo(final Document o) {
 		return id.compareTo(o.id);
 	}
+
+	@Override
+	public String toString() {
+		final StringBuilder builder = new StringBuilder();
+		builder.append("(id=");
+		builder.append(id);
+		builder.append(", revision=");
+		builder.append(revision);
+		builder.append(")");
+		return builder.toString();
+	}
 }
