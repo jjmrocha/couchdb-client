@@ -38,6 +38,14 @@ public class DB {
 		return api.exists(docId);
 	}
 	
+	public Collection<String> ids() throws CouchException {
+		return ids(0, 0);
+	}
+	
+	public Collection<String> ids(final long skip, final long limit) throws CouchException {
+		return api.ids(skip, limit);
+	}
+	
 	public <T> T get(final String docId, final Class<T> type) throws CouchException {
 		return api.get(docId, type);
 	}
@@ -70,7 +78,7 @@ public class DB {
 		return api.view(request);
 	}
 	
-	public <T> List<T> execute(final QueryRequest request, final Class<T> type) throws CouchException {
+	public <T> Collection<T> execute(final QueryRequest request, final Class<T> type) throws CouchException {
 		final QueryResult queryResult = api.query(request);
 		return queryResult.resultAsListOf(type);
 	}

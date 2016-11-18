@@ -20,6 +20,7 @@ package net.uiqui.couchdb.protocol;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.Collection;
 import java.util.Map.Entry;
 
 import net.uiqui.couchdb.api.BatchResult;
@@ -32,6 +33,7 @@ import net.uiqui.couchdb.impl.Cluster;
 import net.uiqui.couchdb.impl.ExceptionFactory;
 import net.uiqui.couchdb.impl.Node;
 import net.uiqui.couchdb.json.JSON;
+import net.uiqui.couchdb.protocol.model.IDList;
 import net.uiqui.couchdb.protocol.model.Failure;
 import net.uiqui.couchdb.protocol.model.QueryResult;
 import net.uiqui.couchdb.protocol.model.Success;
@@ -52,6 +54,8 @@ public class CouchAPI {
 	private static final URLBuilder GET_VIEW_WITH_QUERY = new URLBuilder("http://%s:%s/%s/_design/%s/_view/%s?%s");
 	private static final URLBuilder POST_BULK = new URLBuilder("http://%s:%s/%s/_bulk_docs");
 	private static final URLBuilder POST_FIND = new URLBuilder("http://%s:%s/%s/_find");
+	private static final URLBuilder GET_ALL_DOCS_NO_QUERY = new URLBuilder("http://%s:%s/%s/_all_docs");
+	private static final URLBuilder GET_ALL_DOCS_WITH_QUERY = new URLBuilder("http://%s:%s/%s/_all_docs?%s");
 
 	private Cluster cluster = null;
 	private RestClient restClient = null;
@@ -81,6 +85,39 @@ public class CouchAPI {
 			}
 		} catch (IOException e) {
 			throw ExceptionFactory.build("HEAD", url, e);
+		}
+	}
+	
+	public Collection<String> ids(final long skip, final long limit) throws CouchException {
+		final Node node = cluster.currentNode();
+		URL url = null;
+		
+		if (skip == 0 && limit == 0) {
+			url = GET_ALL_DOCS_NO_QUERY.build(node.server(), node.port(), dbName);
+		} else {
+			final StringBuilder queryBuilder = new StringBuilder();
+			queryBuilder.append("skip=");
+			queryBuilder.append(skip);
+			queryBuilder.append("&limit=");
+			queryBuilder.append(limit);
+			final String query = queryBuilder.toString();
+			
+			url = GET_ALL_DOCS_WITH_QUERY.build(node.server(), node.port(), dbName, query);
+		}
+
+		try {
+			final RestOutput output = restClient.get(url);
+
+			if (output.status() == 200) {
+				final IDList allIds = JSON.fromJson(output.json(), IDList.class);
+				return allIds.ids();
+			} else {
+				final Failure fail = JSON.fromJson(output.json(), Failure.class);
+
+				throw ExceptionFactory.build(output.status(), fail);
+			}
+		} catch (IOException e) {
+			throw ExceptionFactory.build("GET", url, e);
 		}
 	}
 

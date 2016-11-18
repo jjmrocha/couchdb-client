@@ -18,7 +18,7 @@
  */
 package net.uiqui.couchdb.api;
 
-import java.util.List;
+import java.util.Collection;
 
 import net.uiqui.couchdb.impl.Cluster;
 
@@ -34,7 +34,7 @@ public class TypedDB<T extends Document> extends DB {
 		return super.get(docId, type);
 	}
 	
-	public List<T> execute(final QueryRequest request) throws CouchException {
+	public Collection<T> execute(final QueryRequest request) throws CouchException {
 		return super.execute(request, type);
 	}
 }

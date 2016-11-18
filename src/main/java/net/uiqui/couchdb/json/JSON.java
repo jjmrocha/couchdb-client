@@ -18,6 +18,7 @@
  */
 package net.uiqui.couchdb.json;
 
+import net.uiqui.couchdb.protocol.model.IDList;
 import net.uiqui.couchdb.protocol.model.QueryResult;
 
 import com.google.gson.Gson;
@@ -27,6 +28,7 @@ import com.google.gson.JsonElement;
 public class JSON {
 	private static final Gson gson = new GsonBuilder()
 		.registerTypeAdapter(QueryResult.class, new QueryResultDeserializer())
+		.registerTypeAdapter(IDList.class, new IDListDeserializer())
 		.create();
 
 	public static <T> T fromJson(final String json, final Class<T> classOfT) {
