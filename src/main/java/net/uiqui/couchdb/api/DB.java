@@ -1,5 +1,5 @@
 /*
- * CouchDB-client
+a * CouchDB-client
  * ==============
  * 
  * Copyright (C) 2016 Joaquim Rocha <jrocha@gmailbox.org>
@@ -30,8 +30,8 @@ import net.uiqui.couchdb.protocol.model.QueryResult;
 public class DB {
 	private CouchAPI api = null;
 	
-	public DB(final Cluster cluster, final String db) {
-		this.api = new CouchAPI(cluster, db);
+	public DB(final Cluster cluster, final String dbName) {
+		this.api = new CouchAPI(cluster, dbName);
 	}
 	
 	public boolean exists(final String docId) throws CouchException {

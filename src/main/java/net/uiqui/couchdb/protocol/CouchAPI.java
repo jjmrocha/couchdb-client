@@ -61,9 +61,9 @@ public class CouchAPI {
 	private RestClient restClient = null;
 	private String dbName = null;
 
-	public CouchAPI(final Cluster cluster, final String db) {
+	public CouchAPI(final Cluster cluster, final String dbName) {
 		this.cluster = cluster;
-		this.dbName = db;
+		this.dbName = dbName;
 
 		restClient = new RestClient(cluster);
 	}
