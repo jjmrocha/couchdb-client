@@ -16,26 +16,8 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package net.uiqui.couchdb.api;
+package net.uiqui.couchdb.api.query;
 
-import java.util.Collection;
+public class Condition {
 
-import net.uiqui.couchdb.api.error.CouchException;
-import net.uiqui.couchdb.protocol.CouchAPI;
-
-public class TypedDB<T extends Document> extends DB {
-	private Class<T> type = null;
-	
-	public TypedDB(final CouchAPI api, final String db, final Class<T> type) {
-		super(api, db);
-		this.type = type;
-	}
-
-	public T get(final String docId) throws CouchException {
-		return super.get(docId, type);
-	}
-	
-	public Collection<T> execute(final QueryRequest request) throws CouchException {
-		return super.execute(request, type);
-	}
 }

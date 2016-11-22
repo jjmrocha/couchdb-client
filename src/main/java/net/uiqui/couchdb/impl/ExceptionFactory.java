@@ -21,9 +21,9 @@ package net.uiqui.couchdb.impl;
 import java.io.IOException;
 import java.net.URL;
 
-import net.uiqui.couchdb.api.CouchException;
-import net.uiqui.couchdb.api.CouchFailException;
-import net.uiqui.couchdb.protocol.model.Failure;
+import net.uiqui.couchdb.api.error.CouchException;
+import net.uiqui.couchdb.api.error.CouchFailException;
+import net.uiqui.couchdb.protocol.impl.Failure;
 
 public class ExceptionFactory {
 	private static Failure UNAUTHORIZED = new Failure("unauthorized", "You are not authorized to access this db.");

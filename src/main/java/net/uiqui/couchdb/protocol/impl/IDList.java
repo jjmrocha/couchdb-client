@@ -1,4 +1,4 @@
-package net.uiqui.couchdb.protocol.model;
+package net.uiqui.couchdb.protocol.impl;
 
 import java.util.List;
 

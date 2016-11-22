@@ -16,25 +16,8 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package net.uiqui.couchdb.protocol.model;
+package net.uiqui.couchdb.api.query;
 
-public class Success {
-	private String id = null;
-	private String rev = null;
+public class Selector {
 
-	public String id() {
-		return id;
-	}
-
-	public void id(final String id) {
-		this.id = id;
-	}
-
-	public String rev() {
-		return rev;
-	}
-
-	public void rev(final String rev) {
-		this.rev = rev;
-	}
 }

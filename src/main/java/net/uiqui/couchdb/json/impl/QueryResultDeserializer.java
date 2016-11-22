@@ -16,13 +16,13 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package net.uiqui.couchdb.json;
+package net.uiqui.couchdb.json.impl;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.uiqui.couchdb.protocol.model.IDList;
+import net.uiqui.couchdb.protocol.impl.QueryResult;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonDeserializationContext;
@@ -31,24 +31,19 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 
-public class IDListDeserializer implements JsonDeserializer<IDList> {
+public class QueryResultDeserializer implements JsonDeserializer<QueryResult> {
 
-	public IDList deserialize(final JsonElement json, final Type typeOfT, final JsonDeserializationContext context) throws JsonParseException {
+	public QueryResult deserialize(final JsonElement json, final Type typeOfT, final JsonDeserializationContext context) throws JsonParseException {
 		final JsonObject jsonObject = json.getAsJsonObject();
-		final JsonArray jsonArray = jsonObject.getAsJsonArray("rows");
-		final List<String> results = new ArrayList<String>();
+		final JsonArray jsonArray = jsonObject.getAsJsonArray("docs");
+		final List<JsonElement> results = new ArrayList<JsonElement>();
 
 		if (jsonArray != null) {
 			for (JsonElement jsonElement : jsonArray) {
-				final JsonObject row = jsonElement.getAsJsonObject();
-				final JsonElement id = row.get("id");
-				
-				if (id != null) {
-					results.add(id.getAsString());
-				}
+				results.add(jsonElement);
 			}
 		}
 
-		return new IDList(results);
+		return new QueryResult(results);
 	}
 }

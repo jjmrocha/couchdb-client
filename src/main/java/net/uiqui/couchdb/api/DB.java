@@ -22,20 +22,22 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import net.uiqui.couchdb.impl.Cluster;
+import net.uiqui.couchdb.api.error.CouchException;
 import net.uiqui.couchdb.protocol.CouchAPI;
 import net.uiqui.couchdb.protocol.DeleteDoc;
-import net.uiqui.couchdb.protocol.model.QueryResult;
+import net.uiqui.couchdb.protocol.impl.QueryResult;
 
 public class DB {
 	private CouchAPI api = null;
+	private String dbName = null;
 	
-	public DB(final Cluster cluster, final String dbName) {
-		this.api = new CouchAPI(cluster, dbName);
+	public DB(final CouchAPI api, final String dbName) {
+		this.dbName = dbName;
+		this.api = api;
 	}
 	
 	public boolean exists(final String docId) throws CouchException {
-		return api.exists(docId);
+		return api.exists(dbName, docId);
 	}
 	
 	public Collection<String> ids() throws CouchException {
@@ -43,19 +45,19 @@ public class DB {
 	}
 	
 	public Collection<String> ids(final long skip, final long limit) throws CouchException {
-		return api.ids(skip, limit);
+		return api.ids(dbName, skip, limit);
 	}
 	
 	public <T> T get(final String docId, final Class<T> type) throws CouchException {
-		return api.get(docId, type);
+		return api.get(dbName, docId, type);
 	}
 
 	public void insert(final Document doc) throws CouchException {
-		api.insert(doc);
+		api.insert(dbName, doc);
 	}
 
 	public void update(final Document doc) throws CouchException {
-		api.update(doc);
+		api.update(dbName, doc);
 	}
 	
 	public void delete(final Document doc) throws CouchException {
@@ -63,7 +65,7 @@ public class DB {
 	}
 	
 	public void delete(final String docId, final String revision) throws CouchException {
-		api.delete(docId, revision);
+		api.delete(dbName, docId, revision);
 	}
 	
 	public void delete(final String docId) throws CouchException {
@@ -75,11 +77,11 @@ public class DB {
 	}	
 	
 	public ViewResult execute(final ViewRequest request) throws CouchException {
-		return api.view(request);
+		return api.view(dbName, request);
 	}
 	
 	public <T> Collection<T> execute(final QueryRequest request, final Class<T> type) throws CouchException {
-		final QueryResult queryResult = api.query(request);
+		final QueryResult queryResult = api.query(dbName, request);
 		return queryResult.resultAsListOf(type);
 	}
 	
@@ -138,6 +140,6 @@ public class DB {
 	}
 	
 	public BatchResult[] batch(final Document[] docs) throws CouchException {
-		return api.bulk(docs);
+		return api.bulk(dbName, docs);
 	}
 }

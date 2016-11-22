@@ -28,35 +28,40 @@ import net.uiqui.couchdb.impl.Cluster;
 import net.uiqui.couchdb.impl.MultiNodeCluster;
 import net.uiqui.couchdb.impl.Node;
 import net.uiqui.couchdb.impl.SingleNodeCluster;
+import net.uiqui.couchdb.protocol.CouchAPI;
 
-public class CouchDB {
-	private Cluster cluster = null;
+public class CouchClient {
+	private CouchAPI api = null;
 	
-	private CouchDB(final Builder builder) {
+	private CouchClient(final Builder builder) {
+		Cluster cluster = null;
+		
 		if (builder.nodes.size() == 1) {
 			cluster = new SingleNodeCluster(builder.user, builder.password, builder.nodes.get(0));
 		} else {
 			cluster = new MultiNodeCluster(builder.user, builder.password, builder.nodes);
 		}
+		
+		this.api = new CouchAPI(cluster);
 	}
 	
 	public static Builder builder() {
 		return new Builder();
 	}
 	
-	public static CouchDB build(final String server) {
+	public static CouchClient build(final String server) {
 		return builder()
 				.addNode(server)
 				.build();
 	}
 	
-	public static CouchDB build(final String server, final int port) {
+	public static CouchClient build(final String server, final int port) {
 		return builder()
 				.addNode(server, port)
 				.build();
 	}
 	
-	public static CouchDB build(final String server, final int port, final String user, final String password) {
+	public static CouchClient build(final String server, final int port, final String user, final String password) {
 		return builder()
 				.addNode(server, port)
 				.user(user)
@@ -65,11 +70,11 @@ public class CouchDB {
 	}
 	
 	public DB database(final String db) {
-		return new DB(cluster, db);
+		return new DB(api, db);
 	}
 	
 	public <T extends Document> TypedDB<T> database(final String db, final Class<T> type) {
-		return new TypedDB<T>(cluster, db, type);
+		return new TypedDB<T>(api, db, type);
 	}	
 	
 	public static class Builder {
@@ -97,8 +102,8 @@ public class CouchDB {
 			return this;
 		}
 		
-		public CouchDB build() {
-			return new CouchDB(this);
+		public CouchClient build() {
+			return new CouchClient(this);
 		}
 	}
 }

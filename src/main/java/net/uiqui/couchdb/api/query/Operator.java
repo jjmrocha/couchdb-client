@@ -16,16 +16,8 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package net.uiqui.couchdb.api;
+package net.uiqui.couchdb.api.query;
 
-public class CouchException extends Exception {
-	private static final long serialVersionUID = 7878247680574512414L;
+public class Operator {
 
-	public CouchException(final String message, final Throwable cause) {
-		super(message, cause);
-	}
-
-	public CouchException(final String message) {
-		super(message);
-	}
 }

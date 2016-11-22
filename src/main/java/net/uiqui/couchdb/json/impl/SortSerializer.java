@@ -16,39 +16,24 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package net.uiqui.couchdb.protocol.model;
+package net.uiqui.couchdb.json.impl;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.lang.reflect.Type;
 
-import net.uiqui.couchdb.json.JSON;
+import net.uiqui.couchdb.api.query.Sort;
 
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
 
-public class QueryResult {
-	private List<JsonElement> results = null;
-	
-	public QueryResult(final List<JsonElement> results) {
-		this.results = results;
-	}
-	
-	public List<String> resultAsListOfString() {
-		final List<String> output = new ArrayList<String>();
+public class SortSerializer implements JsonSerializer<Sort> {
 
-		for (JsonElement jsonElement : results) {
-			output.add(jsonElement.toString());
-		}
+	public JsonElement serialize(final Sort src, final Type typeOfSrc, final JsonSerializationContext context) {
+		final JsonObject jsonObject = new JsonObject();
+		jsonObject.addProperty(src.field(), src.order());
 		
-		return output;
+		return jsonObject;
 	}
-	
-	public <T> List<T> resultAsListOf(final Class<T> type) {
-		final List<T> output = new ArrayList<T>();
-		
-		for (JsonElement json : results) {
-			output.add(JSON.fromJson(json, type));
-		}
-		
-		return output;
-	}
+
 }

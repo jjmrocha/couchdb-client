@@ -16,26 +16,16 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package net.uiqui.couchdb.api;
+package net.uiqui.couchdb.api.error;
 
-import java.util.Collection;
+public class CouchException extends Exception {
+	private static final long serialVersionUID = 7878247680574512414L;
 
-import net.uiqui.couchdb.api.error.CouchException;
-import net.uiqui.couchdb.protocol.CouchAPI;
-
-public class TypedDB<T extends Document> extends DB {
-	private Class<T> type = null;
-	
-	public TypedDB(final CouchAPI api, final String db, final Class<T> type) {
-		super(api, db);
-		this.type = type;
+	public CouchException(final String message, final Throwable cause) {
+		super(message, cause);
 	}
 
-	public T get(final String docId) throws CouchException {
-		return super.get(docId, type);
-	}
-	
-	public Collection<T> execute(final QueryRequest request) throws CouchException {
-		return super.execute(request, type);
+	public CouchException(final String message) {
+		super(message);
 	}
 }

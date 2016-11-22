@@ -16,7 +16,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package net.uiqui.couchdb.protocol.model;
+package net.uiqui.couchdb.protocol.impl;
 
 public class Failure {
 	private String error = null;

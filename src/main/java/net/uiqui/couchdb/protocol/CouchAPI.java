@@ -24,19 +24,19 @@ import java.util.Collection;
 import java.util.Map.Entry;
 
 import net.uiqui.couchdb.api.BatchResult;
-import net.uiqui.couchdb.api.CouchException;
 import net.uiqui.couchdb.api.Document;
 import net.uiqui.couchdb.api.QueryRequest;
 import net.uiqui.couchdb.api.ViewRequest;
 import net.uiqui.couchdb.api.ViewResult;
+import net.uiqui.couchdb.api.error.CouchException;
 import net.uiqui.couchdb.impl.Cluster;
 import net.uiqui.couchdb.impl.ExceptionFactory;
 import net.uiqui.couchdb.impl.Node;
 import net.uiqui.couchdb.json.JSON;
-import net.uiqui.couchdb.protocol.model.IDList;
-import net.uiqui.couchdb.protocol.model.Failure;
-import net.uiqui.couchdb.protocol.model.QueryResult;
-import net.uiqui.couchdb.protocol.model.Success;
+import net.uiqui.couchdb.protocol.impl.Failure;
+import net.uiqui.couchdb.protocol.impl.IDList;
+import net.uiqui.couchdb.protocol.impl.QueryResult;
+import net.uiqui.couchdb.protocol.impl.Success;
 import net.uiqui.couchdb.rest.Encoder;
 import net.uiqui.couchdb.rest.RestClient;
 import net.uiqui.couchdb.rest.RestOutput;
@@ -59,16 +59,13 @@ public class CouchAPI {
 
 	private Cluster cluster = null;
 	private RestClient restClient = null;
-	private String dbName = null;
 
-	public CouchAPI(final Cluster cluster, final String dbName) {
+	public CouchAPI(final Cluster cluster) {
 		this.cluster = cluster;
-		this.dbName = dbName;
-
-		restClient = new RestClient(cluster);
+		this.restClient = new RestClient(cluster);
 	}
 	
-	public boolean exists(final String docId) throws CouchException {
+	public boolean exists(final String dbName, final String docId) throws CouchException {
 		final Node node = cluster.currentNode();
 		final String id = Encoder.encode(docId);
 		final URL url = HEAD_DOC.build(node.server(), node.port(), dbName, id);
@@ -88,7 +85,7 @@ public class CouchAPI {
 		}
 	}
 	
-	public Collection<String> ids(final long skip, final long limit) throws CouchException {
+	public Collection<String> ids(final String dbName, final long skip, final long limit) throws CouchException {
 		final Node node = cluster.currentNode();
 		URL url = null;
 		
@@ -121,7 +118,7 @@ public class CouchAPI {
 		}
 	}
 
-	public <T> T get(final String docId, final Class<T> type) throws CouchException {
+	public <T> T get(final String dbName, final String docId, final Class<T> type) throws CouchException {
 		final Node node = cluster.currentNode();
 		final String id = Encoder.encode(docId);
 		final URL url = GET_DOC.build(node.server(), node.port(), dbName, id);
@@ -143,7 +140,7 @@ public class CouchAPI {
 		}
 	}
 
-	public void insert(final Document doc) throws CouchException {
+	public void insert(final String dbName, final Document doc) throws CouchException {
 		final Node node = cluster.currentNode();
 		final URL url = POST_DOC.build(node.server(), node.port(), dbName);
 		final String json = JSON.toJson(doc);
@@ -165,7 +162,7 @@ public class CouchAPI {
 		}
 	}
 
-	public void update(final Document doc) throws CouchException {
+	public void update(final String dbName, final Document doc) throws CouchException {
 		final Node node = cluster.currentNode();
 		final String id = Encoder.encode(doc.getId());
 		final URL url = PUT_DOC.build(node.server(), node.port(), dbName, id);
@@ -187,7 +184,7 @@ public class CouchAPI {
 		}
 	}
 	
-	public void delete(final String docId, final String revision) throws CouchException {
+	public void delete(final String dbName, final String docId, final String revision) throws CouchException {
 		final Node node = cluster.currentNode();
 		final String id = Encoder.encode(docId);
 		final String rev = Encoder.encode(revision);
@@ -206,7 +203,7 @@ public class CouchAPI {
 		}
 	}	
 
-	public ViewResult view(final ViewRequest request) throws CouchException {
+	public ViewResult view(final String dbName, final ViewRequest request) throws CouchException {
 		final StringBuilder queryBuilder = new StringBuilder();
 
 		for (Entry<String, Object> entry : request.params().entrySet()) {
@@ -222,15 +219,15 @@ public class CouchAPI {
 		final String query = queryBuilder.length() == 0 ? null : queryBuilder.toString();
 
 		if (request.keys() == null || request.keys().length == 0) {
-			return viewGET(request.designDoc(), request.viewName(), query);
+			return viewGET(dbName, request.designDoc(), request.viewName(), query);
 		} else {
 			final String body = JSON.toJsonObject("keys", request.keys());
 
-			return viewPOST(request.designDoc(), request.viewName(), body, query);
+			return viewPOST(dbName, request.designDoc(), request.viewName(), body, query);
 		}
 	}
 
-	private ViewResult viewPOST(final String designDoc, final String viewName, final String body, final String query) throws CouchException {
+	private ViewResult viewPOST(final String dbName, final String designDoc, final String viewName, final String body, final String query) throws CouchException {
 		final Node node = cluster.currentNode();
 		URL url = null;
 
@@ -255,7 +252,7 @@ public class CouchAPI {
 		}
 	}
 
-	private ViewResult viewGET(final String designDoc, final String viewName, final String query) throws CouchException {
+	private ViewResult viewGET(final String dbName, final String designDoc, final String viewName, final String query) throws CouchException {
 		final Node node = cluster.currentNode();
 		URL url = null;
 
@@ -280,7 +277,7 @@ public class CouchAPI {
 		}
 	}
 	
-	public QueryResult query(final QueryRequest request) throws CouchException {
+	public QueryResult query(final String dbName, final QueryRequest request) throws CouchException {
 		final Node node = cluster.currentNode();
 		final URL url = POST_FIND.build(node.server(), node.port(), dbName);
 		final String json = JSON.toJson(request);
@@ -300,7 +297,7 @@ public class CouchAPI {
 		}
 	}	
 
-	public BatchResult[] bulk(final Document[] docs) throws CouchException {
+	public BatchResult[] bulk(final String dbName, final Document[] docs) throws CouchException {
 		final Node node = cluster.currentNode();
 		final URL url = POST_BULK.build(node.server(), node.port(), dbName);
 		final String json = JSON.toJsonObject("docs", docs);

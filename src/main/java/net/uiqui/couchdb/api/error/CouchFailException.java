@@ -16,9 +16,9 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package net.uiqui.couchdb.api;
+package net.uiqui.couchdb.api.error;
 
-import net.uiqui.couchdb.protocol.model.Failure;
+import net.uiqui.couchdb.protocol.impl.Failure;
 
 public class CouchFailException extends CouchException {
 	private static final long serialVersionUID = -8427579930139524635L;

@@ -25,18 +25,18 @@ Maven dependency:
 Single node cluster:
  ```java
 	// Using default port and no credentials
-	CouchDB couchDB = CouchDB.build("localhost");
+	CouchClient couchDB = CouchClient.build("localhost");
 	
 	// No credentials
-	CouchDB couchDB = CouchDB.build("localhost", 5984);
+	CouchClient couchDB = CouchClient.build("localhost", 5984);
 	
 	// Full control
-	CouchDB couchDB = CouchDB.build("localhost", 5984, "user", "password");
+	CouchClient couchDB = CouchClient.build("localhost", 5984, "user", "password");
  ```
 	 
 Multi node cluster:
  ```java
-	CouchDB couchDB = CouchDB.builder()
+	CouchClient couchDB = CouchClient.builder()
 			.addNode("node1", 5984)
 			.addNode("node2") // Use default port
 			.user("admin")
