@@ -16,22 +16,13 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package net.uiqui.couchdb.api.query;
+package net.uiqui.couchdb.api.query.impl;
 
-import net.uiqui.couchdb.api.query.impl.AndOperator;
-import net.uiqui.couchdb.api.query.impl.EqualCondition;
-import net.uiqui.couchdb.api.query.impl.OrOperator;
+import net.uiqui.couchdb.api.query.Operator;
 
-public class Selector {
-	public static QueryContainer and() {
-		return new AndOperator();
-	}
-	
-	public static QueryContainer or() {
-		return new OrOperator();
-	}
-	
-	public static Condition equals(final String field, final Object value) {
-		return new EqualCondition(field, value);
+public class EqualOperator extends Operator {
+
+	public EqualOperator(final Object value) {
+		super("$eq", value);
 	}
 }

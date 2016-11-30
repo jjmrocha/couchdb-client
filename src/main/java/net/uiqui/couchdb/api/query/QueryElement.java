@@ -18,20 +18,6 @@
  */
 package net.uiqui.couchdb.api.query;
 
-import net.uiqui.couchdb.api.query.impl.AndOperator;
-import net.uiqui.couchdb.api.query.impl.EqualCondition;
-import net.uiqui.couchdb.api.query.impl.OrOperator;
+public interface QueryElement {
 
-public class Selector {
-	public static QueryContainer and() {
-		return new AndOperator();
-	}
-	
-	public static QueryContainer or() {
-		return new OrOperator();
-	}
-	
-	public static Condition equals(final String field, final Object value) {
-		return new EqualCondition(field, value);
-	}
 }

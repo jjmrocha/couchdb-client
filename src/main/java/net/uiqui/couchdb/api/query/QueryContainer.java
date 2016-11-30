@@ -18,20 +18,44 @@
  */
 package net.uiqui.couchdb.api.query;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import net.uiqui.couchdb.api.query.impl.AndOperator;
 import net.uiqui.couchdb.api.query.impl.EqualCondition;
 import net.uiqui.couchdb.api.query.impl.OrOperator;
 
-public class Selector {
-	public static QueryContainer and() {
-		return new AndOperator();
+public abstract class QueryContainer extends Operator {
+	private List<QueryElement> elements = null; 
+
+	@SuppressWarnings("unchecked")
+	public QueryContainer(final String operator) {
+		super(operator, new ArrayList<QueryElement>());
+		elements = (List<QueryElement>) argument();
 	}
 	
-	public static QueryContainer or() {
-		return new OrOperator();
+	public List<QueryElement> elements() {
+		return elements;
+	}
+
+	private QueryContainer add(final QueryElement element) {
+		elements.add(element);
+		return this;
 	}
 	
-	public static Condition equals(final String field, final Object value) {
-		return new EqualCondition(field, value);
+	public AndOperator and() {
+		final AndOperator and = new AndOperator();
+		add(and);
+		return and;
+	}
+	
+	public OrOperator or() {
+		final OrOperator or = new OrOperator();
+		add(or);
+		return or;
+	}
+	
+	public QueryContainer equals(final String field, final Object value) {
+		return add(new EqualCondition(field, value));
 	}
 }

@@ -18,19 +18,20 @@
  */
 package net.uiqui.couchdb.api;
 
-import net.uiqui.couchdb.api.query.Selector;
+import net.uiqui.couchdb.api.query.QueryElement;
 import net.uiqui.couchdb.api.query.Sort;
 
 import com.google.gson.annotations.SerializedName;
 
 public class QueryRequest {
-	private Selector selector = null;
+	private QueryElement selector = null;
 	private Long limit = null;
 	private Long skip = null;
 	private Sort[] sort = null;
 	private String[] fields = null;
-	@SerializedName("use_index") private Object useIndex = null;
-	
+	@SerializedName("use_index")
+	private Object useIndex = null;
+
 	private QueryRequest(final Builder builder) {
 		this.selector = builder.selector;
 		this.limit = builder.limit;
@@ -39,26 +40,31 @@ public class QueryRequest {
 		this.fields = builder.fields;
 		this.useIndex = builder.useIndex;
 	}
-	
-	public Selector selector() {
+
+	public QueryElement selector() {
 		return selector;
 	}
+
 	public Long limit() {
 		return limit;
 	}
+
 	public Long skip() {
 		return skip;
 	}
+
 	public Sort[] sort() {
 		return sort;
 	}
+
 	public String[] fields() {
 		return fields;
 	}
+
 	public Object useIndex() {
 		return useIndex;
 	}
-	
+
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
@@ -77,20 +83,20 @@ public class QueryRequest {
 		builder.append(")");
 		return builder.toString();
 	}
-	
-	public static Builder builder() {		
+
+	public static Builder builder() {
 		return new Builder();
 	}
 
 	public static class Builder {
-		private Selector selector = null;
+		private QueryElement selector = null;
 		private Long limit = null;
 		private Long skip = null;
 		private Sort[] sort = null;
 		private String[] fields = null;
 		private Object useIndex = null;
-		
-		public Builder selector(final Selector selector) {
+
+		public Builder selector(final QueryElement selector) {
 			this.selector = selector;
 			return this;
 		}
@@ -104,11 +110,11 @@ public class QueryRequest {
 			this.skip = skip;
 			return this;
 		}
-		
+
 		public Builder sort(final Sort[] sort) {
 			this.sort = sort;
 			return this;
-		}		
+		}
 
 		public Builder fields(final String... fields) {
 			this.fields = fields;
@@ -119,33 +125,33 @@ public class QueryRequest {
 			this.useIndex = indexFormat(designDocument);
 			return this;
 		}
-		
+
 		public Builder useIndex(final String designDocument, final String indexName) {
-			final String[] index = {indexFormat(designDocument), indexFormat(indexName)};
-			
+			final String[] index = { indexFormat(designDocument), indexFormat(indexName) };
+
 			this.useIndex = index;
-			
+
 			return this;
 		}
-		
+
 		public QueryRequest build() {
 			return new QueryRequest(this);
 		}
 	}
-	
+
 	private static String indexFormat(final String name) {
 		final StringBuilder sb = new StringBuilder();
-		
+
 		if (!name.startsWith("<")) {
 			sb.append("<");
 		}
-		
+
 		sb.append(name);
-		
+
 		if (!name.endsWith(">")) {
 			sb.append(">");
 		}
-		
+
 		return sb.toString();
-	}	
+	}
 }

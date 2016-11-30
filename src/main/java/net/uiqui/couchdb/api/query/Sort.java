@@ -49,7 +49,7 @@ public class Sort {
 		return builder.toString();
 	}
 
-	public static Builder build() {
+	public static Builder builder() {
 		return new Builder();
 	}
 	

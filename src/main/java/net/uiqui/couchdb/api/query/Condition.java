@@ -18,6 +18,31 @@
  */
 package net.uiqui.couchdb.api.query;
 
-public class Condition {
-
+public abstract class Condition implements QueryElement {
+	private String field = null;
+	private Operator operator = null;
+	
+	public Condition(final String field, final Operator operator) {
+		this.field = field;
+		this.operator = operator;
+	}
+	
+	public String field() {
+		return field;
+	}
+	
+	public Object operator() {
+		return operator;
+	}
+	
+	@Override
+	public String toString() {
+		final StringBuilder builder = new StringBuilder();
+		builder.append("(");
+		builder.append(field);
+		builder.append(": ");
+		builder.append(operator);
+		builder.append(")");
+		return builder.toString();
+	}
 }

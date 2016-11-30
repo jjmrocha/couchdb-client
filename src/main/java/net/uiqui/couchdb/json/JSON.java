@@ -18,8 +18,10 @@
  */
 package net.uiqui.couchdb.json;
 
+import net.uiqui.couchdb.api.query.QueryElement;
 import net.uiqui.couchdb.api.query.Sort;
 import net.uiqui.couchdb.json.impl.IDListDeserializer;
+import net.uiqui.couchdb.json.impl.QueryElementSerializer;
 import net.uiqui.couchdb.json.impl.QueryResultDeserializer;
 import net.uiqui.couchdb.json.impl.SortSerializer;
 import net.uiqui.couchdb.protocol.impl.IDList;
@@ -33,7 +35,8 @@ public class JSON {
 	private static final Gson gson = new GsonBuilder()
 		.registerTypeAdapter(QueryResult.class, new QueryResultDeserializer())
 		.registerTypeAdapter(IDList.class, new IDListDeserializer())
-		.registerTypeHierarchyAdapter(Sort.class, new SortSerializer())
+		.registerTypeAdapter(Sort.class, new SortSerializer())
+		.registerTypeAdapter(QueryElement.class, new QueryElementSerializer())
 		.create();
 
 	public static <T> T fromJson(final String json, final Class<T> classOfT) {
