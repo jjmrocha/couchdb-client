@@ -21,11 +21,9 @@ package net.uiqui.couchdb.api.query;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.uiqui.couchdb.api.query.impl.AndOperator;
-import net.uiqui.couchdb.api.query.impl.EqualCondition;
-import net.uiqui.couchdb.api.query.impl.OrOperator;
+import net.uiqui.couchdb.api.query.impl.MangoFactory;
 
-public abstract class QueryContainer extends Operator {
+public class QueryContainer extends Operator {
 	private List<QueryElement> elements = null; 
 
 	@SuppressWarnings("unchecked")
@@ -37,25 +35,45 @@ public abstract class QueryContainer extends Operator {
 	public List<QueryElement> elements() {
 		return elements;
 	}
+	
+	// -- Containers ---
+	
+	public QueryContainer and() {
+		return addContainer(MangoFactory.and());
+	}
+	
+	public QueryContainer or() {
+		return addContainer(MangoFactory.or());
+	}
 
+	public QueryContainer nor() {
+		return addContainer(MangoFactory.nor());
+	}
+	
+	// -- Conditions ---
+	
+	public QueryContainer equals(final String field, final Object value) {
+		return add(MangoFactory.equal(field, value));
+	}
+	
+	public QueryContainer less(final String field, final Object value) {
+		return addCondition(field, "$lt", value);
+	}
+	
+	// -- Utils ---
+	
+
+	private QueryContainer addContainer(final QueryContainer container) {
+		add(container);
+		return container;
+	}
+	
+	private QueryContainer addCondition(final String field, final String mangoOperator, final Object value) {
+		return add(MangoFactory.newCondition(field, mangoOperator, value));
+	}
+	
 	private QueryContainer add(final QueryElement element) {
 		elements.add(element);
 		return this;
-	}
-	
-	public AndOperator and() {
-		final AndOperator and = new AndOperator();
-		add(and);
-		return and;
-	}
-	
-	public OrOperator or() {
-		final OrOperator or = new OrOperator();
-		add(or);
-		return or;
-	}
-	
-	public QueryContainer equals(final String field, final Object value) {
-		return add(new EqualCondition(field, value));
 	}
 }

@@ -18,20 +18,22 @@
  */
 package net.uiqui.couchdb.api.query;
 
-import net.uiqui.couchdb.api.query.impl.AndOperator;
-import net.uiqui.couchdb.api.query.impl.EqualCondition;
-import net.uiqui.couchdb.api.query.impl.OrOperator;
+import net.uiqui.couchdb.api.query.impl.MangoFactory;
 
 public class Selector {
 	public static QueryContainer and() {
-		return new AndOperator();
+		return MangoFactory.and();
 	}
 	
 	public static QueryContainer or() {
-		return new OrOperator();
+		return MangoFactory.or();
+	}
+	
+	public static QueryContainer nor() {
+		return MangoFactory.nor();
 	}
 	
 	public static Condition equals(final String field, final Object value) {
-		return new EqualCondition(field, value);
+		return MangoFactory.equal(field, value);
 	}
 }

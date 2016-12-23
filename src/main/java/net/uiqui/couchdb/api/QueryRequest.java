@@ -18,6 +18,8 @@
  */
 package net.uiqui.couchdb.api;
 
+import java.util.Arrays;
+
 import net.uiqui.couchdb.api.query.QueryElement;
 import net.uiqui.couchdb.api.query.Sort;
 
@@ -75,7 +77,7 @@ public class QueryRequest {
 		builder.append(", skip=");
 		builder.append(skip);
 		builder.append(", sort=");
-		builder.append(sort);
+		builder.append(Arrays.toString(sort));
 		builder.append(", fields=");
 		builder.append(fields);
 		builder.append(", useIndex=");

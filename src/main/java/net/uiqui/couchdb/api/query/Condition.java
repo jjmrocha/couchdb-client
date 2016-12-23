@@ -18,13 +18,13 @@
  */
 package net.uiqui.couchdb.api.query;
 
-public abstract class Condition implements QueryElement {
+public class Condition implements QueryElement {
 	private String field = null;
 	private Operator operator = null;
 	
-	public Condition(final String field, final Operator operator) {
+	public Condition(final String field, final String mangoOperator, final Object argument) {
 		this.field = field;
-		this.operator = operator;
+		this.operator = new Operator(mangoOperator, argument);
 	}
 	
 	public String field() {

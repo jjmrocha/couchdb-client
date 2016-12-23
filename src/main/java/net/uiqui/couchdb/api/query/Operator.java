@@ -18,7 +18,7 @@
  */
 package net.uiqui.couchdb.api.query;
 
-public abstract class Operator implements QueryElement {
+public class Operator implements QueryElement {
 	private String operator = null;
 	private Object argument = null;
 	

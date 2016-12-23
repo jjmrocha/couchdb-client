@@ -36,7 +36,7 @@ public class JSON {
 		.registerTypeAdapter(QueryResult.class, new QueryResultDeserializer())
 		.registerTypeAdapter(IDList.class, new IDListDeserializer())
 		.registerTypeAdapter(Sort.class, new SortSerializer())
-		.registerTypeAdapter(QueryElement.class, new QueryElementSerializer())
+		.registerTypeHierarchyAdapter(QueryElement.class, new QueryElementSerializer())
 		.create();
 
 	public static <T> T fromJson(final String json, final Class<T> classOfT) {

@@ -19,11 +19,34 @@
 package net.uiqui.couchdb.api.query.impl;
 
 import net.uiqui.couchdb.api.query.Condition;
+import net.uiqui.couchdb.api.query.QueryContainer;
 
-public class EqualCondition extends Condition {
-
-	public EqualCondition(final String field, final Object value) {
-		super(field, new EqualOperator(value));
+public class MangoFactory {
+	public static Condition newCondition(final String field, final String mangoOperator, final Object value) {
+		return new Condition(field, mangoOperator, value);
 	}
-
+	
+	public static QueryContainer newContainer(final String mangoOperator) {
+		return new QueryContainer(mangoOperator);
+	}
+	
+	// -- Containers ---
+	
+	public static QueryContainer and() {
+		return newContainer("$and");
+	}
+	
+	public static QueryContainer or() {
+		return newContainer("$or");
+	}
+	
+	public static QueryContainer nor() {
+		return newContainer("$nor");
+	}
+	
+	// -- Conditions ---
+	
+	public static Condition equal(final String field, final Object value) {
+		return newCondition(field, "$eq", value);
+	}
 }
