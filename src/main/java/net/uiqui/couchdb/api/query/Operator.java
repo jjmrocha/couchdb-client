@@ -18,7 +18,9 @@
  */
 package net.uiqui.couchdb.api.query;
 
-public class Operator implements QueryElement {
+import java.util.Arrays;
+
+public class Operator extends Selector {
 	private String operator = null;
 	private Object argument = null;
 	
@@ -41,7 +43,13 @@ public class Operator implements QueryElement {
 		builder.append("(");
 		builder.append(operator);
 		builder.append(": ");
-		builder.append(argument);
+		
+		if (argument instanceof Object[]) {
+			builder.append(Arrays.toString((Object[]) argument));
+		} else {
+			builder.append(argument);
+		}
+		
 		builder.append(")");
 		return builder.toString();
 	}

@@ -22,22 +22,17 @@ import java.lang.reflect.Type;
 
 import net.uiqui.couchdb.api.query.Condition;
 import net.uiqui.couchdb.api.query.Operator;
-import net.uiqui.couchdb.api.query.QueryContainer;
-import net.uiqui.couchdb.api.query.QueryElement;
+import net.uiqui.couchdb.api.query.Selector;
 
-import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 
-public class QueryElementSerializer implements JsonSerializer<QueryElement> {
+public class SelectorSerializer implements JsonSerializer<Selector> {
 
-	public JsonElement serialize(final QueryElement src, final Type typeOfSrc, final JsonSerializationContext context) {
-		if (src instanceof QueryContainer) {
-			final QueryContainer container = (QueryContainer) src;
-			return serialize(container, typeOfSrc, context);
-		} else if (src instanceof Operator) {
+	public JsonElement serialize(final Selector src, final Type typeOfSrc, final JsonSerializationContext context) {
+		if (src instanceof Operator) {
 			final Operator operator = (Operator) src;
 			return serialize(operator, typeOfSrc, context);
 		} else if (src instanceof Condition) {
@@ -54,26 +49,13 @@ public class QueryElementSerializer implements JsonSerializer<QueryElement> {
 		
 		return jsonObject;
 	}
-
-	private JsonElement serialize(final QueryContainer container, final Type typeOfSrc, final JsonSerializationContext context) {
-		final JsonObject jsonObject = new JsonObject();
-		final JsonArray jsonArray = new JsonArray();
-		
-		for (QueryElement element : container.elements()) {
-			jsonArray.add(context.serialize(element, typeOfSrc));
-		}
-		
-		jsonObject.add(container.operator(), jsonArray);
-		
-		return jsonObject;
-	}	
 	
 	private JsonElement serialize(final Operator operator, final Type typeOfSrc, final JsonSerializationContext context) {
 		final JsonObject jsonObject = new JsonObject();
 		
 		JsonElement element = null;
 		
-		if (operator.argument() instanceof QueryElement) {
+		if (operator.argument() instanceof Selector) {
 			element = context.serialize(operator.argument(), typeOfSrc);
 		} else {
 			element = context.serialize(operator.argument());

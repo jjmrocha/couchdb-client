@@ -18,9 +18,6 @@
  */
 package net.uiqui.couchdb.api.query;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class Sort {
 	private String field = null;
 	private String order = null;
@@ -49,25 +46,23 @@ public class Sort {
 		return builder.toString();
 	}
 
-	public static Builder builder() {
-		return new Builder();
+	public static Field field(final String field) {
+		return new Field(field);
 	}
 	
-	public static class Builder {
-		private final List<Sort> sortList = new ArrayList<Sort>();
+	public static class Field {
+		private String field = null;
 		
-		public Builder asc(final String field) {
-			sortList.add(new Sort(field, "asc"));
-			return this;
+		private Field(final String field) {
+			this.field = field;
+		}
+
+		public Sort asc() {
+			return new Sort(field, "asc");
 		}
 		
-		public Builder desc(final String field) {
-			sortList.add(new Sort(field, "desc"));
-			return this;
-		}
-		
-		public Sort[] build() {
-			return sortList.toArray(new Sort[sortList.size()]);
+		public Sort desc() {
+			return new Sort(field, "desc");
 		}
 	}
 }

@@ -18,11 +18,11 @@
  */
 package net.uiqui.couchdb.json;
 
-import net.uiqui.couchdb.api.query.QueryElement;
+import net.uiqui.couchdb.api.query.Selector;
 import net.uiqui.couchdb.api.query.Sort;
 import net.uiqui.couchdb.json.impl.IDListDeserializer;
-import net.uiqui.couchdb.json.impl.QueryElementSerializer;
 import net.uiqui.couchdb.json.impl.QueryResultDeserializer;
+import net.uiqui.couchdb.json.impl.SelectorSerializer;
 import net.uiqui.couchdb.json.impl.SortSerializer;
 import net.uiqui.couchdb.protocol.impl.IDList;
 import net.uiqui.couchdb.protocol.impl.QueryResult;
@@ -36,7 +36,7 @@ public class JSON {
 		.registerTypeAdapter(QueryResult.class, new QueryResultDeserializer())
 		.registerTypeAdapter(IDList.class, new IDListDeserializer())
 		.registerTypeAdapter(Sort.class, new SortSerializer())
-		.registerTypeHierarchyAdapter(QueryElement.class, new QueryElementSerializer())
+		.registerTypeHierarchyAdapter(Selector.class, new SelectorSerializer())
 		.create();
 
 	public static <T> T fromJson(final String json, final Class<T> classOfT) {

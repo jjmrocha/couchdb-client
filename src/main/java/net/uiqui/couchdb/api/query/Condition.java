@@ -18,7 +18,7 @@
  */
 package net.uiqui.couchdb.api.query;
 
-public class Condition implements QueryElement {
+public class Condition extends Selector {
 	private String field = null;
 	private Operator operator = null;
 	

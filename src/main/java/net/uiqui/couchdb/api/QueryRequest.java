@@ -20,13 +20,13 @@ package net.uiqui.couchdb.api;
 
 import java.util.Arrays;
 
-import net.uiqui.couchdb.api.query.QueryElement;
+import net.uiqui.couchdb.api.query.Selector;
 import net.uiqui.couchdb.api.query.Sort;
 
 import com.google.gson.annotations.SerializedName;
 
 public class QueryRequest {
-	private QueryElement selector = null;
+	private Selector selector = null;
 	private Long limit = null;
 	private Long skip = null;
 	private Sort[] sort = null;
@@ -43,7 +43,7 @@ public class QueryRequest {
 		this.useIndex = builder.useIndex;
 	}
 
-	public QueryElement selector() {
+	public Selector selector() {
 		return selector;
 	}
 
@@ -91,14 +91,14 @@ public class QueryRequest {
 	}
 
 	public static class Builder {
-		private QueryElement selector = null;
+		private Selector selector = null;
 		private Long limit = null;
 		private Long skip = null;
 		private Sort[] sort = null;
 		private String[] fields = null;
 		private Object useIndex = null;
 
-		public Builder selector(final QueryElement selector) {
+		public Builder selector(final Selector selector) {
 			this.selector = selector;
 			return this;
 		}
@@ -113,7 +113,7 @@ public class QueryRequest {
 			return this;
 		}
 
-		public Builder sort(final Sort[] sort) {
+		public Builder sort(final Sort...sort) {
 			this.sort = sort;
 			return this;
 		}
