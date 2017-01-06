@@ -85,18 +85,40 @@ public class CouchAPI {
 		}
 	}
 	
-	public Collection<String> ids(final String dbName, final long skip, final long limit) throws CouchException {
+	public Collection<String> ids(final String dbName, final String startKey, final String endKey, final long skip, final long limit) throws CouchException {
 		final Node node = cluster.currentNode();
 		URL url = null;
 		
-		if (skip == 0 && limit == 0) {
+		if (startKey == null && endKey == null && skip == 0 && limit == 0) {
 			url = GET_ALL_DOCS_NO_QUERY.build(node.server(), node.port(), dbName);
 		} else {
 			final StringBuilder queryBuilder = new StringBuilder();
-			queryBuilder.append("skip=");
-			queryBuilder.append(skip);
-			queryBuilder.append("&limit=");
-			queryBuilder.append(limit);
+			
+			if (skip != 0 || limit != 0) {
+				queryBuilder.append("skip=");
+				queryBuilder.append(skip);
+				queryBuilder.append("&limit=");
+				queryBuilder.append(limit);
+			}
+			
+			if (startKey != null) {
+				if (queryBuilder.length() != 0) {
+					queryBuilder.append("&");
+				}
+				
+				queryBuilder.append("startkey=");
+				queryBuilder.append(Encoder.encode(startKey));
+			}
+			
+			if (endKey != null) {
+				if (queryBuilder.length() != 0) {
+					queryBuilder.append("&");
+				}
+				
+				queryBuilder.append("endkey=");
+				queryBuilder.append(Encoder.encode(endKey));
+			}
+			
 			final String query = queryBuilder.toString();
 			
 			url = GET_ALL_DOCS_WITH_QUERY.build(node.server(), node.port(), dbName, query);

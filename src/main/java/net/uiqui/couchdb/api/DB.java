@@ -41,11 +41,19 @@ public class DB {
 	}
 	
 	public Collection<String> ids() throws CouchException {
-		return ids(0, 0);
+		return ids(null, null, 0, 0);
 	}
 	
+	public Collection<String> ids(final String startKey, final String endKey) throws CouchException {
+		return ids(startKey, endKey, 0, 0);
+	}	
+	
 	public Collection<String> ids(final long skip, final long limit) throws CouchException {
-		return api.ids(dbName, skip, limit);
+		return ids(null, null, skip, limit);
+	}
+	
+	public Collection<String> ids(final String startKey, final String endKey, final long skip, final long limit) throws CouchException {
+		return api.ids(dbName, startKey, endKey, skip, limit);
 	}
 	
 	public <T> T get(final String docId, final Class<T> type) throws CouchException {

@@ -19,6 +19,8 @@
 package net.uiqui.couchdb.api;
 
 import java.io.Serializable;
+import java.util.Map;
+import java.util.Set;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -27,6 +29,7 @@ public class Document implements Comparable<Document>, Serializable {
 	
 	@SerializedName("_id") private String id = null;
 	@SerializedName("_rev") private String revision = null;
+	@SerializedName("_attachments") private Map<String, AttachMetaData> attachments = null;
 	
 	public Document() {
 	}
@@ -55,6 +58,18 @@ public class Document implements Comparable<Document>, Serializable {
 	public void setRevision(String revision) {
 		this.revision = revision;
 	}
+	
+	public Set<String> getAttachments() {
+		return attachments.keySet();
+	}
+	
+	public AttachMetaData getAttachMetaData(final String attachment) {
+		if (attachment == null || attachments == null) {
+			return null;
+		}
+		
+		return attachments.get(attachment);
+	}	
 
 	@Override
 	public int hashCode() {
@@ -91,6 +106,8 @@ public class Document implements Comparable<Document>, Serializable {
 		builder.append(id);
 		builder.append(", revision=");
 		builder.append(revision);
+		builder.append(", attachments=");
+		builder.append(attachments);		
 		builder.append(")");
 		return builder.toString();
 	}
