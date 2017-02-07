@@ -65,6 +65,21 @@ public class RestClient {
 
 		return RestOutput.parse(response);
 	}
+	
+	public RestOutput put(final URL url, final Content content) throws IOException {
+		final Request.Builder builder = new Request.Builder();
+		builder.url(url);
+		credentials(builder);
+
+		final MediaType mediaType = MediaType.parse(content.getContentType());
+		final RequestBody body = RequestBody.create(mediaType, content.getContent());
+		builder.put(body);
+
+		final Request request = builder.build();
+		final Response response = client.newCall(request).execute();
+
+		return RestOutput.parse(response);
+	}	
 
 
 	public RestOutput post(final URL url, final String json) throws IOException {
@@ -91,6 +106,17 @@ public class RestClient {
 
 		return RestOutput.parse(response);
 	}
+	
+	public ContentOutput getContent(final URL url) throws IOException {
+		final Request.Builder builder = new Request.Builder();
+		builder.url(url);
+		credentials(builder);
+
+		final Request request = builder.build();
+		final Response response = client.newCall(request).execute();
+
+		return ContentOutput.parse(response);
+	}	
 
 	public RestOutput delete(final URL url) throws IOException {
 		final Request.Builder builder = new Request.Builder();

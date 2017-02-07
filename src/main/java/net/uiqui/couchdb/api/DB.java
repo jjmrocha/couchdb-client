@@ -82,7 +82,7 @@ public class DB {
 		if (doc != null) {
 			delete(doc);
 		}
-	}	
+	}
 	
 	public ViewResult execute(final ViewRequest request) throws CouchException {
 		return api.view(dbName, request);

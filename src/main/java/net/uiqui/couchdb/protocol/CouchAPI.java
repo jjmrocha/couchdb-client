@@ -223,7 +223,7 @@ public class CouchAPI {
 		} catch (IOException e) {
 			throw ExceptionFactory.build("DELETE", url, e);
 		}
-	}	
+	}
 
 	public ViewResult view(final String dbName, final ViewRequest request) throws CouchException {
 		final StringBuilder queryBuilder = new StringBuilder();
