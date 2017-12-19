@@ -36,7 +36,7 @@ public class DB {
         this.api = api;
     }
 
-    public boolean exists(final String docId) throws CouchException {
+    public boolean contains(final String docId) throws CouchException {
         return api.exists(dbName, docId);
     }
 
@@ -60,27 +60,27 @@ public class DB {
         return api.get(dbName, docId, type);
     }
 
-    public void insert(final Document doc) throws CouchException {
-        api.insert(dbName, doc);
+    public void save(final Document doc) throws CouchException {
+        if (doc.getId() == null) {
+            api.insert(dbName, doc);
+        } else {
+            api.update(dbName, doc);
+        }
     }
 
-    public void update(final Document doc) throws CouchException {
-        api.update(dbName, doc);
+    public void remove(final Document doc) throws CouchException {
+        DB.this.remove(doc.getId(), doc.getRevision());
     }
 
-    public void delete(final Document doc) throws CouchException {
-        delete(doc.getId(), doc.getRevision());
-    }
-
-    public void delete(final String docId, final String revision) throws CouchException {
+    public void remove(final String docId, final String revision) throws CouchException {
         api.delete(dbName, docId, revision);
     }
 
-    public void delete(final String docId) throws CouchException {
+    public void remove(final String docId) throws CouchException {
         final Document doc = get(docId, Document.class);
 
         if (doc != null) {
-            delete(doc);
+            DB.this.remove(doc);
         }
     }
 
@@ -145,7 +145,7 @@ public class DB {
         return output;
     }
 
-    public BatchResult[] batch(final Document[] docs) throws CouchException {
+    private BatchResult[] batch(final Document[] docs) throws CouchException {
         return api.bulk(dbName, docs);
     }
 }

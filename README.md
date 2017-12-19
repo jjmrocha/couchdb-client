@@ -1,12 +1,12 @@
 couchdb-client
 ==============
 
-##Introduction
+## Introduction
 
   Very basic java client for the CouchDB 2.0 database server.
   
   
-##Instalation
+## Instalation
 
 Maven dependency:
  
@@ -18,7 +18,7 @@ Maven dependency:
 	</dependency>
  ```
  
-##Usage
+## Usage
  
 #### Start a connection
 
@@ -37,8 +37,8 @@ Single node cluster:
 Multi node cluster:
  ```java
 	CouchClient couchDB = CouchClient.builder()
-			.addNode("node1", 5984)
-			.addNode("node2") // Use default port
+			.node("node1", 5984)
+			.node("node2") // Use default port
 			.user("admin")
 			.password("admin")
 			.build();
@@ -126,7 +126,7 @@ To have access to the CRUD operations we must identify the database by creating 
  ```java
  
 	// Lets check id the admin user already exists
-	System.out.println(userDB.exists("admin")); 
+	System.out.println(userDB.contains("admin")); 
 	// Output: false
 	
 	// Lets create some User objects
@@ -151,8 +151,8 @@ To have access to the CRUD operations we must identify the database by creating 
 	// Output: User(id=null, revision=null, email=operator1@uiqui.net, name=Operator 1, roles=[operations, user])
 	
 	// Add the objects to the database
-	userDB.insert(admin);
-	userDB.insert(oper1);
+	userDB.save(admin);
+	userDB.save(oper1);
 	
 	// The object now already has values for ID and REVISION
 	System.out.println(admin);
@@ -162,7 +162,7 @@ To have access to the CRUD operations we must identify the database by creating 
 	// Output: User(id=21639faca07a48a02a905d6cfe002d33, revision=1-e0eadad7c6127f2bd9d0f6f2234e1929, email=operator1@uiqui.net, name=Operator 1, roles=[operations, user])
 	
 	// Lets check id the admin user already exists on the database
-	System.out.println(userDB.exists("admin")); 
+	System.out.println(userDB.contains("admin")); 
 	// Output: true
 	
 	// Lets retrieve the object from the database
@@ -177,8 +177,8 @@ To have access to the CRUD operations we must identify the database by creating 
 	oper1.addRole("support");
 	
 	// And update objects on the database
-	userDB.update(admin);
-	userDB.update(oper1);
+	userDB.save(admin);
+	userDB.save(oper1);
 	
 	// The REVISION field was changed
 	System.out.println(admin);
@@ -195,11 +195,11 @@ To have access to the CRUD operations we must identify the database by creating 
 	// Output: User(id=admin, revision=16-2e71da8ace356ea126eb0538793ef2c7, email=admin@uiqui.net, name=System Admin, roles=[admin, user])
 	
 	// Lets delete the documents
-	userDB.delete("admin"); // We can delete the object, by providing the only the ID or by providing the ID and the REVISION
-	userDB.delete(oper1); 
+	userDB.remove("admin"); // We can delete the object, by providing the only the ID or by providing the ID and the REVISION
+	userDB.remove(oper1); 
 	
 	// Lets check id the admin user still exists on the database
-	System.out.println(userDB.exists("admin")); 
+	System.out.println(userDB.contains("admin")); 
 	// Output: false
  ```
  
@@ -251,5 +251,5 @@ To execute a view we must create a ViewRequest:
 	 */	
  ```
  
-##License
+## License
 [Apache License Version 2.0](http://www.apache.org/licenses/LICENSE-2.0.html)

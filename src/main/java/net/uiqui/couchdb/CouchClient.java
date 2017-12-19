@@ -34,7 +34,7 @@ public class CouchClient {
     private final CouchAPI api;
 
     private CouchClient(final Builder builder) {
-        Cluster cluster;
+        final Cluster cluster;
 
         if (builder.nodes.size() == 1) {
             cluster = new SingleNodeCluster(builder.user, builder.password, builder.nodes.get(0));
@@ -51,19 +51,19 @@ public class CouchClient {
 
     public static CouchClient build(final String server) {
         return builder()
-                .addNode(server)
+                .node(server)
                 .build();
     }
 
     public static CouchClient build(final String server, final int port) {
         return builder()
-                .addNode(server, port)
+                .node(server, port)
                 .build();
     }
 
     public static CouchClient build(final String server, final int port, final String user, final String password) {
         return builder()
-                .addNode(server, port)
+                .node(server, port)
                 .user(user)
                 .password(password)
                 .build();
@@ -92,12 +92,12 @@ public class CouchClient {
             return this;
         }
 
-        public Builder addNode(final String server, final int port) {
+        public Builder node(final String server, final int port) {
             nodes.add(new Node(server, port));
             return this;
         }
 
-        public Builder addNode(final String server) {
+        public Builder node(final String server) {
             nodes.add(new Node(server));
             return this;
         }

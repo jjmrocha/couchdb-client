@@ -231,7 +231,7 @@ public class CouchAPI {
     public ViewResult view(final String dbName, final ViewRequest request) throws CouchException {
         final StringBuilder queryBuilder = new StringBuilder();
 
-        for (Entry<String, Object> entry : request.params().entrySet()) {
+        for (final Entry<String, Object> entry : request.params().entrySet()) {
             if (queryBuilder.length() > 0) {
                 queryBuilder.append("&");
             }
