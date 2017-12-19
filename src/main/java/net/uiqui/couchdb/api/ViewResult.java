@@ -23,65 +23,65 @@ import java.util.Arrays;
 import com.google.gson.annotations.SerializedName;
 
 public class ViewResult {
-	private Long offset = null;
-	private Row[] rows = null;
-	@SerializedName("total_rows")
-	private Long totalRows = null;
+    private Long offset;
+    private Row[] rows;
+    @SerializedName("total_rows")
+    private Long totalRows;
 
-	public Long offset() {
-		return offset;
-	}
+    public Long offset() {
+        return offset;
+    }
 
-	public Row[] rows() {
-		return rows;
-	}
+    public Row[] rows() {
+        return rows;
+    }
 
-	public Long totalRows() {
-		return totalRows;
-	}
+    public Long totalRows() {
+        return totalRows;
+    }
 
-	@Override
-	public String toString() {
-		final StringBuilder builder = new StringBuilder();
-		builder.append("ViewResult(offset=");
-		builder.append(offset);
-		builder.append(", rows=");
-		builder.append(Arrays.toString(rows));
-		builder.append(", totalRows=");
-		builder.append(totalRows);
-		builder.append(")");
-		return builder.toString();
-	}
+    @Override
+    public String toString() {
+        final StringBuilder builder = new StringBuilder();
+        builder.append("ViewResult(offset=");
+        builder.append(offset);
+        builder.append(", rows=");
+        builder.append(Arrays.toString(rows));
+        builder.append(", totalRows=");
+        builder.append(totalRows);
+        builder.append(")");
+        return builder.toString();
+    }
 
-	public static class Row {
-		private String id = null;
-		private Object key = null;
-		private Object value = null;
+    public static class Row {
+        private String id;
+        private Object key;
+        private Object value;
 
-		public String id() {
-			return id;
-		}
+        public String id() {
+            return id;
+        }
 
-		public Object key() {
-			return key;
-		}
+        public Object key() {
+            return key;
+        }
 
-		@SuppressWarnings("unchecked")
-		public <T> T value() {
-			return (T) value;
-		}
+        @SuppressWarnings("unchecked")
+        public <T> T value() {
+            return (T) value;
+        }
 
-		@Override
-		public String toString() {
-			final StringBuilder builder = new StringBuilder();
-			builder.append("Row(id=");
-			builder.append(id);
-			builder.append(", key=");
-			builder.append(key);
-			builder.append(", value=");
-			builder.append(value);
-			builder.append(")");
-			return builder.toString();
-		}
-	}
+        @Override
+        public String toString() {
+            final StringBuilder builder = new StringBuilder();
+            builder.append("Row(id=");
+            builder.append(id);
+            builder.append(", key=");
+            builder.append(key);
+            builder.append(", value=");
+            builder.append(value);
+            builder.append(")");
+            return builder.toString();
+        }
+    }
 }

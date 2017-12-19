@@ -22,11 +22,11 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
 public class Encoder {
-	public static String encode(final String key) {
-		try {
-			return URLEncoder.encode(key, "UTF-8");
-		} catch (UnsupportedEncodingException e) {
-			return null;
-		}
-	}
+    public static String encode(final String key) {
+        try {
+            return URLEncoder.encode(key, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            return null;
+        }
+    }
 }

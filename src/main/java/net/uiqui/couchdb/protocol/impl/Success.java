@@ -19,22 +19,22 @@
 package net.uiqui.couchdb.protocol.impl;
 
 public class Success {
-	private String id = null;
-	private String rev = null;
+    private String id = null;
+    private String rev = null;
 
-	public String id() {
-		return id;
-	}
+    public String id() {
+        return id;
+    }
 
-	public void id(final String id) {
-		this.id = id;
-	}
+    public void id(final String id) {
+        this.id = id;
+    }
 
-	public String rev() {
-		return rev;
-	}
+    public String rev() {
+        return rev;
+    }
 
-	public void rev(final String rev) {
-		this.rev = rev;
-	}
+    public void rev(final String rev) {
+        this.rev = rev;
+    }
 }

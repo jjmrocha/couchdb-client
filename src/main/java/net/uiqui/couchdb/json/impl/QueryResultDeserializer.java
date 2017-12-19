@@ -33,17 +33,18 @@ import com.google.gson.JsonParseException;
 
 public class QueryResultDeserializer implements JsonDeserializer<QueryResult> {
 
-	public QueryResult deserialize(final JsonElement json, final Type typeOfT, final JsonDeserializationContext context) throws JsonParseException {
-		final JsonObject jsonObject = json.getAsJsonObject();
-		final JsonArray jsonArray = jsonObject.getAsJsonArray("docs");
-		final List<JsonElement> results = new ArrayList<JsonElement>();
+    @Override
+    public QueryResult deserialize(final JsonElement json, final Type typeOfT, final JsonDeserializationContext context) throws JsonParseException {
+        final JsonObject jsonObject = json.getAsJsonObject();
+        final JsonArray jsonArray = jsonObject.getAsJsonArray("docs");
+        final List<JsonElement> results = new ArrayList<>();
 
-		if (jsonArray != null) {
-			for (JsonElement jsonElement : jsonArray) {
-				results.add(jsonElement);
-			}
-		}
+        if (jsonArray != null) {
+            for (final JsonElement jsonElement : jsonArray) {
+                results.add(jsonElement);
+            }
+        }
 
-		return new QueryResult(results);
-	}
+        return new QueryResult(results);
+    }
 }

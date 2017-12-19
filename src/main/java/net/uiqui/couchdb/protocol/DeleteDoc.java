@@ -25,61 +25,62 @@ import net.uiqui.couchdb.api.Document;
 import com.google.gson.annotations.SerializedName;
 
 public class DeleteDoc extends Document {
-	private static final long serialVersionUID = 6665424123226778421L;
-	
-	@SerializedName("_deleted") private boolean deleted = true;
-	
-	public DeleteDoc(final String id, final String revision) {
-		super(id, revision);
-	}
-	
-	public DeleteDoc(final Document doc) {
-		this(doc.getId(), doc.getRevision());
-	}
+    private static final long serialVersionUID = 6665424123226778421L;
 
-	public boolean isDeleted() {
-		return deleted;
-	}
+    @SerializedName("_deleted")
+    private final boolean deleted = true;
 
-	@Override
-	public String toString() {
-		final StringBuilder builder = new StringBuilder();
-		builder.append("DeleteDoc(id=");
-		builder.append(getId());
-		builder.append(", revision=");
-		builder.append(getRevision());
-		builder.append(", deleted=");
-		builder.append(deleted);
-		builder.append(")");
-		return builder.toString();
-	}
-	
-	public static DeleteDoc from(final String id, final String revision) {
-		return new DeleteDoc(id, revision);
-	}
-	
-	public static DeleteDoc from(final Document doc) {
-		return new DeleteDoc(doc);
-	}
-	
-	public static DeleteDoc[] from(final Document[] docs) {
-		final DeleteDoc[] dels = new DeleteDoc[docs.length];
-		
-		for (int i = 0; i < docs.length; i++) {
-			dels[i] = from(docs[i]);
-		}
-		
-		return dels;
-	}
-	
-	public static DeleteDoc[] from(final Collection<Document> docs) {
-		final DeleteDoc[] dels = new DeleteDoc[docs.size()];
-		int i = 0;
-		
-		for (Document doc : docs) {
-			dels[i++] = from(doc);
-		}
-		
-		return dels;
-	}	
+    public DeleteDoc(final String id, final String revision) {
+        super(id, revision);
+    }
+
+    public DeleteDoc(final Document doc) {
+        this(doc.getId(), doc.getRevision());
+    }
+
+    public boolean isDeleted() {
+        return deleted;
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder builder = new StringBuilder();
+        builder.append("DeleteDoc(id=");
+        builder.append(getId());
+        builder.append(", revision=");
+        builder.append(getRevision());
+        builder.append(", deleted=");
+        builder.append(deleted);
+        builder.append(")");
+        return builder.toString();
+    }
+
+    public static DeleteDoc from(final String id, final String revision) {
+        return new DeleteDoc(id, revision);
+    }
+
+    public static DeleteDoc from(final Document doc) {
+        return new DeleteDoc(doc);
+    }
+
+    public static DeleteDoc[] from(final Document[] docs) {
+        final DeleteDoc[] dels = new DeleteDoc[docs.length];
+
+        for (int i = 0; i < docs.length; i++) {
+            dels[i] = from(docs[i]);
+        }
+
+        return dels;
+    }
+
+    public static DeleteDoc[] from(final Collection<Document> docs) {
+        final DeleteDoc[] dels = new DeleteDoc[docs.size()];
+        int i = 0;
+
+        for (Document doc : docs) {
+            dels[i++] = from(doc);
+        }
+
+        return dels;
+    }
 }

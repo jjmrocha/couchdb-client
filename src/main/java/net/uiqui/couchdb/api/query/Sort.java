@@ -19,50 +19,50 @@
 package net.uiqui.couchdb.api.query;
 
 public class Sort {
-	private String field = null;
-	private String order = null;
-	
-	private Sort(final String field, final String order) {
-		this.field = field;
-		this.order = order;
-	}
-	
-	public String field() {
-		return field;
-	}
+    private final String field;
+    private final String order;
 
-	public String order() {
-		return order;
-	}
+    private Sort(final String field, final String order) {
+        this.field = field;
+        this.order = order;
+    }
 
-	@Override
-	public String toString() {
-		final StringBuilder builder = new StringBuilder();
-		builder.append("(");
-		builder.append(field);
-		builder.append(": ");
-		builder.append(order);
-		builder.append(")");
-		return builder.toString();
-	}
+    public String field() {
+        return field;
+    }
 
-	public static Field field(final String field) {
-		return new Field(field);
-	}
-	
-	public static class Field {
-		private String field = null;
-		
-		private Field(final String field) {
-			this.field = field;
-		}
+    public String order() {
+        return order;
+    }
 
-		public Sort asc() {
-			return new Sort(field, "asc");
-		}
-		
-		public Sort desc() {
-			return new Sort(field, "desc");
-		}
-	}
+    @Override
+    public String toString() {
+        final StringBuilder builder = new StringBuilder();
+        builder.append("(");
+        builder.append(field);
+        builder.append(": ");
+        builder.append(order);
+        builder.append(")");
+        return builder.toString();
+    }
+
+    public static Field field(final String field) {
+        return new Field(field);
+    }
+
+    public static class Field {
+        private final String field;
+
+        private Field(final String field) {
+            this.field = field;
+        }
+
+        public Sort asc() {
+            return new Sort(field, "asc");
+        }
+
+        public Sort desc() {
+            return new Sort(field, "desc");
+        }
+    }
 }

@@ -19,8 +19,12 @@
 package net.uiqui.couchdb.impl;
 
 public interface Cluster {
-	public Node currentNode();
-	public Node nextNode();
-	public String user();
-	public String password();
+
+    public Node currentNode();
+
+    public Node nextNode();
+
+    public String user();
+
+    public String password();
 }

@@ -30,23 +30,24 @@ import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 
 public class RetryHandler implements Interceptor {
-	private Cluster cluster = null;
+    private final Cluster cluster;
 
-	public RetryHandler(final Cluster cluster) {
-		this.cluster = cluster;
-	}
+    public RetryHandler(final Cluster cluster) {
+        this.cluster = cluster;
+    }
 
-	public Response intercept(final Chain chain) throws IOException {
-		final Request request = chain.request();
+    @Override
+    public Response intercept(final Chain chain) throws IOException {
+        final Request request = chain.request();
 
-		try {
-			return chain.proceed(request);
-		} catch (SocketTimeoutException e) {
-			final Node node = cluster.nextNode();
-			final URL url = URLBuilder.change(request.url(), node.server(), node.port());
-			final Request retry = request.newBuilder().url(url).build();
+        try {
+            return chain.proceed(request);
+        } catch (SocketTimeoutException e) {
+            final Node node = cluster.nextNode();
+            final URL url = URLBuilder.change(request.url(), node.server(), node.port());
+            final Request retry = request.newBuilder().url(url).build();
 
-			return chain.proceed(retry);
-		}
-	}
+            return chain.proceed(retry);
+        }
+    }
 }

@@ -32,23 +32,23 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 
 public class IDListDeserializer implements JsonDeserializer<IDList> {
+    @Override
+    public IDList deserialize(final JsonElement json, final Type typeOfT, final JsonDeserializationContext context) throws JsonParseException {
+        final JsonObject jsonObject = json.getAsJsonObject();
+        final JsonArray jsonArray = jsonObject.getAsJsonArray("rows");
+        final List<String> results = new ArrayList<>();
 
-	public IDList deserialize(final JsonElement json, final Type typeOfT, final JsonDeserializationContext context) throws JsonParseException {
-		final JsonObject jsonObject = json.getAsJsonObject();
-		final JsonArray jsonArray = jsonObject.getAsJsonArray("rows");
-		final List<String> results = new ArrayList<String>();
+        if (jsonArray != null) {
+            for (JsonElement jsonElement : jsonArray) {
+                final JsonObject row = jsonElement.getAsJsonObject();
+                final JsonElement id = row.get("id");
 
-		if (jsonArray != null) {
-			for (JsonElement jsonElement : jsonArray) {
-				final JsonObject row = jsonElement.getAsJsonObject();
-				final JsonElement id = row.get("id");
-				
-				if (id != null) {
-					results.add(id.getAsString());
-				}
-			}
-		}
+                if (id != null) {
+                    results.add(id.getAsString());
+                }
+            }
+        }
 
-		return new IDList(results);
-	}
+        return new IDList(results);
+    }
 }

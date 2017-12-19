@@ -26,51 +26,51 @@ import com.squareup.okhttp.Headers;
 import com.squareup.okhttp.Response;
 
 public class RestOutput {
-	private int status = 0;
-	private String json = null;
-	private Headers headers = null;
+    private final int status;
+    private final String json;
+    private final Headers headers;
 
-	private RestOutput(final int status, final Headers headers, final String json) {
-		this.status = status;
-		this.headers = headers;
-		this.json = json;
-	}
+    private RestOutput(final int status, final Headers headers, final String json) {
+        this.status = status;
+        this.headers = headers;
+        this.json = json;
+    }
 
-	public int status() {
-		return status;
-	}
+    public int status() {
+        return status;
+    }
 
-	public String json() {
-		return json;
-	}
-	
-	public String stringHeader(final String header) {
-		return headers.get(header);
-	}
-	
-	public List<String> headerValues(final String header) {
-		return headers.values(header);
-	}	
-	
-	public Date dateHeader(final String header) {
-		return headers.getDate(header);
-	}	
-	
-	public Long numericHeader(final String header) {
-		final String value = stringHeader(header);
-		
-		if (value == null) {
-			return null;
-		}
-		
-		return Long.valueOf(value);
-	}	
+    public String json() {
+        return json;
+    }
 
-	public static RestOutput parse(final Response response) throws IOException {
-		final int status = response.code();
-		final String json = response.body().string();
-		final Headers headers = response.headers();
+    public String stringHeader(final String header) {
+        return headers.get(header);
+    }
 
-		return new RestOutput(status, headers, json);
-	}
+    public List<String> headerValues(final String header) {
+        return headers.values(header);
+    }
+
+    public Date dateHeader(final String header) {
+        return headers.getDate(header);
+    }
+
+    public Long numericHeader(final String header) {
+        final String value = stringHeader(header);
+
+        if (value == null) {
+            return null;
+        }
+
+        return Long.valueOf(value);
+    }
+
+    public static RestOutput parse(final Response response) throws IOException {
+        final int status = response.code();
+        final String json = response.body().string();
+        final Headers headers = response.headers();
+
+        return new RestOutput(status, headers, json);
+    }
 }

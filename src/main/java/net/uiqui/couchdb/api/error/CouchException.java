@@ -19,13 +19,13 @@
 package net.uiqui.couchdb.api.error;
 
 public class CouchException extends Exception {
-	private static final long serialVersionUID = 7878247680574512414L;
+    private static final long serialVersionUID = 7878247680574512414L;
 
-	public CouchException(final String message, final Throwable cause) {
-		super(message, cause);
-	}
+    public CouchException(final String message, final Throwable cause) {
+        super(message, cause);
+    }
 
-	public CouchException(final String message) {
-		super(message);
-	}
+    public CouchException(final String message) {
+        super(message);
+    }
 }

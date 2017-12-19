@@ -32,37 +32,37 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 
 public class JSON {
-	private static final Gson gson = new GsonBuilder()
-		.registerTypeAdapter(QueryResult.class, new QueryResultDeserializer())
-		.registerTypeAdapter(IDList.class, new IDListDeserializer())
-		.registerTypeAdapter(Sort.class, new SortSerializer())
-		.registerTypeHierarchyAdapter(Selector.class, new SelectorSerializer())
-		.create();
+    private static final Gson gson = new GsonBuilder()
+            .registerTypeAdapter(QueryResult.class, new QueryResultDeserializer())
+            .registerTypeAdapter(IDList.class, new IDListDeserializer())
+            .registerTypeAdapter(Sort.class, new SortSerializer())
+            .registerTypeHierarchyAdapter(Selector.class, new SelectorSerializer())
+            .create();
 
-	public static <T> T fromJson(final String json, final Class<T> classOfT) {
-		return gson.fromJson(json, classOfT);
-	}
-	
-	public static <T> T fromJson(final JsonElement json, final Class<T> classOfT) {
-		return gson.fromJson(json, classOfT);
-	}	
+    public static <T> T fromJson(final String json, final Class<T> classOfT) {
+        return gson.fromJson(json, classOfT);
+    }
 
-	public static String toJson(final Object obj) {
-		return gson.toJson(obj);
-	}
+    public static <T> T fromJson(final JsonElement json, final Class<T> classOfT) {
+        return gson.fromJson(json, classOfT);
+    }
 
-	public static void toJson(final Object obj, final StringBuilder builder) {
-		gson.toJson(obj, builder);
-	}
-	
-	public static String toJsonObject(final String fieldName, final Object value) {
-		final StringBuilder builder = new StringBuilder();
-		builder.append("{");
-		builder.append("\"");
-		builder.append(fieldName);
-		builder.append("\": ");
-		JSON.toJson(value, builder);
-		builder.append("}");
-		return builder.toString();
-	}
+    public static String toJson(final Object obj) {
+        return gson.toJson(obj);
+    }
+
+    public static void toJson(final Object obj, final StringBuilder builder) {
+        gson.toJson(obj, builder);
+    }
+
+    public static String toJsonObject(final String fieldName, final Object value) {
+        final StringBuilder builder = new StringBuilder();
+        builder.append("{");
+        builder.append("\"");
+        builder.append(fieldName);
+        builder.append("\": ");
+        JSON.toJson(value, builder);
+        builder.append("}");
+        return builder.toString();
+    }
 }

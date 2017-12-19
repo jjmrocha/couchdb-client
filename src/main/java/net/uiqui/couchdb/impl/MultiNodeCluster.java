@@ -22,65 +22,67 @@ import java.util.Collections;
 import java.util.List;
 
 public class MultiNodeCluster extends AbstractCluster {
-	private Ring ringOfNodes = null;
+    private final Ring ringOfNodes;
 
-	public MultiNodeCluster(final String user, final String password, final List<Node> nodes) {
-		super(user, password);
+    public MultiNodeCluster(final String user, final String password, final List<Node> nodes) {
+        super(user, password);
 
-		Collections.shuffle(nodes);
+        Collections.shuffle(nodes);
 
-		this.ringOfNodes = new Ring(nodes);
-	}
+        this.ringOfNodes = new Ring(nodes);
+    }
 
-	public Node currentNode() {
-		return ringOfNodes.current();
-	}
+    @Override
+    public Node currentNode() {
+        return ringOfNodes.current();
+    }
 
-	public Node nextNode() {
-		return ringOfNodes.next();
-	}
+    @Override
+    public Node nextNode() {
+        return ringOfNodes.next();
+    }
 
-	private static class Ring {
-		private RingNode current = null;
+    private static class Ring {
+        private RingNode current;
 
-		private Ring(final List<Node> nodes) {
-			for (Node server : nodes) {
-				if (current == null) {
-					current = new RingNode(server, null);
-					current.next = current;
-				} else {
-					RingNode next = current.next;
-					current.next = new RingNode(server, next);
-				}
-			}
-		}
+        private Ring(final List<Node> nodes) {
+            for (final Node server : nodes) {
+                if (current == null) {
+                    current = new RingNode(server, null);
+                    current.next = current;
+                } else {
+                    final RingNode next = current.next;
+                    current.next = new RingNode(server, next);
+                }
+            }
+        }
 
-		public synchronized Node current() {
-			if (current == null) {
-				return null;
-			}
+        public synchronized Node current() {
+            if (current == null) {
+                return null;
+            }
 
-			return current.node;
-		}
+            return current.node;
+        }
 
-		public synchronized Node next() {
-			if (current == null) {
-				return null;
-			}
+        public synchronized Node next() {
+            if (current == null) {
+                return null;
+            }
 
-			current = current.next;
+            current = current.next;
 
-			return current.node;
-		}
+            return current.node;
+        }
 
-		private static class RingNode {
-			public final Node node;
-			public RingNode next;
+        private static class RingNode {
+            public final Node node;
+            public RingNode next;
 
-			public RingNode(final Node node, final RingNode next) {
-				this.node = node;
-				this.next = next;
-			}
-		}
-	}
+            public RingNode(final Node node, final RingNode next) {
+                this.node = node;
+                this.next = next;
+            }
+        }
+    }
 }

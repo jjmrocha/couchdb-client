@@ -19,23 +19,23 @@
 package net.uiqui.couchdb.rest;
 
 public class Content {
-	private String contentType = null;
-	private byte [] content = null;
-	
-	public Content(final String contentType) {
-		this.contentType = contentType;
-	}
-	
-	public Content(final String contentType, final byte [] content) {
-		this(contentType);
-		this.content = content;
-	}
-	
-	public String getContentType() {
-		return contentType;
-	}
-	
-	public byte[] getContent() {
-		return content;
-	}
+    private final String contentType;
+    private byte[] content = null;
+
+    public Content(final String contentType) {
+        this.contentType = contentType;
+    }
+
+    public Content(final String contentType, final byte[] content) {
+        this(contentType);
+        this.content = content;
+    }
+
+    public String getContentType() {
+        return contentType;
+    }
+
+    public byte[] getContent() {
+        return content;
+    }
 }

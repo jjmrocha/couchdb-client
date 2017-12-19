@@ -19,19 +19,21 @@
 package net.uiqui.couchdb.impl;
 
 public abstract class AbstractCluster implements Cluster {
-	private String user = null;
-	private String password = null;
-	
-	public AbstractCluster(final String user, final String password) {
-		this.user = user;
-		this.password = password;
-	}
+    private final String user;
+    private final String password;
 
-	public String user() {
-		return user;
-	}
+    public AbstractCluster(final String user, final String password) {
+        this.user = user;
+        this.password = password;
+    }
 
-	public String password() {
-		return password;
-	}
+    @Override
+    public String user() {
+        return user;
+    }
+
+    @Override
+    public String password() {
+        return password;
+    }
 }

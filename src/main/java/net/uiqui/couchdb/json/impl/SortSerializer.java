@@ -29,11 +29,12 @@ import com.google.gson.JsonSerializer;
 
 public class SortSerializer implements JsonSerializer<Sort> {
 
-	public JsonElement serialize(final Sort src, final Type typeOfSrc, final JsonSerializationContext context) {
-		final JsonObject jsonObject = new JsonObject();
-		jsonObject.addProperty(src.field(), src.order());
-		
-		return jsonObject;
-	}
+    @Override
+    public JsonElement serialize(final Sort src, final Type typeOfSrc, final JsonSerializationContext context) {
+        final JsonObject jsonObject = new JsonObject();
+        jsonObject.addProperty(src.field(), src.order());
+
+        return jsonObject;
+    }
 
 }

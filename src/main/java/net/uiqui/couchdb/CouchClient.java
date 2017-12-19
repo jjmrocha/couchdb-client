@@ -31,79 +31,79 @@ import net.uiqui.couchdb.impl.SingleNodeCluster;
 import net.uiqui.couchdb.protocol.CouchAPI;
 
 public class CouchClient {
-	private CouchAPI api = null;
-	
-	private CouchClient(final Builder builder) {
-		Cluster cluster = null;
-		
-		if (builder.nodes.size() == 1) {
-			cluster = new SingleNodeCluster(builder.user, builder.password, builder.nodes.get(0));
-		} else {
-			cluster = new MultiNodeCluster(builder.user, builder.password, builder.nodes);
-		}
-		
-		this.api = new CouchAPI(cluster);
-	}
-	
-	public static Builder builder() {
-		return new Builder();
-	}
-	
-	public static CouchClient build(final String server) {
-		return builder()
-				.addNode(server)
-				.build();
-	}
-	
-	public static CouchClient build(final String server, final int port) {
-		return builder()
-				.addNode(server, port)
-				.build();
-	}
-	
-	public static CouchClient build(final String server, final int port, final String user, final String password) {
-		return builder()
-				.addNode(server, port)
-				.user(user)
-				.password(password)
-				.build();
-	}
-	
-	public DB database(final String db) {
-		return new DB(api, db);
-	}
-	
-	public <T extends Document> TypedDB<T> database(final String db, final Class<T> type) {
-		return new TypedDB<T>(api, db, type);
-	}	
-	
-	public static class Builder {
-		private String user = null;
-		private String password = null;
-		private final List<Node> nodes = new ArrayList<Node>(); 
-		
-		public Builder user(final String user) {
-			this.user = user;
-			return this;
-		}
-		
-		public Builder password(final String password) {
-			this.password = password;
-			return this;
-		}
-		
-		public Builder addNode(final String server, final int port) {
-			nodes.add(new Node(server, port));
-			return this;
-		}
-		
-		public Builder addNode(final String server) {
-			nodes.add(new Node(server));
-			return this;
-		}
-		
-		public CouchClient build() {
-			return new CouchClient(this);
-		}
-	}
+    private final CouchAPI api;
+
+    private CouchClient(final Builder builder) {
+        Cluster cluster;
+
+        if (builder.nodes.size() == 1) {
+            cluster = new SingleNodeCluster(builder.user, builder.password, builder.nodes.get(0));
+        } else {
+            cluster = new MultiNodeCluster(builder.user, builder.password, builder.nodes);
+        }
+
+        this.api = new CouchAPI(cluster);
+    }
+
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    public static CouchClient build(final String server) {
+        return builder()
+                .addNode(server)
+                .build();
+    }
+
+    public static CouchClient build(final String server, final int port) {
+        return builder()
+                .addNode(server, port)
+                .build();
+    }
+
+    public static CouchClient build(final String server, final int port, final String user, final String password) {
+        return builder()
+                .addNode(server, port)
+                .user(user)
+                .password(password)
+                .build();
+    }
+
+    public DB database(final String db) {
+        return new DB(api, db);
+    }
+
+    public <T extends Document> TypedDB<T> database(final String db, final Class<T> type) {
+        return new TypedDB<>(api, db, type);
+    }
+
+    public static class Builder {
+        private String user = null;
+        private String password = null;
+        private final List<Node> nodes = new ArrayList<>();
+
+        public Builder user(final String user) {
+            this.user = user;
+            return this;
+        }
+
+        public Builder password(final String password) {
+            this.password = password;
+            return this;
+        }
+
+        public Builder addNode(final String server, final int port) {
+            nodes.add(new Node(server, port));
+            return this;
+        }
+
+        public Builder addNode(final String server) {
+            nodes.add(new Node(server));
+            return this;
+        }
+
+        public CouchClient build() {
+            return new CouchClient(this);
+        }
+    }
 }

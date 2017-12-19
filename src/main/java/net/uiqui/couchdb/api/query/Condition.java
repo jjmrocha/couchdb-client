@@ -19,30 +19,30 @@
 package net.uiqui.couchdb.api.query;
 
 public class Condition extends Selector {
-	private String field = null;
-	private Operator operator = null;
-	
-	public Condition(final String field, final String mangoOperator, final Object argument) {
-		this.field = field;
-		this.operator = new Operator(mangoOperator, argument);
-	}
-	
-	public String field() {
-		return field;
-	}
-	
-	public Object operator() {
-		return operator;
-	}
-	
-	@Override
-	public String toString() {
-		final StringBuilder builder = new StringBuilder();
-		builder.append("(");
-		builder.append(field);
-		builder.append(": ");
-		builder.append(operator);
-		builder.append(")");
-		return builder.toString();
-	}
+    private final String field;
+    private final Operator operator;
+
+    public Condition(final String field, final String mangoOperator, final Object argument) {
+        this.field = field;
+        this.operator = new Operator(mangoOperator, argument);
+    }
+
+    public String field() {
+        return field;
+    }
+
+    public Object operator() {
+        return operator;
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder builder = new StringBuilder();
+        builder.append("(");
+        builder.append(field);
+        builder.append(": ");
+        builder.append(operator);
+        builder.append(")");
+        return builder.toString();
+    }
 }

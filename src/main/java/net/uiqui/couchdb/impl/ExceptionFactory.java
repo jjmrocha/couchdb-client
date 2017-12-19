@@ -26,28 +26,28 @@ import net.uiqui.couchdb.api.error.CouchFailException;
 import net.uiqui.couchdb.protocol.impl.Failure;
 
 public class ExceptionFactory {
-	private static Failure UNAUTHORIZED = new Failure("unauthorized", "You are not authorized to access this db.");
-	private static Failure NOT_FOUND = new Failure("Not Found", "Specified database, document or attachment was not found.");
-	
-	public static CouchException build(final String method, final URL url, final IOException error) {
-		final StringBuilder builder = new StringBuilder();
-		builder.append("Error invoking: ");
-		builder.append(method);
-		builder.append(" ");
-		builder.append(url.toString());
-		
-		return new CouchException(builder.toString(), error);
-	}
-	
-	public static CouchException build(final int status, final Failure fail) {
-		return new CouchFailException(status, fail);
-	}	
-	
-	public static CouchException unauthorized(final int status) {
-		return build(status, UNAUTHORIZED);
-	}
-	
-	public static CouchException notFound(final int status) {
-		return build(status, NOT_FOUND);
-	}	
+    private static final Failure UNAUTHORIZED = new Failure("unauthorized", "You are not authorized to access this db.");
+    private static final Failure NOT_FOUND = new Failure("Not Found", "Specified database, document or attachment was not found.");
+
+    public static CouchException build(final String method, final URL url, final IOException error) {
+        final StringBuilder builder = new StringBuilder();
+        builder.append("Error invoking: ");
+        builder.append(method);
+        builder.append(" ");
+        builder.append(url.toString());
+
+        return new CouchException(builder.toString(), error);
+    }
+
+    public static CouchException build(final int status, final Failure fail) {
+        return new CouchFailException(status, fail);
+    }
+
+    public static CouchException unauthorized(final int status) {
+        return build(status, UNAUTHORIZED);
+    }
+
+    public static CouchException notFound(final int status) {
+        return build(status, NOT_FOUND);
+    }
 }

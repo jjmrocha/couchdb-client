@@ -19,23 +19,23 @@
 package net.uiqui.couchdb.impl;
 
 public class Node {
-	private String server = null;
-	private int port = 5984;
-	
-	public Node(final String server) {
-		this.server = server;
-	}
-	
-	public Node(final String server, final int port) {
-		this.server = server;
-		this.port = port;
-	}
+    private final String server;
+    private int port = 5984;
 
-	public String server() {
-		return server;
-	}
+    public Node(final String server) {
+        this.server = server;
+    }
 
-	public int port() {
-		return port;
-	}
+    public Node(final String server, final int port) {
+        this.server = server;
+        this.port = port;
+    }
+
+    public String server() {
+        return server;
+    }
+
+    public int port() {
+        return port;
+    }
 }

@@ -31,39 +31,40 @@ import com.google.gson.JsonSerializer;
 
 public class SelectorSerializer implements JsonSerializer<Selector> {
 
-	public JsonElement serialize(final Selector src, final Type typeOfSrc, final JsonSerializationContext context) {
-		if (src instanceof Operator) {
-			final Operator operator = (Operator) src;
-			return serialize(operator, typeOfSrc, context);
-		} else if (src instanceof Condition) {
-			final Condition condition = (Condition) src;
-			return serialize(condition, typeOfSrc, context);
-		} else {
-			return null;
-		}
-	}
+    @Override
+    public JsonElement serialize(final Selector src, final Type typeOfSrc, final JsonSerializationContext context) {
+        if (src instanceof Operator) {
+            final Operator operator = (Operator) src;
+            return serialize(operator, typeOfSrc, context);
+        } else if (src instanceof Condition) {
+            final Condition condition = (Condition) src;
+            return serialize(condition, typeOfSrc, context);
+        } else {
+            return null;
+        }
+    }
 
-	private JsonElement serialize(final Condition condition, final Type typeOfSrc, final JsonSerializationContext context) {
-		final JsonObject jsonObject = new JsonObject();
-		jsonObject.add(condition.field(), context.serialize(condition.operator(), typeOfSrc));
-		
-		return jsonObject;
-	}
-	
-	private JsonElement serialize(final Operator operator, final Type typeOfSrc, final JsonSerializationContext context) {
-		final JsonObject jsonObject = new JsonObject();
-		
-		JsonElement element = null;
-		
-		if (operator.argument() instanceof Selector) {
-			element = context.serialize(operator.argument(), typeOfSrc);
-		} else {
-			element = context.serialize(operator.argument());
-		}
-		
-		jsonObject.add(operator.operator(), element);
-		
-		return jsonObject;
-	}
+    private JsonElement serialize(final Condition condition, final Type typeOfSrc, final JsonSerializationContext context) {
+        final JsonObject jsonObject = new JsonObject();
+        jsonObject.add(condition.field(), context.serialize(condition.operator(), typeOfSrc));
+
+        return jsonObject;
+    }
+
+    private JsonElement serialize(final Operator operator, final Type typeOfSrc, final JsonSerializationContext context) {
+        final JsonObject jsonObject = new JsonObject();
+
+        JsonElement element;
+
+        if (operator.argument() instanceof Selector) {
+            element = context.serialize(operator.argument(), typeOfSrc);
+        } else {
+            element = context.serialize(operator.argument());
+        }
+
+        jsonObject.add(operator.operator(), element);
+
+        return jsonObject;
+    }
 
 }

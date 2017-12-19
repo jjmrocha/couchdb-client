@@ -23,33 +23,33 @@ import java.io.IOException;
 import com.squareup.okhttp.Response;
 
 public class ContentOutput {
-	private int status = 0;
-	private Content content = null;
+    private final int status;
+    private final Content content;
 
-	private ContentOutput(final int status, final Content content) {
-		this.status = status;
-		this.content = content;
-	}
+    private ContentOutput(final int status, final Content content) {
+        this.status = status;
+        this.content = content;
+    }
 
-	public int status() {
-		return status;
-	}
+    public int status() {
+        return status;
+    }
 
-	public Content content() {
-		return content;
-	}
+    public Content content() {
+        return content;
+    }
 
-	public static ContentOutput parse(final Response response) throws IOException {
-		final int status = response.code();
-		Content content = null;
+    public static ContentOutput parse(final Response response) throws IOException {
+        final int status = response.code();
+        Content content = null;
 
-		if (response.body() != null) {
-			final String contentType = response.header("Content-Type");
-			final byte[] body = response.body().bytes();
+        if (response.body() != null) {
+            final String contentType = response.header("Content-Type");
+            final byte[] body = response.body().bytes();
 
-			content = new Content(contentType, body);
-		}
+            content = new Content(contentType, body);
+        }
 
-		return new ContentOutput(status, content);
-	}
+        return new ContentOutput(status, content);
+    }
 }

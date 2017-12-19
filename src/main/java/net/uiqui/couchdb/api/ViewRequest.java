@@ -19,211 +19,207 @@
 package net.uiqui.couchdb.api;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class ViewRequest {
-	private String designDoc = null;
-	private String viewName = null;
-	private final Map<String, Object> params = new HashMap<String, Object>();
-	private Object[] keys = null;
+    private final String designDoc;
+    private final String viewName;
+    private final Map<String, Object> params = new HashMap<>();
+    private Object[] keys;
 
-	private ViewRequest(final Builder builder) {
-		this.designDoc = builder.designDoc;
-		this.viewName = builder.viewName;
-		
-		if (builder.descending != null) {
-			this.params.put("descending", builder.descending);
-		}
+    private ViewRequest(final Builder builder) {
+        this.designDoc = builder.designDoc;
+        this.viewName = builder.viewName;
 
-		if (builder.endKey != null) {
-			this.params.put("endkey", builder.endKey);
-		}
+        if (builder.descending != null) {
+            this.params.put("descending", builder.descending);
+        }
 
-		if (builder.endKeyDocId != null) {
-			this.params.put("endkey_docid", builder.endKeyDocId);
-		}
+        if (builder.endKey != null) {
+            this.params.put("endkey", builder.endKey);
+        }
 
-		if (builder.inclusiveEnd != null) {
-			this.params.put("inclusive_end", builder.inclusiveEnd);
-		}
+        if (builder.endKeyDocId != null) {
+            this.params.put("endkey_docid", builder.endKeyDocId);
+        }
 
-		if (builder.limit != null) {
-			this.params.put("limit", builder.limit);
-		}
+        if (builder.inclusiveEnd != null) {
+            this.params.put("inclusive_end", builder.inclusiveEnd);
+        }
 
-		if (builder.reduce != null) {
-			this.params.put("reduce", builder.reduce);
-		}
+        if (builder.limit != null) {
+            this.params.put("limit", builder.limit);
+        }
 
-		if (builder.skip != null) {
-			this.params.put("skip", builder.skip);
-		}
+        if (builder.reduce != null) {
+            this.params.put("reduce", builder.reduce);
+        }
 
-		if (builder.sorted != null) {
-			this.params.put("sorted", builder.sorted);
-		}
+        if (builder.skip != null) {
+            this.params.put("skip", builder.skip);
+        }
 
-		if (builder.startKey != null) {
-			this.params.put("startkey", builder.startKey);
-		}
+        if (builder.sorted != null) {
+            this.params.put("sorted", builder.sorted);
+        }
 
-		if (builder.startKeyDocId != null) {
-			this.params.put("startkey_docid", builder.startKeyDocId);
-		}
-		
-		if (builder.group != null) {
-			this.params.put("group", builder.group);
-		}
-		
-		if (builder.groupLevel != null) {
-			this.params.put("group_level", builder.groupLevel);
-		}		
-		
-		if (!builder.keys.isEmpty()) {
-			this.keys = builder.keys.toArray(new Object[builder.keys.size()]);
-		}
-	}
-	
-	public String designDoc() {
-		return designDoc;
-	}
-	
-	public String viewName() {
-		return viewName;
-	}
-	
-	public Map<String, Object> params() {
-		return params;
-	}
+        if (builder.startKey != null) {
+            this.params.put("startkey", builder.startKey);
+        }
 
-	public Object[] keys() {
-		return keys;
-	}
-	
-	@Override
-	public String toString() {
-		final StringBuilder builder = new StringBuilder();
-		builder.append("ViewRequest(designDoc=");
-		builder.append(designDoc);
-		builder.append(", viewName=");
-		builder.append(viewName);
-		builder.append(", params=");
-		builder.append(params);
-		builder.append(", keys=");
-		builder.append(keys);
-		builder.append(")");
-		return builder.toString();
-	}
+        if (builder.startKeyDocId != null) {
+            this.params.put("startkey_docid", builder.startKeyDocId);
+        }
 
-	public static Builder builder(final String designDoc, final String viewName) {
-		return new Builder(designDoc, viewName);
-	}
-	
-	public static ViewRequest build(final String designDoc, final String viewName, final Object...keys) {
-		return builder(designDoc, viewName).keys(keys).build();
-	}	
+        if (builder.group != null) {
+            this.params.put("group", builder.group);
+        }
 
-	public static class Builder {
-		private String designDoc = null;
-		private String viewName = null;
-		
-		private Boolean descending = null;
-		private Object endKey = null;
-		private String endKeyDocId = null;
-		private Boolean inclusiveEnd = null;
-		private Long limit = null;
-		private Boolean reduce = null;
-		private Long skip = null;
-		private Boolean sorted = null;
-		private Object startKey = null;
-		private String startKeyDocId = null;
-		private Boolean group = null;
-		private Integer groupLevel = null;
-		
-		private List<Object> keys = new ArrayList<Object>();
+        if (builder.groupLevel != null) {
+            this.params.put("group_level", builder.groupLevel);
+        }
 
-		private Builder(final String designDoc, final String viewName) {
-			this.designDoc = designDoc;
-			this.viewName = viewName;
-		}
+        if (!builder.keys.isEmpty()) {
+            this.keys = builder.keys.toArray(new Object[builder.keys.size()]);
+        }
+    }
 
-		public Builder descending(final boolean descending) {
-			this.descending = descending;
-			return this;
-		}
+    public String designDoc() {
+        return designDoc;
+    }
 
-		public Builder endKey(final Object endKey) {
-			this.endKey = endKey;
-			return this;
-		}
+    public String viewName() {
+        return viewName;
+    }
 
-		public Builder endKeyDocId(final String endKeyDocId) {
-			this.endKeyDocId = endKeyDocId;
-			return this;
-		}
+    public Map<String, Object> params() {
+        return params;
+    }
 
-		public Builder inclusiveEnd(final boolean inclusiveEnd) {
-			this.inclusiveEnd = inclusiveEnd;
-			return this;
-		}
+    public Object[] keys() {
+        return keys;
+    }
 
-		public Builder limit(final long limit) {
-			this.limit = limit;
-			return this;
-		}
+    @Override
+    public String toString() {
+        final StringBuilder builder = new StringBuilder();
+        builder.append("ViewRequest(designDoc=");
+        builder.append(designDoc);
+        builder.append(", viewName=");
+        builder.append(viewName);
+        builder.append(", params=");
+        builder.append(params);
+        builder.append(", keys=");
+        builder.append(keys);
+        builder.append(")");
+        return builder.toString();
+    }
 
-		public Builder reduce(final boolean reduce) {
-			this.reduce = reduce;
-			return this;
-		}
+    public static Builder builder(final String designDoc, final String viewName) {
+        return new Builder(designDoc, viewName);
+    }
 
-		public Builder skip(final long skip) {
-			this.skip = skip;
-			return this;
-		}
+    public static ViewRequest build(final String designDoc, final String viewName, final Object... keys) {
+        return builder(designDoc, viewName).keys(keys).build();
+    }
 
-		public Builder sorted(final boolean sorted) {
-			this.sorted = sorted;
-			return this;
-		}
+    public static class Builder {
+        private String designDoc;
+        private String viewName;
+        private Boolean descending;
+        private Object endKey;
+        private String endKeyDocId;
+        private Boolean inclusiveEnd;
+        private Long limit;
+        private Boolean reduce;
+        private Long skip;
+        private Boolean sorted;
+        private Object startKey;
+        private String startKeyDocId;
+        private Boolean group;
+        private Integer groupLevel;
+        private final List<Object> keys = new ArrayList<>();
 
-		public Builder startKey(final Object startKey) {
-			this.startKey = startKey;
-			return this;
-		}
+        private Builder(final String designDoc, final String viewName) {
+            this.designDoc = designDoc;
+            this.viewName = viewName;
+        }
 
-		public Builder startKeyDocId(final String startKeyDocId) {
-			this.startKeyDocId = startKeyDocId;
-			return this;
-		}
-		
-		public Builder group(final boolean group) {
-			this.group = group;
-			return this;
-		}
-		
-		public Builder groupLevel(final Integer groupLevel) {
-			this.groupLevel = groupLevel;
-			return this;
-		}
-		
-		public Builder addKey(final Object key) {
-			keys.add(key);
-			return this;
-		}
-		
-		public Builder keys(final Object...args) {
-			for (Object key : args) {
-				keys.add(key);
-			}
-			
-			return this;
-		}
+        public Builder descending(final boolean descending) {
+            this.descending = descending;
+            return this;
+        }
 
-		public ViewRequest build() {
-			return new ViewRequest(this);
-		}
-	}
+        public Builder endKey(final Object endKey) {
+            this.endKey = endKey;
+            return this;
+        }
+
+        public Builder endKeyDocId(final String endKeyDocId) {
+            this.endKeyDocId = endKeyDocId;
+            return this;
+        }
+
+        public Builder inclusiveEnd(final boolean inclusiveEnd) {
+            this.inclusiveEnd = inclusiveEnd;
+            return this;
+        }
+
+        public Builder limit(final long limit) {
+            this.limit = limit;
+            return this;
+        }
+
+        public Builder reduce(final boolean reduce) {
+            this.reduce = reduce;
+            return this;
+        }
+
+        public Builder skip(final long skip) {
+            this.skip = skip;
+            return this;
+        }
+
+        public Builder sorted(final boolean sorted) {
+            this.sorted = sorted;
+            return this;
+        }
+
+        public Builder startKey(final Object startKey) {
+            this.startKey = startKey;
+            return this;
+        }
+
+        public Builder startKeyDocId(final String startKeyDocId) {
+            this.startKeyDocId = startKeyDocId;
+            return this;
+        }
+
+        public Builder group(final boolean group) {
+            this.group = group;
+            return this;
+        }
+
+        public Builder groupLevel(final Integer groupLevel) {
+            this.groupLevel = groupLevel;
+            return this;
+        }
+
+        public Builder addKey(final Object key) {
+            keys.add(key);
+            return this;
+        }
+
+        public Builder keys(final Object... args) {
+            keys.addAll(Arrays.asList(args));
+            return this;
+        }
+
+        public ViewRequest build() {
+            return new ViewRequest(this);
+        }
+    }
 }

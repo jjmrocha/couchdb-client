@@ -32,119 +32,120 @@ import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.Response;
 
 public class RestClient {
-	public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
-	private static final String AUTHORIZATION_HEADER = "Authorization";
+    public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+    private static final String AUTHORIZATION_HEADER = "Authorization";
 
-	private OkHttpClient client = null;
-	private String credential = null;
+    private final OkHttpClient client;
+    private final String credential;
 
-	public RestClient(final Cluster cluster) {
-		client = new OkHttpClient();
+    public RestClient(final Cluster cluster) {
+        client = new OkHttpClient();
 
-		client.setConnectTimeout(30, TimeUnit.SECONDS);
-		client.setWriteTimeout(30, TimeUnit.SECONDS);
-		client.setReadTimeout(30, TimeUnit.SECONDS);
+        client.setConnectTimeout(30, TimeUnit.SECONDS);
+        client.setWriteTimeout(30, TimeUnit.SECONDS);
+        client.setReadTimeout(30, TimeUnit.SECONDS);
 
-		client.interceptors().add(new RetryHandler(cluster));
+        client.interceptors().add(new RetryHandler(cluster));
 
-		if (cluster.user() != null) {
-			credential = Credentials.basic(cluster.user(), cluster.password());
-		}
-	}
+        if (cluster.user() != null) {
+            credential = Credentials.basic(cluster.user(), cluster.password());
+        } else {
+            credential = null;
+        }
+    }
 
-	public RestOutput put(final URL url, final String json) throws IOException {
-		final Request.Builder builder = new Request.Builder();
-		builder.url(url);
-		credentials(builder);
+    public RestOutput put(final URL url, final String json) throws IOException {
+        final Request.Builder builder = new Request.Builder();
+        builder.url(url);
+        credentials(builder);
 
-		final RequestBody body = RequestBody.create(JSON, json);
-		builder.put(body);
+        final RequestBody body = RequestBody.create(JSON, json);
+        builder.put(body);
 
-		final Request request = builder.build();
-		final Response response = client.newCall(request).execute();
+        final Request request = builder.build();
+        final Response response = client.newCall(request).execute();
 
-		return RestOutput.parse(response);
-	}
-	
-	public RestOutput put(final URL url, final Content content) throws IOException {
-		final Request.Builder builder = new Request.Builder();
-		builder.url(url);
-		credentials(builder);
+        return RestOutput.parse(response);
+    }
 
-		final MediaType mediaType = MediaType.parse(content.getContentType());
-		final RequestBody body = RequestBody.create(mediaType, content.getContent());
-		builder.put(body);
+    public RestOutput put(final URL url, final Content content) throws IOException {
+        final Request.Builder builder = new Request.Builder();
+        builder.url(url);
+        credentials(builder);
 
-		final Request request = builder.build();
-		final Response response = client.newCall(request).execute();
+        final MediaType mediaType = MediaType.parse(content.getContentType());
+        final RequestBody body = RequestBody.create(mediaType, content.getContent());
+        builder.put(body);
 
-		return RestOutput.parse(response);
-	}	
+        final Request request = builder.build();
+        final Response response = client.newCall(request).execute();
 
+        return RestOutput.parse(response);
+    }
 
-	public RestOutput post(final URL url, final String json) throws IOException {
-		final Request.Builder builder = new Request.Builder();
-		builder.url(url);
-		credentials(builder);
+    public RestOutput post(final URL url, final String json) throws IOException {
+        final Request.Builder builder = new Request.Builder();
+        builder.url(url);
+        credentials(builder);
 
-		final RequestBody body = RequestBody.create(JSON, json);
-		builder.post(body);
+        final RequestBody body = RequestBody.create(JSON, json);
+        builder.post(body);
 
-		final Request request = builder.build();
-		final Response response = client.newCall(request).execute();
+        final Request request = builder.build();
+        final Response response = client.newCall(request).execute();
 
-		return RestOutput.parse(response);
-	}
+        return RestOutput.parse(response);
+    }
 
-	public RestOutput get(final URL url) throws IOException {
-		final Request.Builder builder = new Request.Builder();
-		builder.url(url);
-		credentials(builder);
+    public RestOutput get(final URL url) throws IOException {
+        final Request.Builder builder = new Request.Builder();
+        builder.url(url);
+        credentials(builder);
 
-		final Request request = builder.build();
-		final Response response = client.newCall(request).execute();
+        final Request request = builder.build();
+        final Response response = client.newCall(request).execute();
 
-		return RestOutput.parse(response);
-	}
-	
-	public ContentOutput getContent(final URL url) throws IOException {
-		final Request.Builder builder = new Request.Builder();
-		builder.url(url);
-		credentials(builder);
+        return RestOutput.parse(response);
+    }
 
-		final Request request = builder.build();
-		final Response response = client.newCall(request).execute();
+    public ContentOutput getContent(final URL url) throws IOException {
+        final Request.Builder builder = new Request.Builder();
+        builder.url(url);
+        credentials(builder);
 
-		return ContentOutput.parse(response);
-	}	
+        final Request request = builder.build();
+        final Response response = client.newCall(request).execute();
 
-	public RestOutput delete(final URL url) throws IOException {
-		final Request.Builder builder = new Request.Builder();
-		builder.url(url);
-		credentials(builder);
-		builder.delete();
+        return ContentOutput.parse(response);
+    }
 
-		final Request request = builder.build();
-		final Response response = client.newCall(request).execute();
+    public RestOutput delete(final URL url) throws IOException {
+        final Request.Builder builder = new Request.Builder();
+        builder.url(url);
+        credentials(builder);
+        builder.delete();
 
-		return RestOutput.parse(response);
-	}
+        final Request request = builder.build();
+        final Response response = client.newCall(request).execute();
 
-	public int head(final URL url) throws IOException {
-		final Request.Builder builder = new Request.Builder();
-		builder.url(url);
-		credentials(builder);
-		builder.head();
+        return RestOutput.parse(response);
+    }
 
-		final Request request = builder.build();
-		final Response response = client.newCall(request).execute();
+    public int head(final URL url) throws IOException {
+        final Request.Builder builder = new Request.Builder();
+        builder.url(url);
+        credentials(builder);
+        builder.head();
 
-		return response.code();
-	}
-	
-	private void credentials(final Request.Builder builder) {
-		if (credential != null) {
-			builder.header(AUTHORIZATION_HEADER, credential);
-		}
-	}	
+        final Request request = builder.build();
+        final Response response = client.newCall(request).execute();
+
+        return response.code();
+    }
+
+    private void credentials(final Request.Builder builder) {
+        if (credential != null) {
+            builder.header(AUTHORIZATION_HEADER, credential);
+        }
+    }
 }

@@ -19,42 +19,42 @@
 package net.uiqui.couchdb.protocol.impl;
 
 public class Failure {
-	private String error = null;
-	private String reason = null;
-	
-	public Failure() {
-	}
-	
-	public Failure(String error, String reason) {
-		this.error = error;
-		this.reason = reason;
-	}
+    private String error = null;
+    private String reason = null;
 
-	public String error() {
-		return error;
-	}
+    public Failure() {
+    }
 
-	public void error(String error) {
-		this.error = error;
-	}
+    public Failure(String error, String reason) {
+        this.error = error;
+        this.reason = reason;
+    }
 
-	public String reason() {
-		return reason;
-	}
+    public String error() {
+        return error;
+    }
 
-	public void reason(String reason) {
-		this.reason = reason;
-	}
+    public void error(String error) {
+        this.error = error;
+    }
 
-	@Override
-	public String toString() {
-		final StringBuilder builder = new StringBuilder();
-		builder.append("(error='");
-		builder.append(error);
-		builder.append("', reason='");
-		builder.append(reason);
-		builder.append("')");
+    public String reason() {
+        return reason;
+    }
 
-		return builder.toString();
-	}
+    public void reason(String reason) {
+        this.reason = reason;
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder builder = new StringBuilder();
+        builder.append("(error='");
+        builder.append(error);
+        builder.append("', reason='");
+        builder.append(reason);
+        builder.append("')");
+
+        return builder.toString();
+    }
 }

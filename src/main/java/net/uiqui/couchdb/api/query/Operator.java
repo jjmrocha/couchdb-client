@@ -21,36 +21,36 @@ package net.uiqui.couchdb.api.query;
 import java.util.Arrays;
 
 public class Operator extends Selector {
-	private String operator = null;
-	private Object argument = null;
-	
-	public Operator(final String operator, final Object argument) {
-		this.operator = operator;
-		this.argument = argument;
-	}
-	
-	public String operator() {
-		return operator;
-	}
-	
-	public Object argument() {
-		return argument;
-	}
-	
-	@Override
-	public String toString() {
-		final StringBuilder builder = new StringBuilder();
-		builder.append("(");
-		builder.append(operator);
-		builder.append(": ");
-		
-		if (argument instanceof Object[]) {
-			builder.append(Arrays.toString((Object[]) argument));
-		} else {
-			builder.append(argument);
-		}
-		
-		builder.append(")");
-		return builder.toString();
-	}
+    private final String operator;
+    private final Object argument;
+
+    public Operator(final String operator, final Object argument) {
+        this.operator = operator;
+        this.argument = argument;
+    }
+
+    public String operator() {
+        return operator;
+    }
+
+    public Object argument() {
+        return argument;
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder builder = new StringBuilder();
+        builder.append("(");
+        builder.append(operator);
+        builder.append(": ");
+
+        if (argument instanceof Object[]) {
+            builder.append(Arrays.toString((Object[]) argument));
+        } else {
+            builder.append(argument);
+        }
+
+        builder.append(")");
+        return builder.toString();
+    }
 }

@@ -43,299 +43,302 @@ import net.uiqui.couchdb.rest.RestOutput;
 import net.uiqui.couchdb.rest.URLBuilder;
 
 public class CouchAPI {
-	private static final URLBuilder PUT_DOC = new URLBuilder("http://%s:%s/%s/%s");
-	private static final URLBuilder GET_DOC = new URLBuilder("http://%s:%s/%s/%s");
-	private static final URLBuilder HEAD_DOC = new URLBuilder("http://%s:%s/%s/%s");
-	private static final URLBuilder DELETE_DOC = new URLBuilder("http://%s:%s/%s/%s?rev=%s");
-	private static final URLBuilder POST_DOC = new URLBuilder("http://%s:%s/%s");
-	private static final URLBuilder POST_VIEW_NO_QUERY = new URLBuilder("http://%s:%s/%s/_design/%s/_view/%s");
-	private static final URLBuilder POST_VIEW_WITH_QUERY = new URLBuilder("http://%s:%s/%s/_design/%s/_view/%s?%s");
-	private static final URLBuilder GET_VIEW_NO_QUERY = new URLBuilder("http://%s:%s/%s/_design/%s/_view/%s");
-	private static final URLBuilder GET_VIEW_WITH_QUERY = new URLBuilder("http://%s:%s/%s/_design/%s/_view/%s?%s");
-	private static final URLBuilder POST_BULK = new URLBuilder("http://%s:%s/%s/_bulk_docs");
-	private static final URLBuilder POST_FIND = new URLBuilder("http://%s:%s/%s/_find");
-	private static final URLBuilder GET_ALL_DOCS_NO_QUERY = new URLBuilder("http://%s:%s/%s/_all_docs");
-	private static final URLBuilder GET_ALL_DOCS_WITH_QUERY = new URLBuilder("http://%s:%s/%s/_all_docs?%s");
+    private static final URLBuilder PUT_DOC = new URLBuilder("http://%s:%s/%s/%s");
+    private static final URLBuilder GET_DOC = new URLBuilder("http://%s:%s/%s/%s");
+    private static final URLBuilder HEAD_DOC = new URLBuilder("http://%s:%s/%s/%s");
+    private static final URLBuilder DELETE_DOC = new URLBuilder("http://%s:%s/%s/%s?rev=%s");
+    private static final URLBuilder POST_DOC = new URLBuilder("http://%s:%s/%s");
+    private static final URLBuilder POST_VIEW_NO_QUERY = new URLBuilder("http://%s:%s/%s/_design/%s/_view/%s");
+    private static final URLBuilder POST_VIEW_WITH_QUERY = new URLBuilder("http://%s:%s/%s/_design/%s/_view/%s?%s");
+    private static final URLBuilder GET_VIEW_NO_QUERY = new URLBuilder("http://%s:%s/%s/_design/%s/_view/%s");
+    private static final URLBuilder GET_VIEW_WITH_QUERY = new URLBuilder("http://%s:%s/%s/_design/%s/_view/%s?%s");
+    private static final URLBuilder POST_BULK = new URLBuilder("http://%s:%s/%s/_bulk_docs");
+    private static final URLBuilder POST_FIND = new URLBuilder("http://%s:%s/%s/_find");
+    private static final URLBuilder GET_ALL_DOCS_NO_QUERY = new URLBuilder("http://%s:%s/%s/_all_docs");
+    private static final URLBuilder GET_ALL_DOCS_WITH_QUERY = new URLBuilder("http://%s:%s/%s/_all_docs?%s");
 
-	private Cluster cluster = null;
-	private RestClient restClient = null;
+    private final Cluster cluster;
+    private final RestClient restClient;
 
-	public CouchAPI(final Cluster cluster) {
-		this.cluster = cluster;
-		this.restClient = new RestClient(cluster);
-	}
-	
-	public boolean exists(final String dbName, final String docId) throws CouchException {
-		final Node node = cluster.currentNode();
-		final String id = Encoder.encode(docId);
-		final URL url = HEAD_DOC.build(node.server(), node.port(), dbName, id);
+    public CouchAPI(final Cluster cluster) {
+        this.cluster = cluster;
+        this.restClient = new RestClient(cluster);
+    }
 
-		try {
-			final int status = restClient.head(url);
+    public boolean exists(final String dbName, final String docId) throws CouchException {
+        final Node node = cluster.currentNode();
+        final String id = Encoder.encode(docId);
+        final URL url = HEAD_DOC.build(node.server(), node.port(), dbName, id);
 
-			if (status == 200 || status == 304) {
-				return true;
-			} else if (status == 404) {
-				return false;
-			} else {
-				throw ExceptionFactory.unauthorized(status);
-			}
-		} catch (IOException e) {
-			throw ExceptionFactory.build("HEAD", url, e);
-		}
-	}
-	
-	public Collection<String> ids(final String dbName, final String startKey, final String endKey, final long skip, final long limit) throws CouchException {
-		final Node node = cluster.currentNode();
-		URL url = null;
-		
-		if (startKey == null && endKey == null && skip == 0 && limit == 0) {
-			url = GET_ALL_DOCS_NO_QUERY.build(node.server(), node.port(), dbName);
-		} else {
-			final StringBuilder queryBuilder = new StringBuilder();
-			
-			if (skip != 0 || limit != 0) {
-				queryBuilder.append("skip=");
-				queryBuilder.append(skip);
-				queryBuilder.append("&limit=");
-				queryBuilder.append(limit);
-			}
-			
-			if (startKey != null) {
-				if (queryBuilder.length() != 0) {
-					queryBuilder.append("&");
-				}
-				
-				queryBuilder.append("startkey=");
-				queryBuilder.append(Encoder.encode(startKey));
-			}
-			
-			if (endKey != null) {
-				if (queryBuilder.length() != 0) {
-					queryBuilder.append("&");
-				}
-				
-				queryBuilder.append("endkey=");
-				queryBuilder.append(Encoder.encode(endKey));
-			}
-			
-			final String query = queryBuilder.toString();
-			
-			url = GET_ALL_DOCS_WITH_QUERY.build(node.server(), node.port(), dbName, query);
-		}
+        try {
+            final int status = restClient.head(url);
 
-		try {
-			final RestOutput output = restClient.get(url);
+            switch (status) {
+                case 200:
+                case 304:
+                    return true;
+                case 404:
+                    return false;
+                default:
+                    throw ExceptionFactory.unauthorized(status);
+            }
+        } catch (IOException e) {
+            throw ExceptionFactory.build("HEAD", url, e);
+        }
+    }
 
-			if (output.status() == 200) {
-				final IDList allIds = JSON.fromJson(output.json(), IDList.class);
-				return allIds.ids();
-			} else {
-				final Failure fail = JSON.fromJson(output.json(), Failure.class);
+    public Collection<String> ids(final String dbName, final String startKey, final String endKey, final long skip, final long limit) throws CouchException {
+        final Node node = cluster.currentNode();
+        URL url;
 
-				throw ExceptionFactory.build(output.status(), fail);
-			}
-		} catch (IOException e) {
-			throw ExceptionFactory.build("GET", url, e);
-		}
-	}
+        if (startKey == null && endKey == null && skip == 0 && limit == 0) {
+            url = GET_ALL_DOCS_NO_QUERY.build(node.server(), node.port(), dbName);
+        } else {
+            final StringBuilder queryBuilder = new StringBuilder();
 
-	public <T> T get(final String dbName, final String docId, final Class<T> type) throws CouchException {
-		final Node node = cluster.currentNode();
-		final String id = Encoder.encode(docId);
-		final URL url = GET_DOC.build(node.server(), node.port(), dbName, id);
+            if (skip != 0 || limit != 0) {
+                queryBuilder.append("skip=");
+                queryBuilder.append(skip);
+                queryBuilder.append("&limit=");
+                queryBuilder.append(limit);
+            }
 
-		try {
-			final RestOutput output = restClient.get(url);
+            if (startKey != null) {
+                if (queryBuilder.length() != 0) {
+                    queryBuilder.append("&");
+                }
 
-			if (output.status() == 200) {
-				return JSON.fromJson(output.json(), type);
-			} else if (output.status() == 404) {
-				return null;
-			} else {
-				final Failure fail = JSON.fromJson(output.json(), Failure.class);
+                queryBuilder.append("startkey=");
+                queryBuilder.append(Encoder.encode(startKey));
+            }
 
-				throw ExceptionFactory.build(output.status(), fail);
-			}
-		} catch (IOException e) {
-			throw ExceptionFactory.build("GET", url, e);
-		}
-	}
+            if (endKey != null) {
+                if (queryBuilder.length() != 0) {
+                    queryBuilder.append("&");
+                }
 
-	public void insert(final String dbName, final Document doc) throws CouchException {
-		final Node node = cluster.currentNode();
-		final URL url = POST_DOC.build(node.server(), node.port(), dbName);
-		final String json = JSON.toJson(doc);
+                queryBuilder.append("endkey=");
+                queryBuilder.append(Encoder.encode(endKey));
+            }
 
-		try {
-			final RestOutput output = restClient.post(url, json);
+            final String query = queryBuilder.toString();
 
-			if (output.status() == 201 || output.status() == 202) {
-				final Success sucess = JSON.fromJson(output.json(), Success.class);
-				doc.setId(sucess.id());
-				doc.setRevision(sucess.rev());
-			} else {
-				final Failure fail = JSON.fromJson(output.json(), Failure.class);
+            url = GET_ALL_DOCS_WITH_QUERY.build(node.server(), node.port(), dbName, query);
+        }
 
-				throw ExceptionFactory.build(output.status(), fail);
-			}
-		} catch (IOException e) {
-			throw ExceptionFactory.build("POST", url, e);
-		}
-	}
+        try {
+            final RestOutput output = restClient.get(url);
 
-	public void update(final String dbName, final Document doc) throws CouchException {
-		final Node node = cluster.currentNode();
-		final String id = Encoder.encode(doc.getId());
-		final URL url = PUT_DOC.build(node.server(), node.port(), dbName, id);
-		final String json = JSON.toJson(doc);
+            if (output.status() == 200) {
+                final IDList allIds = JSON.fromJson(output.json(), IDList.class);
+                return allIds.ids();
+            } else {
+                final Failure fail = JSON.fromJson(output.json(), Failure.class);
 
-		try {
-			final RestOutput output = restClient.put(url, json);
+                throw ExceptionFactory.build(output.status(), fail);
+            }
+        } catch (IOException e) {
+            throw ExceptionFactory.build("GET", url, e);
+        }
+    }
 
-			if (output.status() == 201 || output.status() == 202) {
-				final Success sucess = JSON.fromJson(output.json(), Success.class);
-				doc.setRevision(sucess.rev());
-			} else {
-				final Failure fail = JSON.fromJson(output.json(), Failure.class);
+    public <T> T get(final String dbName, final String docId, final Class<T> type) throws CouchException {
+        final Node node = cluster.currentNode();
+        final String id = Encoder.encode(docId);
+        final URL url = GET_DOC.build(node.server(), node.port(), dbName, id);
 
-				throw ExceptionFactory.build(output.status(), fail);
-			}
-		} catch (IOException e) {
-			throw ExceptionFactory.build("PUT", url, e);
-		}
-	}
-	
-	public void delete(final String dbName, final String docId, final String revision) throws CouchException {
-		final Node node = cluster.currentNode();
-		final String id = Encoder.encode(docId);
-		final String rev = Encoder.encode(revision);
-		final URL url = DELETE_DOC.build(node.server(), node.port(), dbName, id, rev);
+        try {
+            final RestOutput output = restClient.get(url);
 
-		try {
-			final RestOutput output = restClient.delete(url);
+            switch (output.status()) {
+                case 200:
+                    return JSON.fromJson(output.json(), type);
+                case 404:
+                    return null;
+                default:
+                    final Failure fail = JSON.fromJson(output.json(), Failure.class);
+                    
+                    throw ExceptionFactory.build(output.status(), fail);
+            }
+        } catch (IOException e) {
+            throw ExceptionFactory.build("GET", url, e);
+        }
+    }
 
-			if (output.status() != 200 && output.status() != 202) {
-				final Failure fail = JSON.fromJson(output.json(), Failure.class);
+    public void insert(final String dbName, final Document doc) throws CouchException {
+        final Node node = cluster.currentNode();
+        final URL url = POST_DOC.build(node.server(), node.port(), dbName);
+        final String json = JSON.toJson(doc);
 
-				throw ExceptionFactory.build(output.status(), fail);
-			}
-		} catch (IOException e) {
-			throw ExceptionFactory.build("DELETE", url, e);
-		}
-	}
+        try {
+            final RestOutput output = restClient.post(url, json);
 
-	public ViewResult view(final String dbName, final ViewRequest request) throws CouchException {
-		final StringBuilder queryBuilder = new StringBuilder();
+            if (output.status() == 201 || output.status() == 202) {
+                final Success sucess = JSON.fromJson(output.json(), Success.class);
+                doc.setId(sucess.id());
+                doc.setRevision(sucess.rev());
+            } else {
+                final Failure fail = JSON.fromJson(output.json(), Failure.class);
 
-		for (Entry<String, Object> entry : request.params().entrySet()) {
-			if (queryBuilder.length() > 0) {
-				queryBuilder.append("&");
-			}
+                throw ExceptionFactory.build(output.status(), fail);
+            }
+        } catch (IOException e) {
+            throw ExceptionFactory.build("POST", url, e);
+        }
+    }
 
-			queryBuilder.append(entry.getKey());
-			queryBuilder.append("=");
-			queryBuilder.append(Encoder.encode(JSON.toJson(entry.getValue())));
-		}
+    public void update(final String dbName, final Document doc) throws CouchException {
+        final Node node = cluster.currentNode();
+        final String id = Encoder.encode(doc.getId());
+        final URL url = PUT_DOC.build(node.server(), node.port(), dbName, id);
+        final String json = JSON.toJson(doc);
 
-		final String query = queryBuilder.length() == 0 ? null : queryBuilder.toString();
+        try {
+            final RestOutput output = restClient.put(url, json);
 
-		if (request.keys() == null || request.keys().length == 0) {
-			return viewGET(dbName, request.designDoc(), request.viewName(), query);
-		} else {
-			final String body = JSON.toJsonObject("keys", request.keys());
+            if (output.status() == 201 || output.status() == 202) {
+                final Success sucess = JSON.fromJson(output.json(), Success.class);
+                doc.setRevision(sucess.rev());
+            } else {
+                final Failure fail = JSON.fromJson(output.json(), Failure.class);
 
-			return viewPOST(dbName, request.designDoc(), request.viewName(), body, query);
-		}
-	}
+                throw ExceptionFactory.build(output.status(), fail);
+            }
+        } catch (IOException e) {
+            throw ExceptionFactory.build("PUT", url, e);
+        }
+    }
 
-	private ViewResult viewPOST(final String dbName, final String designDoc, final String viewName, final String body, final String query) throws CouchException {
-		final Node node = cluster.currentNode();
-		URL url = null;
+    public void delete(final String dbName, final String docId, final String revision) throws CouchException {
+        final Node node = cluster.currentNode();
+        final String id = Encoder.encode(docId);
+        final String rev = Encoder.encode(revision);
+        final URL url = DELETE_DOC.build(node.server(), node.port(), dbName, id, rev);
 
-		if (query == null) {
-			url = POST_VIEW_NO_QUERY.build(node.server(), node.port(), dbName, designDoc, viewName);
-		} else {
-			url = POST_VIEW_WITH_QUERY.build(node.server(), node.port(), dbName, designDoc, viewName, query);
-		}
+        try {
+            final RestOutput output = restClient.delete(url);
 
-		try {
-			final RestOutput output = restClient.post(url, body);
+            if (output.status() != 200 && output.status() != 202) {
+                final Failure fail = JSON.fromJson(output.json(), Failure.class);
 
-			if (output.status() == 200) {
-				return JSON.fromJson(output.json(), ViewResult.class);
-			} else {
-				final Failure fail = JSON.fromJson(output.json(), Failure.class);
+                throw ExceptionFactory.build(output.status(), fail);
+            }
+        } catch (IOException e) {
+            throw ExceptionFactory.build("DELETE", url, e);
+        }
+    }
 
-				throw ExceptionFactory.build(output.status(), fail);
-			}
-		} catch (IOException e) {
-			throw ExceptionFactory.build("POST", url, e);
-		}
-	}
+    public ViewResult view(final String dbName, final ViewRequest request) throws CouchException {
+        final StringBuilder queryBuilder = new StringBuilder();
 
-	private ViewResult viewGET(final String dbName, final String designDoc, final String viewName, final String query) throws CouchException {
-		final Node node = cluster.currentNode();
-		URL url = null;
+        for (Entry<String, Object> entry : request.params().entrySet()) {
+            if (queryBuilder.length() > 0) {
+                queryBuilder.append("&");
+            }
 
-		if (query == null) {
-			url = GET_VIEW_NO_QUERY.build(node.server(), node.port(), dbName, designDoc, viewName);
-		} else {
-			url = GET_VIEW_WITH_QUERY.build(node.server(), node.port(), dbName, designDoc, viewName, query);
-		}
+            queryBuilder.append(entry.getKey());
+            queryBuilder.append("=");
+            queryBuilder.append(Encoder.encode(JSON.toJson(entry.getValue())));
+        }
 
-		try {
-			final RestOutput output = restClient.get(url);
+        final String query = queryBuilder.length() == 0 ? null : queryBuilder.toString();
 
-			if (output.status() == 200) {
-				return JSON.fromJson(output.json(), ViewResult.class);
-			} else {
-				final Failure fail = JSON.fromJson(output.json(), Failure.class);
+        if (request.keys() == null || request.keys().length == 0) {
+            return viewGET(dbName, request.designDoc(), request.viewName(), query);
+        } else {
+            final String body = JSON.toJsonObject("keys", request.keys());
 
-				throw ExceptionFactory.build(output.status(), fail);
-			}
-		} catch (IOException e) {
-			throw ExceptionFactory.build("GET", url, e);
-		}
-	}
-	
-	public QueryResult query(final String dbName, final QueryRequest request) throws CouchException {
-		final Node node = cluster.currentNode();
-		final URL url = POST_FIND.build(node.server(), node.port(), dbName);
-		final String json = JSON.toJson(request);
-		
-		try {
-			final RestOutput output = restClient.post(url, json);
+            return viewPOST(dbName, request.designDoc(), request.viewName(), body, query);
+        }
+    }
 
-			if (output.status() == 200) {
-				return JSON.fromJson(output.json(), QueryResult.class);
-			} else {
-				final Failure fail = JSON.fromJson(output.json(), Failure.class);
+    private ViewResult viewPOST(final String dbName, final String designDoc, final String viewName, final String body, final String query) throws CouchException {
+        final Node node = cluster.currentNode();
+        URL url;
 
-				throw ExceptionFactory.build(output.status(), fail);
-			}
-		} catch (IOException e) {
-			throw ExceptionFactory.build("POST", url, e);
-		}
-	}	
+        if (query == null) {
+            url = POST_VIEW_NO_QUERY.build(node.server(), node.port(), dbName, designDoc, viewName);
+        } else {
+            url = POST_VIEW_WITH_QUERY.build(node.server(), node.port(), dbName, designDoc, viewName, query);
+        }
 
-	public BatchResult[] bulk(final String dbName, final Document[] docs) throws CouchException {
-		final Node node = cluster.currentNode();
-		final URL url = POST_BULK.build(node.server(), node.port(), dbName);
-		final String json = JSON.toJsonObject("docs", docs);
+        try {
+            final RestOutput output = restClient.post(url, body);
 
-		try {
-			final RestOutput output = restClient.post(url, json);
+            if (output.status() == 200) {
+                return JSON.fromJson(output.json(), ViewResult.class);
+            } else {
+                final Failure fail = JSON.fromJson(output.json(), Failure.class);
 
-			if (output.status() == 201) {
-				return JSON.fromJson(output.json(), BatchResult[].class);
-			} else {
-				final Failure fail = JSON.fromJson(output.json(), Failure.class);
+                throw ExceptionFactory.build(output.status(), fail);
+            }
+        } catch (IOException e) {
+            throw ExceptionFactory.build("POST", url, e);
+        }
+    }
 
-				throw ExceptionFactory.build(output.status(), fail);
-			}
-		} catch (IOException e) {
-			throw ExceptionFactory.build("POST", url, e);
-		}
-	}
+    private ViewResult viewGET(final String dbName, final String designDoc, final String viewName, final String query) throws CouchException {
+        final Node node = cluster.currentNode();
+        URL url;
+
+        if (query == null) {
+            url = GET_VIEW_NO_QUERY.build(node.server(), node.port(), dbName, designDoc, viewName);
+        } else {
+            url = GET_VIEW_WITH_QUERY.build(node.server(), node.port(), dbName, designDoc, viewName, query);
+        }
+
+        try {
+            final RestOutput output = restClient.get(url);
+
+            if (output.status() == 200) {
+                return JSON.fromJson(output.json(), ViewResult.class);
+            } else {
+                final Failure fail = JSON.fromJson(output.json(), Failure.class);
+
+                throw ExceptionFactory.build(output.status(), fail);
+            }
+        } catch (IOException e) {
+            throw ExceptionFactory.build("GET", url, e);
+        }
+    }
+
+    public QueryResult query(final String dbName, final QueryRequest request) throws CouchException {
+        final Node node = cluster.currentNode();
+        final URL url = POST_FIND.build(node.server(), node.port(), dbName);
+        final String json = JSON.toJson(request);
+
+        try {
+            final RestOutput output = restClient.post(url, json);
+
+            if (output.status() == 200) {
+                return JSON.fromJson(output.json(), QueryResult.class);
+            } else {
+                final Failure fail = JSON.fromJson(output.json(), Failure.class);
+
+                throw ExceptionFactory.build(output.status(), fail);
+            }
+        } catch (IOException e) {
+            throw ExceptionFactory.build("POST", url, e);
+        }
+    }
+
+    public BatchResult[] bulk(final String dbName, final Document[] docs) throws CouchException {
+        final Node node = cluster.currentNode();
+        final URL url = POST_BULK.build(node.server(), node.port(), dbName);
+        final String json = JSON.toJsonObject("docs", docs);
+
+        try {
+            final RestOutput output = restClient.post(url, json);
+
+            if (output.status() == 201) {
+                return JSON.fromJson(output.json(), BatchResult[].class);
+            } else {
+                final Failure fail = JSON.fromJson(output.json(), Failure.class);
+
+                throw ExceptionFactory.build(output.status(), fail);
+            }
+        } catch (IOException e) {
+            throw ExceptionFactory.build("POST", url, e);
+        }
+    }
 }

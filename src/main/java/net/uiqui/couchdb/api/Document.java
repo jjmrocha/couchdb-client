@@ -23,75 +23,78 @@ import java.io.Serializable;
 import com.google.gson.annotations.SerializedName;
 
 public class Document implements Comparable<Document>, Serializable {
-	private static final long serialVersionUID = -8352773631948437124L;
-	
-	@SerializedName("_id") private String id = null;
-	@SerializedName("_rev") private String revision = null;
-	
-	public Document() {
-	}
-	
-	public Document(final String id) {
-		this.id = id;
-	}
-	
-	public Document(final String id, String revision) {
-		this.id = id;
-		this.revision = revision;
-	}
+    private static final long serialVersionUID = -8352773631948437124L;
 
-	public String getId() {
-		return id;
-	}
+    @SerializedName("_id")
+    private String id;
+    @SerializedName("_rev")
+    private String revision;
 
-	public void setId(String id) {
-		this.id = id;
-	}
+    public Document() {
+    }
 
-	public String getRevision() {
-		return revision;
-	}
+    public Document(final String id) {
+        this.id = id;
+    }
 
-	public void setRevision(String revision) {
-		this.revision = revision;
-	}
+    public Document(final String id, final String revision) {
+        this.id = id;
+        this.revision = revision;
+    }
 
-	@Override
-	public int hashCode() {
-		return id.hashCode();
-	}
+    public String getId() {
+        return id;
+    }
 
-	@Override
-	public boolean equals(final Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		
-		if (obj == null) {
-			return false;
-		}
-		
-		if (getClass() != obj.getClass()) {
-			return false;
-		}
-		
-		final Document other = (Document) obj;
-		
-		return id.equals(other.id);
-	}
-	
-	public int compareTo(final Document o) {
-		return id.compareTo(o.id);
-	}
+    public void setId(String id) {
+        this.id = id;
+    }
 
-	@Override
-	public String toString() {
-		final StringBuilder builder = new StringBuilder();
-		builder.append("(id=");
-		builder.append(id);
-		builder.append(", revision=");
-		builder.append(revision);		
-		builder.append(")");
-		return builder.toString();
-	}
+    public String getRevision() {
+        return revision;
+    }
+
+    public void setRevision(String revision) {
+        this.revision = revision;
+    }
+
+    @Override
+    public int hashCode() {
+        return id.hashCode();
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+
+        if (obj == null) {
+            return false;
+        }
+
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+
+        final Document other = (Document) obj;
+
+        return id.equals(other.id);
+    }
+
+    @Override
+    public int compareTo(final Document o) {
+        return id.compareTo(o.id);
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder builder = new StringBuilder();
+        builder.append("(id=");
+        builder.append(id);
+        builder.append(", revision=");
+        builder.append(revision);
+        builder.append(")");
+        return builder.toString();
+    }
 }

@@ -19,20 +19,22 @@
 package net.uiqui.couchdb.impl;
 
 public class SingleNodeCluster extends AbstractCluster {
-	private Node node = null;
-	
-	public SingleNodeCluster(final String user, final String password, final Node node) {
-		super(user, password);
-		
-		this.node = node;
-	}
+    private final Node node;
 
-	public Node currentNode() {
-		return node;
-	}
+    public SingleNodeCluster(final String user, final String password, final Node node) {
+        super(user, password);
 
-	public Node nextNode() {
-		return node;
-	}
+        this.node = node;
+    }
+
+    @Override
+    public Node currentNode() {
+        return node;
+    }
+
+    @Override
+    public Node nextNode() {
+        return node;
+    }
 
 }

@@ -26,29 +26,29 @@ import net.uiqui.couchdb.json.JSON;
 import com.google.gson.JsonElement;
 
 public class QueryResult {
-	private List<JsonElement> results = null;
-	
-	public QueryResult(final List<JsonElement> results) {
-		this.results = results;
-	}
-	
-	public List<String> resultAsListOfString() {
-		final List<String> output = new ArrayList<String>();
+    private final List<JsonElement> results;
 
-		for (JsonElement jsonElement : results) {
-			output.add(jsonElement.toString());
-		}
-		
-		return output;
-	}
-	
-	public <T> List<T> resultAsListOf(final Class<T> type) {
-		final List<T> output = new ArrayList<T>();
-		
-		for (JsonElement json : results) {
-			output.add(JSON.fromJson(json, type));
-		}
-		
-		return output;
-	}
+    public QueryResult(final List<JsonElement> results) {
+        this.results = results;
+    }
+
+    public List<String> resultAsListOfString() {
+        final List<String> output = new ArrayList<>();
+
+        for (final JsonElement jsonElement : results) {
+            output.add(jsonElement.toString());
+        }
+
+        return output;
+    }
+
+    public <T> List<T> resultAsListOf(final Class<T> type) {
+        final List<T> output = new ArrayList<T>();
+
+        for (final JsonElement json : results) {
+            output.add(JSON.fromJson(json, type));
+        }
+
+        return output;
+    }
 }

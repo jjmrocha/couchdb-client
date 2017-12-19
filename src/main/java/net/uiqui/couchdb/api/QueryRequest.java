@@ -26,134 +26,134 @@ import net.uiqui.couchdb.api.query.Sort;
 import com.google.gson.annotations.SerializedName;
 
 public class QueryRequest {
-	private Selector selector = null;
-	private Long limit = null;
-	private Long skip = null;
-	private Sort[] sort = null;
-	private String[] fields = null;
-	@SerializedName("use_index")
-	private Object useIndex = null;
+    private final Selector selector;
+    private final Long limit;
+    private final Long skip;
+    private final Sort[] sort;
+    private final String[] fields;
+    @SerializedName("use_index")
+    private final Object useIndex;
 
-	private QueryRequest(final Builder builder) {
-		this.selector = builder.selector;
-		this.limit = builder.limit;
-		this.skip = builder.skip;
-		this.sort = builder.sort;
-		this.fields = builder.fields;
-		this.useIndex = builder.useIndex;
-	}
+    private QueryRequest(final Builder builder) {
+        this.selector = builder.selector;
+        this.limit = builder.limit;
+        this.skip = builder.skip;
+        this.sort = builder.sort;
+        this.fields = builder.fields;
+        this.useIndex = builder.useIndex;
+    }
 
-	public Selector selector() {
-		return selector;
-	}
+    public Selector selector() {
+        return selector;
+    }
 
-	public Long limit() {
-		return limit;
-	}
+    public Long limit() {
+        return limit;
+    }
 
-	public Long skip() {
-		return skip;
-	}
+    public Long skip() {
+        return skip;
+    }
 
-	public Sort[] sort() {
-		return sort;
-	}
+    public Sort[] sort() {
+        return sort;
+    }
 
-	public String[] fields() {
-		return fields;
-	}
+    public String[] fields() {
+        return fields;
+    }
 
-	public Object useIndex() {
-		return useIndex;
-	}
+    public Object useIndex() {
+        return useIndex;
+    }
 
-	@Override
-	public String toString() {
-		StringBuilder builder = new StringBuilder();
-		builder.append("QueryRequest(selector=");
-		builder.append(selector);
-		builder.append(", limit=");
-		builder.append(limit);
-		builder.append(", skip=");
-		builder.append(skip);
-		builder.append(", sort=");
-		builder.append(Arrays.toString(sort));
-		builder.append(", fields=");
-		builder.append(fields);
-		builder.append(", useIndex=");
-		builder.append(useIndex);
-		builder.append(")");
-		return builder.toString();
-	}
+    @Override
+    public String toString() {
+        final StringBuilder builder = new StringBuilder();
+        builder.append("QueryRequest(selector=");
+        builder.append(selector);
+        builder.append(", limit=");
+        builder.append(limit);
+        builder.append(", skip=");
+        builder.append(skip);
+        builder.append(", sort=");
+        builder.append(Arrays.toString(sort));
+        builder.append(", fields=");
+        builder.append(fields);
+        builder.append(", useIndex=");
+        builder.append(useIndex);
+        builder.append(")");
+        return builder.toString();
+    }
 
-	public static Builder builder() {
-		return new Builder();
-	}
+    public static Builder builder() {
+        return new Builder();
+    }
 
-	public static class Builder {
-		private Selector selector = null;
-		private Long limit = null;
-		private Long skip = null;
-		private Sort[] sort = null;
-		private String[] fields = null;
-		private Object useIndex = null;
+    public static class Builder {
+        private Selector selector;
+        private Long limit;
+        private Long skip;
+        private Sort[] sort;
+        private String[] fields;
+        private Object useIndex;
 
-		public Builder selector(final Selector selector) {
-			this.selector = selector;
-			return this;
-		}
+        public Builder selector(final Selector selector) {
+            this.selector = selector;
+            return this;
+        }
 
-		public Builder limit(final long limit) {
-			this.limit = limit;
-			return this;
-		}
+        public Builder limit(final long limit) {
+            this.limit = limit;
+            return this;
+        }
 
-		public Builder skip(final long skip) {
-			this.skip = skip;
-			return this;
-		}
+        public Builder skip(final long skip) {
+            this.skip = skip;
+            return this;
+        }
 
-		public Builder sort(final Sort...sort) {
-			this.sort = sort;
-			return this;
-		}
+        public Builder sort(final Sort... sort) {
+            this.sort = sort;
+            return this;
+        }
 
-		public Builder fields(final String... fields) {
-			this.fields = fields;
-			return this;
-		}
+        public Builder fields(final String... fields) {
+            this.fields = fields;
+            return this;
+        }
 
-		public Builder useIndex(final String designDocument) {
-			this.useIndex = indexFormat(designDocument);
-			return this;
-		}
+        public Builder useIndex(final String designDocument) {
+            this.useIndex = indexFormat(designDocument);
+            return this;
+        }
 
-		public Builder useIndex(final String designDocument, final String indexName) {
-			final String[] index = { indexFormat(designDocument), indexFormat(indexName) };
+        public Builder useIndex(final String designDocument, final String indexName) {
+            final String[] index = {indexFormat(designDocument), indexFormat(indexName)};
 
-			this.useIndex = index;
+            this.useIndex = index;
 
-			return this;
-		}
+            return this;
+        }
 
-		public QueryRequest build() {
-			return new QueryRequest(this);
-		}
-	}
+        public QueryRequest build() {
+            return new QueryRequest(this);
+        }
+    }
 
-	private static String indexFormat(final String name) {
-		final StringBuilder sb = new StringBuilder();
+    private static String indexFormat(final String name) {
+        final StringBuilder sb = new StringBuilder();
 
-		if (!name.startsWith("<")) {
-			sb.append("<");
-		}
+        if (!name.startsWith("<")) {
+            sb.append("<");
+        }
 
-		sb.append(name);
+        sb.append(name);
 
-		if (!name.endsWith(">")) {
-			sb.append(">");
-		}
+        if (!name.endsWith(">")) {
+            sb.append(">");
+        }
 
-		return sb.toString();
-	}
+        return sb.toString();
+    }
 }

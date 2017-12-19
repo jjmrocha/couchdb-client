@@ -21,62 +21,63 @@ package net.uiqui.couchdb.api;
 import com.google.gson.annotations.SerializedName;
 
 public class BatchResult {
-	@SerializedName("ok") private Boolean success = null;
-	private String id = null;
-	private String rev = null;
-	private String error = null;
-	private String reason = null;
-	
-	public boolean isSuccess() {
-		return success != null && success;
-	}
+    @SerializedName("ok")
+    private Boolean success;
+    private String id;
+    private String rev;
+    private String error;
+    private String reason;
 
-	public String id() {
-		return id;
-	}
+    public boolean isSuccess() {
+        return success != null && success;
+    }
 
-	public void id(final String id) {
-		this.id = id;
-	}
+    public String id() {
+        return id;
+    }
 
-	public String rev() {
-		return rev;
-	}
+    public void id(final String id) {
+        this.id = id;
+    }
 
-	public void rev(final String rev) {
-		this.rev = rev;
-	}
-	
-	public String error() {
-		return error;
-	}
+    public String rev() {
+        return rev;
+    }
 
-	public void error(String error) {
-		this.error = error;
-	}
+    public void rev(final String rev) {
+        this.rev = rev;
+    }
 
-	public String reason() {
-		return reason;
-	}
+    public String error() {
+        return error;
+    }
 
-	public void reason(String reason) {
-		this.reason = reason;
-	}
+    public void error(String error) {
+        this.error = error;
+    }
 
-	@Override
-	public String toString() {
-		final StringBuilder builder = new StringBuilder();
-		builder.append("BatchResult(success=");
-		builder.append(isSuccess());
-		builder.append(", id=");
-		builder.append(id);
-		builder.append(", rev=");
-		builder.append(rev);
-		builder.append(", error=");
-		builder.append(error);
-		builder.append(", reason=");
-		builder.append(reason);
-		builder.append(")");
-		return builder.toString();
-	}
+    public String reason() {
+        return reason;
+    }
+
+    public void reason(String reason) {
+        this.reason = reason;
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder builder = new StringBuilder();
+        builder.append("BatchResult(success=");
+        builder.append(isSuccess());
+        builder.append(", id=");
+        builder.append(id);
+        builder.append(", rev=");
+        builder.append(rev);
+        builder.append(", error=");
+        builder.append(error);
+        builder.append(", reason=");
+        builder.append(reason);
+        builder.append(")");
+        return builder.toString();
+    }
 }
