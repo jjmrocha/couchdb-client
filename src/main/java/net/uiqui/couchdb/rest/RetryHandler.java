@@ -24,10 +24,10 @@ import java.net.URL;
 
 import net.uiqui.couchdb.impl.Cluster;
 import net.uiqui.couchdb.impl.Node;
-
-import com.squareup.okhttp.Interceptor;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.Response;
+import okhttp3.Interceptor;
+import okhttp3.Interceptor.Chain;
+import okhttp3.Request;
+import okhttp3.Response;
 
 public class RetryHandler implements Interceptor {
     private final Cluster cluster;
@@ -44,7 +44,7 @@ public class RetryHandler implements Interceptor {
             return chain.proceed(request);
         } catch (SocketTimeoutException e) {
             final Node node = cluster.nextNode();
-            final URL url = URLBuilder.change(request.url(), node.server(), node.port());
+            final URL url = URLBuilder.change(request.url().url(), node.server(), node.port());
             final Request retry = request.newBuilder().url(url).build();
 
             return chain.proceed(retry);

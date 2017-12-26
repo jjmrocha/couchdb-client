@@ -20,7 +20,7 @@ package net.uiqui.couchdb.api;
 
 import com.google.gson.annotations.SerializedName;
 
-public class BatchResult {
+public class BulkResult {
     @SerializedName("ok")
     private Boolean success;
     private String id;

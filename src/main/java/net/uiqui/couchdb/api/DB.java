@@ -37,23 +37,23 @@ public class DB {
     }
 
     public boolean contains(final String docId) throws CouchException {
-        return api.exists(dbName, docId);
+        return api.contains(dbName, docId);
     }
 
-    public Collection<String> ids() throws CouchException {
-        return ids(null, null, 0, 0);
+    public Collection<String> docIds() throws CouchException {
+        return docIds(null, null, 0, 0);
     }
 
-    public Collection<String> ids(final String startKey, final String endKey) throws CouchException {
-        return ids(startKey, endKey, 0, 0);
+    public Collection<String> docIds(final String startKey, final String endKey) throws CouchException {
+        return docIds(startKey, endKey, 0, 0);
     }
 
-    public Collection<String> ids(final long skip, final long limit) throws CouchException {
-        return ids(null, null, skip, limit);
+    public Collection<String> docIds(final long skip, final long limit) throws CouchException {
+        return docIds(null, null, skip, limit);
     }
 
-    public Collection<String> ids(final String startKey, final String endKey, final long skip, final long limit) throws CouchException {
-        return api.ids(dbName, startKey, endKey, skip, limit);
+    public Collection<String> docIds(final String startKey, final String endKey, final long skip, final long limit) throws CouchException {
+        return api.docIds(dbName, startKey, endKey, skip, limit);
     }
 
     public <T> T get(final String docId, final Class<T> type) throws CouchException {
@@ -62,90 +62,89 @@ public class DB {
 
     public void save(final Document doc) throws CouchException {
         if (doc.getId() == null) {
-            api.insert(dbName, doc);
+            api.add(dbName, doc);
         } else {
             api.update(dbName, doc);
         }
     }
 
     public void remove(final Document doc) throws CouchException {
-        DB.this.remove(doc.getId(), doc.getRevision());
+        remove(doc.getId(), doc.getRevision());
     }
 
     public void remove(final String docId, final String revision) throws CouchException {
-        api.delete(dbName, docId, revision);
+        api.remove(dbName, docId, revision);
     }
 
     public void remove(final String docId) throws CouchException {
         final Document doc = get(docId, Document.class);
 
         if (doc != null) {
-            DB.this.remove(doc);
+            remove(doc);
         }
     }
 
     public ViewResult execute(final ViewRequest request) throws CouchException {
-        return api.view(dbName, request);
+        return api.execute(dbName, request);
     }
 
     public <T> Collection<T> execute(final QueryRequest request, final Class<T> type) throws CouchException {
-        final QueryResult queryResult = api.query(dbName, request);
+        final QueryResult queryResult = api.execute(dbName, request);
         return queryResult.resultAsListOf(type);
     }
 
-    public Collection<BatchResult> batchInsert(final Collection<Document> docs) throws CouchException {
-        final Document[] inputs = docs.toArray(new Document[docs.size()]);
-        final BatchResult[] results = batch(inputs);
-        final List<BatchResult> output = new ArrayList<>();
+    public BulkResult[] bulkSave(final Collection<Document> docs) throws CouchException {
+        final Document[] docArray = docs.toArray(new Document[docs.size()]);
+        return bulkSave(docArray);
+    }
+    
+    public BulkResult[] bulkSave(final Document[] docs) throws CouchException {
+        final BulkResult[] results = bulk(docs);
+        final List<BulkResult> output = new ArrayList<>();
 
-        for (int i = 0; i < inputs.length; i++) {
-            final BatchResult result = results[i];
+        for (int i = 0; i < docs.length; i++) {
+            final BulkResult result = results[i];
 
             if (result.isSuccess()) {
-                final Document input = inputs[i];
+                final Document input = docs[i];
 
-                input.setId(result.id());
+                if (input.getId() != null) {
+                    input.setId(result.id());
+                }
+                
                 input.setRevision(result.rev());
             } else {
                 output.add(result);
             }
         }
 
-        return output;
+        return output.toArray(new BulkResult[output.size()]);
     }
 
-    public Collection<BatchResult> batchUpdate(final Collection<Document> docs) throws CouchException {
-        final Document[] inputs = docs.toArray(new Document[docs.size()]);
-        final BatchResult[] results = batch(inputs);
-        final List<BatchResult> output = new ArrayList<>();
-
-        for (int i = 0; i < inputs.length; i++) {
-            final BatchResult result = results[i];
-
-            if (result.isSuccess()) {
-                inputs[i].setRevision(result.rev());
-            } else {
-                output.add(result);
-            }
-        }
-
-        return output;
+    public BulkResult[] bulkRemove(final Document[] docs) throws CouchException {
+        final DeleteDoc[] deletDocs = DeleteDoc.from(docs);
+        return bulkRemove(deletDocs);
     }
 
-    public Collection<BatchResult> batchDelete(final Collection<Document> docs) throws CouchException {
-        final BatchResult[] results = batch(DeleteDoc.from(docs));
-        final List<BatchResult> output = new ArrayList<>();
+    public BulkResult[] bulkRemove(final Collection<Document> docs) throws CouchException {
+        final DeleteDoc[] deletDocs = DeleteDoc.from(docs);
+        return bulkRemove(deletDocs);
+    }
 
-        for (final BatchResult result : results) {
+    private BulkResult[] bulkRemove(final DeleteDoc[] docs) throws CouchException {
+        final BulkResult[] results = bulk(docs);
+        final List<BulkResult> output = new ArrayList<>();
+
+        for (final BulkResult result : results) {
             if (!result.isSuccess()) {
                 output.add(result);
             }
         }
 
-        return output;
-    }
+        return output.toArray(new BulkResult[output.size()]);
+    }    
 
-    private BatchResult[] batch(final Document[] docs) throws CouchException {
+    private BulkResult[] bulk(final Document[] docs) throws CouchException {
         return api.bulk(dbName, docs);
     }
 }

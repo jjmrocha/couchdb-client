@@ -23,7 +23,7 @@ import java.net.URL;
 import java.util.Collection;
 import java.util.Map.Entry;
 
-import net.uiqui.couchdb.api.BatchResult;
+import net.uiqui.couchdb.api.BulkResult;
 import net.uiqui.couchdb.api.Document;
 import net.uiqui.couchdb.api.QueryRequest;
 import net.uiqui.couchdb.api.ViewRequest;
@@ -65,7 +65,7 @@ public class CouchAPI {
         this.restClient = new RestClient(cluster);
     }
 
-    public boolean exists(final String dbName, final String docId) throws CouchException {
+    public boolean contains(final String dbName, final String docId) throws CouchException {
         final Node node = cluster.currentNode();
         final String id = Encoder.encode(docId);
         final URL url = HEAD_DOC.build(node.server(), node.port(), dbName, id);
@@ -87,7 +87,7 @@ public class CouchAPI {
         }
     }
 
-    public Collection<String> ids(final String dbName, final String startKey, final String endKey, final long skip, final long limit) throws CouchException {
+    public Collection<String> docIds(final String dbName, final String startKey, final String endKey, final long skip, final long limit) throws CouchException {
         final Node node = cluster.currentNode();
         URL url;
 
@@ -165,7 +165,7 @@ public class CouchAPI {
         }
     }
 
-    public void insert(final String dbName, final Document doc) throws CouchException {
+    public void add(final String dbName, final Document doc) throws CouchException {
         final Node node = cluster.currentNode();
         final URL url = POST_DOC.build(node.server(), node.port(), dbName);
         final String json = JSON.toJson(doc);
@@ -209,7 +209,7 @@ public class CouchAPI {
         }
     }
 
-    public void delete(final String dbName, final String docId, final String revision) throws CouchException {
+    public void remove(final String dbName, final String docId, final String revision) throws CouchException {
         final Node node = cluster.currentNode();
         final String id = Encoder.encode(docId);
         final String rev = Encoder.encode(revision);
@@ -228,7 +228,7 @@ public class CouchAPI {
         }
     }
 
-    public ViewResult view(final String dbName, final ViewRequest request) throws CouchException {
+    public ViewResult execute(final String dbName, final ViewRequest request) throws CouchException {
         final StringBuilder queryBuilder = new StringBuilder();
 
         for (final Entry<String, Object> entry : request.params().entrySet()) {
@@ -302,7 +302,7 @@ public class CouchAPI {
         }
     }
 
-    public QueryResult query(final String dbName, final QueryRequest request) throws CouchException {
+    public QueryResult execute(final String dbName, final QueryRequest request) throws CouchException {
         final Node node = cluster.currentNode();
         final URL url = POST_FIND.build(node.server(), node.port(), dbName);
         final String json = JSON.toJson(request);
@@ -322,7 +322,7 @@ public class CouchAPI {
         }
     }
 
-    public BatchResult[] bulk(final String dbName, final Document[] docs) throws CouchException {
+    public BulkResult[] bulk(final String dbName, final Document[] docs) throws CouchException {
         final Node node = cluster.currentNode();
         final URL url = POST_BULK.build(node.server(), node.port(), dbName);
         final String json = JSON.toJsonObject("docs", docs);
@@ -331,7 +331,7 @@ public class CouchAPI {
             final RestOutput output = restClient.post(url, json);
 
             if (output.status() == 201) {
-                return JSON.fromJson(output.json(), BatchResult[].class);
+                return JSON.fromJson(output.json(), BulkResult[].class);
             } else {
                 final Failure fail = JSON.fromJson(output.json(), Failure.class);
 

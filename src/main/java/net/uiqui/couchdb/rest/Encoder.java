@@ -20,11 +20,12 @@ package net.uiqui.couchdb.rest;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 
 public class Encoder {
     public static String encode(final String key) {
         try {
-            return URLEncoder.encode(key, "UTF-8");
+            return URLEncoder.encode(key, StandardCharsets.UTF_8.toString());
         } catch (UnsupportedEncodingException e) {
             return null;
         }

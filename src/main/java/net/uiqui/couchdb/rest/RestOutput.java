@@ -21,9 +21,8 @@ package net.uiqui.couchdb.rest;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
-
-import com.squareup.okhttp.Headers;
-import com.squareup.okhttp.Response;
+import okhttp3.Headers;
+import okhttp3.Response;
 
 public class RestOutput {
     private final int status;
@@ -68,7 +67,7 @@ public class RestOutput {
 
     public static RestOutput parse(final Response response) throws IOException {
         final int status = response.code();
-        final String json = response.body().string();
+        final String json = response.body() != null ? response.body().string() : null;
         final Headers headers = response.headers();
 
         return new RestOutput(status, headers, json);

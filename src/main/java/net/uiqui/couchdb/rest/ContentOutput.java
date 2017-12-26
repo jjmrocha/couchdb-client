@@ -19,8 +19,7 @@
 package net.uiqui.couchdb.rest;
 
 import java.io.IOException;
-
-import com.squareup.okhttp.Response;
+import okhttp3.Response;
 
 public class ContentOutput {
     private final int status;
