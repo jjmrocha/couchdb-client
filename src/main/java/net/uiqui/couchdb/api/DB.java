@@ -21,13 +21,28 @@ package net.uiqui.couchdb.api;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Queue;
+import java.util.Spliterator;
+import java.util.Spliterators;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.Future;
+import java.util.function.Consumer;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import net.uiqui.couchdb.api.error.CouchException;
+import net.uiqui.couchdb.api.error.DocNotFoundException;
+import net.uiqui.couchdb.impl.CouchDBConstants;
+import net.uiqui.couchdb.impl.StreamSource;
 import net.uiqui.couchdb.protocol.CouchAPI;
 import net.uiqui.couchdb.protocol.DeleteDoc;
 import net.uiqui.couchdb.protocol.impl.QueryResult;
 
 public class DB {
+
     private final CouchAPI api;
     private final String dbName;
 
@@ -40,16 +55,17 @@ public class DB {
         return api.contains(dbName, docId);
     }
 
-    public Collection<String> docIds() throws CouchException {
-        return docIds(null, null, 0, 0);
+    public Stream<String> docIds() {
+        return docIds(null, null);
     }
 
-    public Collection<String> docIds(final String startKey, final String endKey) throws CouchException {
-        return docIds(startKey, endKey, 0, 0);
-    }
-
-    public Collection<String> docIds(final long skip, final long limit) throws CouchException {
-        return docIds(null, null, skip, limit);
+    public Stream<String> docIds(final String startKey, final String endKey) {
+        return StreamSupport.stream(new StreamSource<String>() {
+            @Override
+            public Collection<String> fetchBatch(final long offset, final int size) throws Exception {
+                return docIds(startKey, endKey, offset, size);
+            }
+        }, false);
     }
 
     public Collection<String> docIds(final String startKey, final String endKey, final long skip, final long limit) throws CouchException {
@@ -81,6 +97,8 @@ public class DB {
 
         if (doc != null) {
             remove(doc);
+        } else {
+            throw new DocNotFoundException(docId);
         }
     }
 
@@ -93,42 +111,62 @@ public class DB {
         return queryResult.resultAsListOf(type);
     }
 
-    public BulkResult[] bulkSave(final Collection<Document> docs) throws CouchException {
+    public Future<BulkResult[]> bulkSave(final Collection<Document> docs) {
         final Document[] docArray = docs.toArray(new Document[docs.size()]);
         return bulkSave(docArray);
     }
-    
-    public BulkResult[] bulkSave(final Document[] docs) throws CouchException {
-        final BulkResult[] results = bulk(docs);
-        final List<BulkResult> output = new ArrayList<>();
 
-        for (int i = 0; i < docs.length; i++) {
-            final BulkResult result = results[i];
+    public Future<BulkResult[]> bulkSave(final Document[] docs) {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                final BulkResult[] results = bulk(docs);
+                final List<BulkResult> output = new ArrayList<>();
 
-            if (result.isSuccess()) {
-                final Document input = docs[i];
+                for (int i = 0; i < docs.length; i++) {
+                    final BulkResult result = results[i];
 
-                if (input.getId() != null) {
-                    input.setId(result.id());
+                    if (result.isSuccess()) {
+                        final Document input = docs[i];
+
+                        if (input.getId() != null) {
+                            input.setId(result.id());
+                        }
+
+                        input.setRevision(result.rev());
+                    } else {
+                        output.add(result);
+                    }
                 }
-                
-                input.setRevision(result.rev());
-            } else {
-                output.add(result);
+
+                return output.toArray(new BulkResult[output.size()]);
+            } catch (final CouchException ex) {
+                throw new CompletionException(ex);
             }
-        }
-
-        return output.toArray(new BulkResult[output.size()]);
+        });
     }
 
-    public BulkResult[] bulkRemove(final Document[] docs) throws CouchException {
-        final DeleteDoc[] deletDocs = DeleteDoc.from(docs);
-        return bulkRemove(deletDocs);
+    public Future<BulkResult[]> bulkRemove(final Document[] docs) {
+        return CompletableFuture.supplyAsync(() -> {
+            final DeleteDoc[] deletDocs = DeleteDoc.from(docs);
+
+            try {
+                return bulkRemove(deletDocs);
+            } catch (final CouchException ex) {
+                throw new CompletionException(ex);
+            }
+        });
     }
 
-    public BulkResult[] bulkRemove(final Collection<Document> docs) throws CouchException {
-        final DeleteDoc[] deletDocs = DeleteDoc.from(docs);
-        return bulkRemove(deletDocs);
+    public Future<BulkResult[]> bulkRemove(final Collection<Document> docs) {
+        return CompletableFuture.supplyAsync(() -> {
+            final DeleteDoc[] deletDocs = DeleteDoc.from(docs);
+
+            try {
+                return bulkRemove(deletDocs);
+            } catch (final CouchException ex) {
+                throw new CompletionException(ex);
+            }
+        });
     }
 
     private BulkResult[] bulkRemove(final DeleteDoc[] docs) throws CouchException {
@@ -142,7 +180,7 @@ public class DB {
         }
 
         return output.toArray(new BulkResult[output.size()]);
-    }    
+    }
 
     private BulkResult[] bulk(final Document[] docs) throws CouchException {
         return api.bulk(dbName, docs);

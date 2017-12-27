@@ -89,7 +89,7 @@ public class CouchAPI {
 
     public Collection<String> docIds(final String dbName, final String startKey, final String endKey, final long skip, final long limit) throws CouchException {
         final Node node = cluster.currentNode();
-        URL url;
+        final URL url;
 
         if (startKey == null && endKey == null && skip == 0 && limit == 0) {
             url = GET_ALL_DOCS_NO_QUERY.build(node.server(), node.port(), dbName);
@@ -108,7 +108,7 @@ public class CouchAPI {
                     queryBuilder.append("&");
                 }
 
-                queryBuilder.append("startkey=");
+                queryBuilder.append("startkey_docid=");
                 queryBuilder.append(Encoder.encode(startKey));
             }
 
@@ -117,7 +117,7 @@ public class CouchAPI {
                     queryBuilder.append("&");
                 }
 
-                queryBuilder.append("endkey=");
+                queryBuilder.append("endkey_docid=");
                 queryBuilder.append(Encoder.encode(endKey));
             }
 
@@ -254,7 +254,7 @@ public class CouchAPI {
 
     private ViewResult viewPOST(final String dbName, final String designDoc, final String viewName, final String body, final String query) throws CouchException {
         final Node node = cluster.currentNode();
-        URL url;
+        final URL url;
 
         if (query == null) {
             url = POST_VIEW_NO_QUERY.build(node.server(), node.port(), dbName, designDoc, viewName);
@@ -279,7 +279,7 @@ public class CouchAPI {
 
     private ViewResult viewGET(final String dbName, final String designDoc, final String viewName, final String query) throws CouchException {
         final Node node = cluster.currentNode();
-        URL url;
+        final URL url;
 
         if (query == null) {
             url = GET_VIEW_NO_QUERY.build(node.server(), node.port(), dbName, designDoc, viewName);

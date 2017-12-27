@@ -20,6 +20,7 @@ package net.uiqui.couchdb.impl;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class MultiNodeCluster extends AbstractCluster {
     private final Ring ringOfNodes;
@@ -43,6 +44,7 @@ public class MultiNodeCluster extends AbstractCluster {
     }
 
     private static class Ring {
+        private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
         private RingNode current;
 
         private Ring(final List<Node> nodes) {
@@ -57,22 +59,34 @@ public class MultiNodeCluster extends AbstractCluster {
             }
         }
 
-        public synchronized Node current() {
-            if (current == null) {
-                return null;
-            }
+        public Node current() {
+            lock.readLock().lock();
 
-            return current.node;
+            try {
+                if (current == null) {
+                    return null;
+                }
+
+                return current.node;
+            } finally {
+                lock.readLock().unlock();
+            }
         }
 
-        public synchronized Node next() {
-            if (current == null) {
-                return null;
+        public Node next() {
+            lock.writeLock().lock();
+
+            try {
+                if (current == null) {
+                    return null;
+                }
+
+                current = current.next;
+
+                return current.node;
+            } finally {
+                lock.writeLock().unlock();
             }
-
-            current = current.next;
-
-            return current.node;
         }
 
         private static class RingNode {

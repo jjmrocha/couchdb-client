@@ -20,7 +20,7 @@ package net.uiqui.couchdb.impl;
 
 public class Node {
     private final String server;
-    private int port = 5984;
+    private int port = CouchDBConstants.COUCHDB_PORT;
 
     public Node(final String server) {
         this.server = server;

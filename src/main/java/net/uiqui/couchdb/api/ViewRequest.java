@@ -123,7 +123,9 @@ public class ViewRequest {
     }
 
     public static ViewRequest build(final String designDoc, final String viewName, final Object... keys) {
-        return builder(designDoc, viewName).keys(keys).build();
+        return builder(designDoc, viewName)
+                .keys(keys)
+                .build();
     }
 
     public static class Builder {
