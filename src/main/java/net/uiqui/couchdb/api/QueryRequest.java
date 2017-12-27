@@ -27,8 +27,8 @@ import com.google.gson.annotations.SerializedName;
 
 public class QueryRequest {
     private final Selector selector;
-    private final Long limit;
-    private final Long skip;
+    private Long limit;
+    private Long skip;
     private final Sort[] sort;
     private final String[] fields;
     @SerializedName("use_index")
@@ -65,6 +65,11 @@ public class QueryRequest {
 
     public Object useIndex() {
         return useIndex;
+    }
+    
+    public void batch(final long skip, final long limit) {
+        this.skip = skip;
+        this.limit = limit;
     }
 
     @Override

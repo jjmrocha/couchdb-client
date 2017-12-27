@@ -19,23 +19,17 @@ a * CouchDB-client
 package net.uiqui.couchdb.api;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import java.util.Queue;
-import java.util.Spliterator;
-import java.util.Spliterators;
-import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
-import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.Future;
-import java.util.function.Consumer;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import net.uiqui.couchdb.api.error.CouchException;
 import net.uiqui.couchdb.api.error.DocNotFoundException;
-import net.uiqui.couchdb.impl.CouchDBConstants;
 import net.uiqui.couchdb.impl.StreamSource;
 import net.uiqui.couchdb.protocol.CouchAPI;
 import net.uiqui.couchdb.protocol.DeleteDoc;
@@ -62,7 +56,7 @@ public class DB {
     public Stream<String> docIds(final String startKey, final String endKey) {
         return StreamSupport.stream(new StreamSource<String>() {
             @Override
-            public Collection<String> fetchBatch(final long offset, final int size) throws Exception {
+            public Collection<String> fetchBatch(final long offset, final long size) throws Exception {
                 return docIds(startKey, endKey, offset, size);
             }
         }, false);
@@ -106,9 +100,50 @@ public class DB {
         return api.execute(dbName, request);
     }
 
+    public Future<ViewResult> async(final ViewRequest request) {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                return execute(request);
+            } catch (final CouchException ex) {
+                throw new CompletionException(ex);
+            }
+        });
+    }
+
+    public Stream<ViewResult.Row> stream(final ViewRequest request) {
+        return StreamSupport.stream(new StreamSource<ViewResult.Row>() {
+            @Override
+            public Collection<ViewResult.Row> fetchBatch(final long offset, final long size) throws Exception {
+                request.batch(offset, size);
+                final ViewResult result = execute(request);
+                return Arrays.asList(result.rows());
+            }
+        }, false);
+    }
+
     public <T> Collection<T> execute(final QueryRequest request, final Class<T> type) throws CouchException {
         final QueryResult queryResult = api.execute(dbName, request);
         return queryResult.resultAsListOf(type);
+    }
+
+    public <T> Future<Collection<T>> async(final QueryRequest request, final Class<T> type) {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                return execute(request, type);
+            } catch (final CouchException ex) {
+                throw new CompletionException(ex);
+            }
+        });
+    }
+
+    public <T> Stream<T> stream(final QueryRequest request, final Class<T> type) {
+        return StreamSupport.stream(new StreamSource<T>() {
+            @Override
+            public Collection<T> fetchBatch(final long offset, final long size) throws Exception {
+                request.batch(offset, size);
+                return execute(request, type);
+            }
+        }, false);
     }
 
     public Future<BulkResult[]> bulkSave(final Collection<Document> docs) {

@@ -102,6 +102,11 @@ public class ViewRequest {
     public Object[] keys() {
         return keys;
     }
+    
+    public void batch(final long skip, final long limit) {
+        this.params.put("skip", skip);
+        this.params.put("limit", limit);
+    }
 
     @Override
     public String toString() {

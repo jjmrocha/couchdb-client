@@ -78,5 +78,5 @@ public abstract class StreamSource<T> extends Spliterators.AbstractSpliterator<T
         }
     }
 
-    public abstract Collection<T> fetchBatch(final long offset, final int size) throws Exception;
+    public abstract Collection<T> fetchBatch(final long offset, final long size) throws Exception;
 }

@@ -19,11 +19,18 @@
 package net.uiqui.couchdb.api;
 
 import java.util.Collection;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
+import java.util.concurrent.Future;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import net.uiqui.couchdb.api.error.CouchException;
+import net.uiqui.couchdb.impl.StreamSource;
 import net.uiqui.couchdb.protocol.CouchAPI;
 
 public class TypedDB<T extends Document> extends DB {
+
     private final Class<T> type;
 
     public TypedDB(final CouchAPI api, final String db, final Class<T> type) {
@@ -37,5 +44,25 @@ public class TypedDB<T extends Document> extends DB {
 
     public Collection<T> execute(final QueryRequest request) throws CouchException {
         return super.execute(request, type);
+    }
+
+    public Future<Collection<T>> async(final QueryRequest request) {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                return execute(request);
+            } catch (final CouchException ex) {
+                throw new CompletionException(ex);
+            }
+        });
+    }
+
+    public Stream<T> stream(final QueryRequest request) {
+        return StreamSupport.stream(new StreamSource<T>() {
+            @Override
+            public Collection<T> fetchBatch(final long offset, final long size) throws Exception {
+                request.batch(offset, size);
+                return execute(request);
+            }
+        }, false);
     }
 }
