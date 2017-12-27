@@ -18,9 +18,11 @@
  */
 package net.uiqui.couchdb.impl;
 
+import net.uiqui.couchdb.util.CouchDBConstants;
+
 public class Node {
     private final String server;
-    private int port = CouchDBConstants.COUCHDB_PORT;
+    private int port = CouchDBConstants.COUCHDB_DEFAULT_PORT;
 
     public Node(final String server) {
         this.server = server;

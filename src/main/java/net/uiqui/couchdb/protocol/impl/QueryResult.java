@@ -43,7 +43,7 @@ public class QueryResult {
     }
 
     public <T> List<T> resultAsListOf(final Class<T> type) {
-        final List<T> output = new ArrayList<T>();
+        final List<T> output = new ArrayList<>();
 
         for (final JsonElement json : results) {
             output.add(JSON.fromJson(json, type));

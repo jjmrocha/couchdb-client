@@ -16,11 +16,11 @@ a * CouchDB-client
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package net.uiqui.couchdb.impl;
+package net.uiqui.couchdb.util;
 
 public class CouchDBConstants {
-    public static final int COUCHDB_PORT = 5984;
+    public static final int COUCHDB_DEFAULT_PORT = 5984;
     
-    public static final int STREAM_POOL = 100;
-    public static final int STREAM_THRESHOLD = 50;
+    public static final int STREAM_REQUEST_SIZE = 400;
+    public static final int STREAM_REQUEST_THRESHOLD = 100;
 }

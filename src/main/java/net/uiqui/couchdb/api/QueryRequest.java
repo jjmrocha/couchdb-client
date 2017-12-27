@@ -67,7 +67,7 @@ public class QueryRequest {
         return useIndex;
     }
     
-    public void batch(final long skip, final long limit) {
+    protected void batch(final long skip, final long limit) {
         this.skip = skip;
         this.limit = limit;
     }

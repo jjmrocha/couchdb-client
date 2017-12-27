@@ -103,7 +103,7 @@ public class ViewRequest {
         return keys;
     }
     
-    public void batch(final long skip, final long limit) {
+    protected void batch(final long skip, final long limit) {
         this.params.put("skip", skip);
         this.params.put("limit", limit);
     }

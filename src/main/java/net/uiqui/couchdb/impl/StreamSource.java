@@ -18,6 +18,7 @@ a * CouchDB-client
  */
 package net.uiqui.couchdb.impl;
 
+import net.uiqui.couchdb.util.CouchDBConstants;
 import java.util.Collection;
 import java.util.Queue;
 import java.util.Spliterator;
@@ -29,7 +30,7 @@ import java.util.function.Consumer;
 public abstract class StreamSource<T> extends Spliterators.AbstractSpliterator<T> {
     private boolean done = false;
     private long offset = 0;
-    private final Queue<T> data = new ArrayBlockingQueue<>(CouchDBConstants.STREAM_POOL + CouchDBConstants.STREAM_THRESHOLD);
+    private final Queue<T> data = new ArrayBlockingQueue<>(CouchDBConstants.STREAM_REQUEST_SIZE + CouchDBConstants.STREAM_REQUEST_THRESHOLD);
 
     public StreamSource() {
         super(Long.MAX_VALUE, Spliterator.ORDERED);
@@ -50,7 +51,7 @@ public abstract class StreamSource<T> extends Spliterators.AbstractSpliterator<T
     private T next() {
         if (!done && data.isEmpty()) {
             fetch();
-        } else if (!done && data.size() < CouchDBConstants.STREAM_THRESHOLD) {
+        } else if (!done && data.size() < CouchDBConstants.STREAM_REQUEST_THRESHOLD) {
             ForkJoinPool.commonPool()
                     .execute(() -> fetch());
         }
@@ -59,12 +60,12 @@ public abstract class StreamSource<T> extends Spliterators.AbstractSpliterator<T
     }
 
     private synchronized void fetch() {
-        if (!done && data.size() < CouchDBConstants.STREAM_THRESHOLD) {
+        if (!done && data.size() < CouchDBConstants.STREAM_REQUEST_THRESHOLD) {
             try {
-                final Collection<T> values = fetchBatch(offset, CouchDBConstants.STREAM_POOL);
+                final Collection<T> values = fetchBatch(offset, CouchDBConstants.STREAM_REQUEST_SIZE);
                 final int size = values == null ? 0 : values.size();
 
-                if (size < CouchDBConstants.STREAM_POOL) {
+                if (size < CouchDBConstants.STREAM_REQUEST_SIZE) {
                     done = true;
                 }
 
