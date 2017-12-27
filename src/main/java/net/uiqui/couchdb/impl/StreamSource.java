@@ -25,11 +25,14 @@ import java.util.Spliterator;
 import java.util.Spliterators;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
 public abstract class StreamSource<T> extends Spliterators.AbstractSpliterator<T> {
+
     private boolean done = false;
     private long offset = 0;
+    private AtomicBoolean scheduledFetch = new AtomicBoolean(false);
     private final Queue<T> data = new ArrayBlockingQueue<>(CouchDBConstants.STREAM_REQUEST_SIZE + CouchDBConstants.STREAM_REQUEST_THRESHOLD);
 
     public StreamSource() {
@@ -52,8 +55,15 @@ public abstract class StreamSource<T> extends Spliterators.AbstractSpliterator<T
         if (!done && data.isEmpty()) {
             fetch();
         } else if (!done && data.size() < CouchDBConstants.STREAM_REQUEST_THRESHOLD) {
-            ForkJoinPool.commonPool()
-                    .execute(() -> fetch());
+            if (scheduledFetch.compareAndSet(false, true) && !done) {
+                ForkJoinPool.commonPool().execute(() -> {
+                    try {
+                        fetch();
+                    } finally {
+                        scheduledFetch.set(false);
+                    }
+                });
+            }
         }
 
         return data.poll();
