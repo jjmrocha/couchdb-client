@@ -24,7 +24,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
-import java.util.concurrent.Future;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -61,7 +60,7 @@ public class DB {
             }
         }, false);
     }
-
+    
     public Collection<String> docIds(final String startKey, final String endKey, final long skip, final long limit) throws CouchException {
         return api.docIds(dbName, startKey, endKey, skip, limit);
     }
@@ -100,7 +99,7 @@ public class DB {
         return api.execute(dbName, request);
     }
 
-    public Future<ViewResult> async(final ViewRequest request) {
+    public CompletableFuture<ViewResult> async(final ViewRequest request) {
         return CompletableFuture.supplyAsync(() -> {
             try {
                 return execute(request);
@@ -126,7 +125,7 @@ public class DB {
         return queryResult.resultAsListOf(type);
     }
 
-    public <T> Future<Collection<T>> async(final QueryRequest request, final Class<T> type) {
+    public <T> CompletableFuture<Collection<T>> async(final QueryRequest request, final Class<T> type) {
         return CompletableFuture.supplyAsync(() -> {
             try {
                 return execute(request, type);
@@ -146,12 +145,12 @@ public class DB {
         }, false);
     }
 
-    public Future<BulkResult[]> bulkSave(final Collection<Document> docs) {
+    public CompletableFuture<BulkResult[]> bulkSave(final Collection<Document> docs) {
         final Document[] docArray = docs.toArray(new Document[docs.size()]);
         return bulkSave(docArray);
     }
 
-    public Future<BulkResult[]> bulkSave(final Document[] docs) {
+    public CompletableFuture<BulkResult[]> bulkSave(final Document[] docs) {
         return CompletableFuture.supplyAsync(() -> {
             try {
                 final BulkResult[] results = bulk(docs);
@@ -180,7 +179,7 @@ public class DB {
         });
     }
 
-    public Future<BulkResult[]> bulkRemove(final Document[] docs) {
+    public CompletableFuture<BulkResult[]> bulkRemove(final Document[] docs) {
         return CompletableFuture.supplyAsync(() -> {
             final DeleteDoc[] deletDocs = DeleteDoc.from(docs);
 
@@ -192,7 +191,7 @@ public class DB {
         });
     }
 
-    public Future<BulkResult[]> bulkRemove(final Collection<Document> docs) {
+    public CompletableFuture<BulkResult[]> bulkRemove(final Collection<Document> docs) {
         return CompletableFuture.supplyAsync(() -> {
             final DeleteDoc[] deletDocs = DeleteDoc.from(docs);
 

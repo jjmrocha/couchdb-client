@@ -1,5 +1,5 @@
 /*
-a * CouchDB-client
+ * CouchDB-client
  * ==============
  * 
  * Copyright (C) 2016-17 Joaquim Rocha <jrocha@gmailbox.org>
@@ -32,7 +32,7 @@ public abstract class StreamSource<T> extends Spliterators.AbstractSpliterator<T
 
     private boolean done = false;
     private long offset = 0;
-    private AtomicBoolean scheduledFetch = new AtomicBoolean(false);
+    private final AtomicBoolean scheduledFetch = new AtomicBoolean(false);
     private final Queue<T> data = new ArrayBlockingQueue<>(CouchDBConstants.STREAM_REQUEST_SIZE + CouchDBConstants.STREAM_REQUEST_THRESHOLD);
 
     public StreamSource() {

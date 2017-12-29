@@ -21,7 +21,6 @@ package net.uiqui.couchdb.api;
 import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
-import java.util.concurrent.Future;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -46,7 +45,7 @@ public class TypedDB<T extends Document> extends DB {
         return super.execute(request, type);
     }
 
-    public Future<Collection<T>> async(final QueryRequest request) {
+    public CompletableFuture<Collection<T>> async(final QueryRequest request) {
         return CompletableFuture.supplyAsync(() -> {
             try {
                 return execute(request);
