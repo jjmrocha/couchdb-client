@@ -18,10 +18,10 @@
  */
 package net.uiqui.couchdb.api;
 
-import com.google.gson.annotations.SerializedName;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class BulkResult {
-    @SerializedName("ok")
+    @JsonProperty("ok")
     private Boolean success;
     private String id;
     private String rev;

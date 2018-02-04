@@ -18,12 +18,12 @@
  */
 package net.uiqui.couchdb.api;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Arrays;
 
 import net.uiqui.couchdb.api.query.Selector;
 import net.uiqui.couchdb.api.query.Sort;
 
-import com.google.gson.annotations.SerializedName;
 
 public class QueryRequest {
     private final Selector selector;
@@ -31,7 +31,7 @@ public class QueryRequest {
     private Long skip;
     private final Sort[] sort;
     private final String[] fields;
-    @SerializedName("use_index")
+    @JsonProperty("use_index")
     private final Object useIndex;
 
     private QueryRequest(final Builder builder) {

@@ -18,16 +18,15 @@
  */
 package net.uiqui.couchdb.protocol;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Collection;
 
 import net.uiqui.couchdb.api.Document;
 
-import com.google.gson.annotations.SerializedName;
-
 public class DeleteDoc extends Document {
     private static final long serialVersionUID = 6665424123226778421L;
 
-    @SerializedName("_deleted")
+    @JsonProperty("_deleted")
     private final boolean deleted = true;
 
     public DeleteDoc(final String id, final String revision) {

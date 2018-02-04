@@ -168,9 +168,9 @@ public class CouchAPI {
     public void add(final String dbName, final Document doc) throws CouchException {
         final Node node = cluster.currentNode();
         final URL url = POST_DOC.build(node.server(), node.port(), dbName);
-        final String json = JSON.toJson(doc);
 
         try {
+            final String json = JSON.toJson(doc);
             final RestOutput output = restClient.post(url, json);
 
             if (output.status() == 201 || output.status() == 202) {
@@ -191,9 +191,9 @@ public class CouchAPI {
         final Node node = cluster.currentNode();
         final String id = Encoder.encode(doc.getId());
         final URL url = PUT_DOC.build(node.server(), node.port(), dbName, id);
-        final String json = JSON.toJson(doc);
 
         try {
+            final String json = JSON.toJson(doc);
             final RestOutput output = restClient.put(url, json);
 
             if (output.status() == 201 || output.status() == 202) {
@@ -305,9 +305,9 @@ public class CouchAPI {
     public QueryResult execute(final String dbName, final QueryRequest request) throws CouchException {
         final Node node = cluster.currentNode();
         final URL url = POST_FIND.build(node.server(), node.port(), dbName);
-        final String json = JSON.toJson(request);
 
         try {
+            final String json = JSON.toJson(request);        
             final RestOutput output = restClient.post(url, json);
 
             if (output.status() == 200) {
@@ -325,9 +325,9 @@ public class CouchAPI {
     public BulkResult[] bulk(final String dbName, final Document[] docs) throws CouchException {
         final Node node = cluster.currentNode();
         final URL url = POST_BULK.build(node.server(), node.port(), dbName);
-        final String json = JSON.toJsonObject("docs", docs);
-
+        
         try {
+            final String json = JSON.toJsonObject("docs", docs);
             final RestOutput output = restClient.post(url, json);
 
             if (output.status() == 201) {

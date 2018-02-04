@@ -18,16 +18,16 @@
  */
 package net.uiqui.couchdb.api;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.io.Serializable;
 
-import com.google.gson.annotations.SerializedName;
 
 public class Document implements Comparable<Document>, Serializable {
     private static final long serialVersionUID = -8352773631948437124L;
 
-    @SerializedName("_id")
+    @JsonProperty("_id")
     private String id;
-    @SerializedName("_rev")
+    @JsonProperty("_rev")
     private String revision;
 
     public Document() {
