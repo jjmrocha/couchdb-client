@@ -2,7 +2,7 @@
  * CouchDB-client
  * ==============
  * 
- * Copyright (C) 2016-17 Joaquim Rocha <jrocha@gmailbox.org>
+ * Copyright (C) 2016-18 Joaquim Rocha <jrocha@gmailbox.org>
  * 
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -18,16 +18,16 @@
  */
 package net.uiqui.couchdb.api;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.gson.annotations.SerializedName;
 import java.io.Serializable;
 
 
 public class Document implements Comparable<Document>, Serializable {
     private static final long serialVersionUID = -8352773631948437124L;
 
-    @JsonProperty("_id")
+    @SerializedName("_id")
     private String id;
-    @JsonProperty("_rev")
+    @SerializedName("_rev")
     private String revision;
 
     public Document() {

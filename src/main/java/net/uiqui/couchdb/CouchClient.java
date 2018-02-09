@@ -2,7 +2,7 @@
  * CouchDB-client
  * ==============
  * 
- * Copyright (C) 2016-17 Joaquim Rocha <jrocha@gmailbox.org>
+ * Copyright (C) 2016-18 Joaquim Rocha <jrocha@gmailbox.org>
  * 
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -45,24 +45,20 @@ public class CouchClient {
         this.api = new CouchAPI(cluster);
     }
 
-    public static Builder builder() {
-        return new Builder();
-    }
-
     public static CouchClient build(final String server) {
-        return builder()
+        return new Builder()
                 .node(server)
                 .build();
     }
 
     public static CouchClient build(final String server, final int port) {
-        return builder()
+        return new Builder()
                 .node(server, port)
                 .build();
     }
 
     public static CouchClient build(final String server, final int port, final String user, final String password) {
-        return builder()
+        return new Builder()
                 .node(server, port)
                 .user(user)
                 .password(password)

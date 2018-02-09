@@ -18,13 +18,13 @@
  */
 package net.uiqui.couchdb.api;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.gson.annotations.SerializedName;
 import java.util.Arrays;
 
 public class ViewResult {
     private Long offset;
     private Row[] rows;
-    @JsonProperty("total_rows")
+    @SerializedName("total_rows")
     private Long totalRows;
 
     public Long offset() {

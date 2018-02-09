@@ -2,7 +2,7 @@
  * CouchDB-client
  * ==============
  * 
- * Copyright (C) 2016-17 Joaquim Rocha <jrocha@gmailbox.org>
+ * Copyright (C) 2016-18 Joaquim Rocha <jrocha@gmailbox.org>
  * 
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -18,10 +18,10 @@
  */
 package net.uiqui.couchdb.api;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.gson.annotations.SerializedName;
 
 public class BulkResult {
-    @JsonProperty("ok")
+    @SerializedName("ok")
     private Boolean success;
     private String id;
     private String rev;

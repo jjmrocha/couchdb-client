@@ -2,7 +2,7 @@
  * CouchDB-client
  * ==============
  * 
- * Copyright (C) 2016-17 Joaquim Rocha <jrocha@gmailbox.org>
+ * Copyright (C) 2016-18 Joaquim Rocha <jrocha@gmailbox.org>
  * 
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -123,12 +123,8 @@ public class ViewRequest {
         return builder.toString();
     }
 
-    public static Builder builder(final String designDoc, final String viewName) {
-        return new Builder(designDoc, viewName);
-    }
-
     public static ViewRequest build(final String designDoc, final String viewName, final Object... keys) {
-        return builder(designDoc, viewName)
+        return new Builder(designDoc, viewName)
                 .keys(keys)
                 .build();
     }
@@ -150,7 +146,7 @@ public class ViewRequest {
         private Integer groupLevel;
         private final List<Object> keys = new ArrayList<>();
 
-        private Builder(final String designDoc, final String viewName) {
+        public Builder(final String designDoc, final String viewName) {
             this.designDoc = designDoc;
             this.viewName = viewName;
         }
@@ -215,7 +211,7 @@ public class ViewRequest {
             return this;
         }
 
-        public Builder addKey(final Object key) {
+        public Builder key(final Object key) {
             keys.add(key);
             return this;
         }

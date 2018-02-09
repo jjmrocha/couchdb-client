@@ -2,7 +2,7 @@
  * CouchDB-client
  * ==============
  * 
- * Copyright (C) 2016-17 Joaquim Rocha <jrocha@gmailbox.org>
+ * Copyright (C) 2016-18 Joaquim Rocha <jrocha@gmailbox.org>
  * 
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@
  */
 package net.uiqui.couchdb.protocol;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.gson.annotations.SerializedName;
 import java.util.Collection;
 
 import net.uiqui.couchdb.api.Document;
@@ -26,7 +26,7 @@ import net.uiqui.couchdb.api.Document;
 public class DeleteDoc extends Document {
     private static final long serialVersionUID = 6665424123226778421L;
 
-    @JsonProperty("_deleted")
+    @SerializedName("_deleted")
     private final boolean deleted = true;
 
     public DeleteDoc(final String id, final String revision) {

@@ -36,7 +36,7 @@ Single node cluster:
 	 
 Multi node cluster:
  ```java
-	CouchClient couchDB = CouchClient.builder()
+	CouchClient couchDB = new CouchClient.Builder()
 			.node("node1", 5984)
 			.node("node2") // Use default port
 			.user("admin")
@@ -209,7 +209,7 @@ To execute a view we must create a ViewRequest:
  ```java
  
 	// Number of user by role
-	ViewRequest request1 = ViewRequest.builder("test", "roles")
+	ViewRequest request1 = new ViewRequest.Builder("test", "roles")
 			.group(true)
 			.build();
 	
@@ -230,7 +230,7 @@ To execute a view we must create a ViewRequest:
 	 */
 	
 	// List of users with role "user"
-	ViewRequest request2 = ViewRequest.builder("test", "roles")
+	ViewRequest request2 = new ViewRequest.Builder("test", "roles")
 			.reduce(false)
 			.keys("user")
 			.build();

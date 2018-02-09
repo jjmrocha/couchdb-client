@@ -2,7 +2,7 @@
 a * CouchDB-client
  * ==============
  * 
- * Copyright (C) 2016-17 Joaquim Rocha <jrocha@gmailbox.org>
+ * Copyright (C) 2016-18 Joaquim Rocha <jrocha@gmailbox.org>
  * 
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -70,7 +70,7 @@ public class DB {
     }
 
     public void save(final Document doc) throws CouchException {
-        if (doc.getId() == null) {
+        if (doc.getId() == null || doc.getRevision() == null) {
             api.add(dbName, doc);
         } else {
             api.update(dbName, doc);

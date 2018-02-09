@@ -2,7 +2,7 @@
  * CouchDB-client
  * ==============
  * 
- * Copyright (C) 2016-17 Joaquim Rocha <jrocha@gmailbox.org>
+ * Copyright (C) 2016-18 Joaquim Rocha <jrocha@gmailbox.org>
  * 
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@
  */
 package net.uiqui.couchdb.api;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.gson.annotations.SerializedName;
 import java.util.Arrays;
 
 import net.uiqui.couchdb.api.query.Selector;
@@ -31,7 +31,7 @@ public class QueryRequest {
     private Long skip;
     private final Sort[] sort;
     private final String[] fields;
-    @JsonProperty("use_index")
+    @SerializedName("use_index")
     private final Object useIndex;
 
     private QueryRequest(final Builder builder) {
@@ -89,10 +89,6 @@ public class QueryRequest {
         builder.append(useIndex);
         builder.append(")");
         return builder.toString();
-    }
-
-    public static Builder builder() {
-        return new Builder();
     }
 
     public static class Builder {
