@@ -2,7 +2,7 @@
  * CouchDB-client
  * ==============
  * 
- * Copyright (C) 2016-17 Joaquim Rocha <jrocha@gmailbox.org>
+ * Copyright (C) 2016-18 Joaquim Rocha <jrocha@gmailbox.org>
  * 
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -20,18 +20,15 @@ package net.uiqui.couchdb.rest;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class URLBuilder {
-    private final List<String> parts = new ArrayList<>();
+    private final List<String> parts;
 
     public URLBuilder(final String url) {
         final String[] frags = url.split("%s");
-
-        for (final String s : frags) {
-            parts.add(s);
-        }
+        parts = Arrays.asList(frags);
     }
 
     public URL build(final Object... args) {

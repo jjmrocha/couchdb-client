@@ -2,7 +2,7 @@
  * CouchDB-client
  * ==============
  * 
- * Copyright (C) 2016-17 Joaquim Rocha <jrocha@gmailbox.org>
+ * Copyright (C) 2016-18 Joaquim Rocha <jrocha@gmailbox.org>
  * 
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.uiqui.couchdb.protocol.impl.IDList;
+import net.uiqui.couchdb.protocol.impl.ListOf;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonDeserializationContext;
@@ -31,24 +31,24 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 
-public class IDListDeserializer implements JsonDeserializer<IDList> {
+public class IDListDeserializer implements JsonDeserializer<ListOf> {
     @Override
-    public IDList deserialize(final JsonElement json, final Type typeOfT, final JsonDeserializationContext context) throws JsonParseException {
+    public ListOf deserialize(final JsonElement json, final Type typeOfT, final JsonDeserializationContext context) throws JsonParseException {
         final JsonObject jsonObject = json.getAsJsonObject();
         final JsonArray jsonArray = jsonObject.getAsJsonArray("rows");
-        final List<String> results = new ArrayList<>();
+        final List<JsonElement> elements = new ArrayList<>();
 
         if (jsonArray != null) {
-            for (JsonElement jsonElement : jsonArray) {
+            for (final JsonElement jsonElement : jsonArray) {
                 final JsonObject row = jsonElement.getAsJsonObject();
                 final JsonElement id = row.get("id");
 
                 if (id != null) {
-                    results.add(id.getAsString());
-                }
+                    elements.add(id);
+}
             }
         }
 
-        return new IDList(results);
+        return new ListOf(elements);
     }
 }

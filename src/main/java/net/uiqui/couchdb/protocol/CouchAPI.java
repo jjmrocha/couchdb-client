@@ -2,7 +2,7 @@
  * CouchDB-client
  * ==============
  * 
- * Copyright (C) 2016-17 Joaquim Rocha <jrocha@gmailbox.org>
+ * Copyright (C) 2016-18 Joaquim Rocha <jrocha@gmailbox.org>
  * 
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -34,7 +34,7 @@ import net.uiqui.couchdb.impl.ExceptionFactory;
 import net.uiqui.couchdb.impl.Node;
 import net.uiqui.couchdb.json.JSON;
 import net.uiqui.couchdb.protocol.impl.Failure;
-import net.uiqui.couchdb.protocol.impl.IDList;
+import net.uiqui.couchdb.protocol.impl.ListOf;
 import net.uiqui.couchdb.protocol.impl.QueryResult;
 import net.uiqui.couchdb.protocol.impl.Success;
 import net.uiqui.couchdb.rest.Encoder;
@@ -130,8 +130,8 @@ public class CouchAPI {
             final RestOutput output = restClient.get(url);
 
             if (output.status() == 200) {
-                final IDList allIds = JSON.fromJson(output.json(), IDList.class);
-                return allIds.ids();
+                final ListOf allIds = JSON.fromJson(output.json(), ListOf.class);
+                return allIds.get(String.class);
             } else {
                 final Failure fail = JSON.fromJson(output.json(), Failure.class);
 
