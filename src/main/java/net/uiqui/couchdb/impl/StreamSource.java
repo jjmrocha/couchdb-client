@@ -27,6 +27,7 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
+import net.uiqui.couchdb.util.AsyncTask;
 
 public abstract class StreamSource<T> extends Spliterators.AbstractSpliterator<T> {
 
@@ -56,7 +57,7 @@ public abstract class StreamSource<T> extends Spliterators.AbstractSpliterator<T
             fetch();
         } else if (!done && data.size() < CouchDBConstants.STREAM_REQUEST_THRESHOLD) {
             if (scheduledFetch.compareAndSet(false, true) && !done) {
-                ForkJoinPool.commonPool().execute(() -> {
+                AsyncTask.execute(() -> {
                     try {
                         fetch();
                     } finally {

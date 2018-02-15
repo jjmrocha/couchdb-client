@@ -22,13 +22,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import net.uiqui.couchdb.api.error.CouchException;
 import net.uiqui.couchdb.api.error.DocNotFoundException;
+import net.uiqui.couchdb.impl.Promise;
 import net.uiqui.couchdb.impl.StreamSource;
 import net.uiqui.couchdb.protocol.CouchAPI;
 import net.uiqui.couchdb.protocol.DeleteDoc;
@@ -99,8 +99,8 @@ public class DB {
         return api.execute(dbName, request);
     }
 
-    public CompletableFuture<ViewResult> async(final ViewRequest request) {
-        return CompletableFuture.supplyAsync(() -> {
+    public Promise<ViewResult> async(final ViewRequest request) {
+        return Promise.newPromise(() -> {
             try {
                 return execute(request);
             } catch (final CouchException ex) {
@@ -125,8 +125,8 @@ public class DB {
         return queryResult.resultAsListOf(type);
     }
 
-    public <T> CompletableFuture<Collection<T>> async(final QueryRequest request, final Class<T> type) {
-        return CompletableFuture.supplyAsync(() -> {
+    public <T> Promise<Collection<T>> async(final QueryRequest request, final Class<T> type) {
+        return Promise.newPromise(() -> {
             try {
                 return execute(request, type);
             } catch (final CouchException ex) {
@@ -145,13 +145,13 @@ public class DB {
         }, false);
     }
 
-    public CompletableFuture<BulkResult[]> bulkSave(final Collection<Document> docs) {
+    public Promise<BulkResult[]> bulkSave(final Collection<Document> docs) {
         final Document[] docArray = docs.toArray(new Document[docs.size()]);
         return bulkSave(docArray);
     }
 
-    public CompletableFuture<BulkResult[]> bulkSave(final Document[] docs) {
-        return CompletableFuture.supplyAsync(() -> {
+    public Promise<BulkResult[]> bulkSave(final Document[] docs) {
+        return Promise.newPromise(() -> {
             try {
                 final BulkResult[] results = bulk(docs);
                 final List<BulkResult> output = new ArrayList<>();
@@ -179,8 +179,8 @@ public class DB {
         });
     }
 
-    public CompletableFuture<BulkResult[]> bulkRemove(final Document[] docs) {
-        return CompletableFuture.supplyAsync(() -> {
+    public Promise<BulkResult[]> bulkRemove(final Document[] docs) {
+        return Promise.newPromise(() -> {
             final DeleteDoc[] deletDocs = DeleteDoc.from(docs);
 
             try {
@@ -191,8 +191,8 @@ public class DB {
         });
     }
 
-    public CompletableFuture<BulkResult[]> bulkRemove(final Collection<Document> docs) {
-        return CompletableFuture.supplyAsync(() -> {
+    public Promise<BulkResult[]> bulkRemove(final Collection<Document> docs) {
+        return Promise.newPromise(() -> {
             final DeleteDoc[] deletDocs = DeleteDoc.from(docs);
 
             try {
