@@ -21,25 +21,29 @@ package net.uiqui.couchdb.api;
 import com.google.gson.annotations.SerializedName;
 
 public class TypedDocument extends Document {
-    @SerializedName("doc-type")
+    @SerializedName("type")
     private final String documentType;
     
     public TypedDocument() {
         super();
-        this.documentType = getDocumentType();
+        this.documentType = documentType();
     }
 
     public TypedDocument(final String id) {
         super(id);
-        this.documentType = getDocumentType();
+        this.documentType = documentType();
     }
 
     public TypedDocument(final String id, final String revision) {
         super(id, revision);
-        this.documentType = getDocumentType();
+        this.documentType = documentType();
+    }
+
+    public String getDocumentType() {
+        return documentType;
     }
     
-    private String getDocumentType() {
+    private String documentType() {
         return this.getClass().getSimpleName();
     }
 }
