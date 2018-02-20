@@ -224,7 +224,7 @@ public class DB {
         return AsyncTask.invoke(new RecursiveBulkTask(api, dbName, docs));
     }
 
-    private static class RecursiveBulkTask extends RecursiveTask<BulkResult[]> {
+    private static final class RecursiveBulkTask extends RecursiveTask<BulkResult[]> {
         private final String dbName;
         private final CouchAPI api;
         private final Document[] docs;
@@ -237,7 +237,7 @@ public class DB {
 
         @Override
         public BulkResult[] compute() {
-            if (CouchDBConstants.BULK_REQUEST_SIZE > docs.length) {
+            if (docs.length <= CouchDBConstants.BULK_REQUEST_SIZE) {
                 try {
                     return api.bulk(dbName, docs);
                 } catch (final CouchException ex) {
@@ -245,19 +245,21 @@ public class DB {
                 }
             }
             
-            final Document[] head = new Document[CouchDBConstants.BULK_REQUEST_SIZE];
-            final Document[] tail = new Document[docs.length - CouchDBConstants.BULK_REQUEST_SIZE];
+            final int headSize = CouchDBConstants.BULK_REQUEST_SIZE;
+            final int tailSize = docs.length - CouchDBConstants.BULK_REQUEST_SIZE;
+            final Document[] head = new Document[headSize];
+            final Document[] tail = new Document[tailSize];
             
-            System.arraycopy(docs, 0, head, head.length, 0);
-            System.arraycopy(docs, CouchDBConstants.BULK_REQUEST_SIZE, tail, tail.length, 0);
+            System.arraycopy(docs, 0, head, 0, headSize);
+            System.arraycopy(docs, headSize, tail, 0, tailSize);
             
             final RecursiveBulkTask firstBlock = new RecursiveBulkTask(api, dbName, head);
             final RecursiveBulkTask remainingBlock = new RecursiveBulkTask(api, dbName, tail);
             remainingBlock.fork();
                     
             final BulkResult[] results = new BulkResult[docs.length];
-            System.arraycopy(firstBlock.compute(), 0, results, head.length, 0);
-            System.arraycopy(remainingBlock.join(), 0, results, tail.length, CouchDBConstants.BULK_REQUEST_SIZE);
+            System.arraycopy(firstBlock.compute(), 0, results, 0, headSize);
+            System.arraycopy(remainingBlock.join(), 0, results, headSize, tailSize);
             
             return results;
         }
