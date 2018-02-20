@@ -19,10 +19,19 @@
 package net.uiqui.couchdb.util;
 
 import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.ForkJoinTask;
 
 public class AsyncTask {
 
     public static void execute(final Runnable task) {
         ForkJoinPool.commonPool().execute(task);
+    }
+
+    public static void execute(final ForkJoinTask<?> task) {
+        ForkJoinPool.commonPool().execute(task);
+    }
+
+    public static <V> V invoke(final ForkJoinTask<V> task) {
+        return ForkJoinPool.commonPool().invoke(task);
     }
 }

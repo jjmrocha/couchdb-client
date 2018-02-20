@@ -2,7 +2,7 @@
 a * CouchDB-client
  * ==============
  * 
- * Copyright (C) 2016-17 Joaquim Rocha <jrocha@gmailbox.org>
+ * Copyright (C) 2016-18 Joaquim Rocha <jrocha@gmailbox.org>
  * 
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -23,4 +23,6 @@ public class CouchDBConstants {
     
     public static final int STREAM_REQUEST_SIZE = 400;
     public static final int STREAM_REQUEST_THRESHOLD = 100;
+    
+    public static final int BULK_REQUEST_SIZE = 500;
 }

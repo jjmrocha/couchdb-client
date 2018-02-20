@@ -23,6 +23,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.CompletionException;
+import java.util.concurrent.ForkJoinTask;
+import java.util.concurrent.RecursiveTask;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -33,6 +35,8 @@ import net.uiqui.couchdb.impl.StreamSource;
 import net.uiqui.couchdb.protocol.CouchAPI;
 import net.uiqui.couchdb.protocol.DeleteDoc;
 import net.uiqui.couchdb.protocol.impl.QueryResult;
+import net.uiqui.couchdb.util.AsyncTask;
+import net.uiqui.couchdb.util.CouchDBConstants;
 
 public class DB {
 
@@ -60,7 +64,7 @@ public class DB {
             }
         }, false);
     }
-    
+
     public Collection<String> docIds(final String startKey, final String endKey, final long skip, final long limit) throws CouchException {
         return api.docIds(dbName, startKey, endKey, skip, limit);
     }
@@ -217,6 +221,45 @@ public class DB {
     }
 
     private BulkResult[] bulk(final Document[] docs) throws CouchException {
-        return api.bulk(dbName, docs);
+        return AsyncTask.invoke(new RecursiveBulkTask(api, dbName, docs));
+    }
+
+    private static class RecursiveBulkTask extends RecursiveTask<BulkResult[]> {
+        private final String dbName;
+        private final CouchAPI api;
+        private final Document[] docs;
+        
+        public RecursiveBulkTask(final CouchAPI api, final String dbName, final Document[] docs) {
+            this.api = api;
+            this.dbName = dbName;
+            this.docs = docs;
+        }
+
+        @Override
+        public BulkResult[] compute() {
+            if (CouchDBConstants.BULK_REQUEST_SIZE > docs.length) {
+                try {
+                    return api.bulk(dbName, docs);
+                } catch (final CouchException ex) {
+                    throw new CompletionException(ex);
+                }
+            }
+            
+            final Document[] head = new Document[CouchDBConstants.BULK_REQUEST_SIZE];
+            final Document[] tail = new Document[docs.length - CouchDBConstants.BULK_REQUEST_SIZE];
+            
+            System.arraycopy(docs, 0, head, head.length, 0);
+            System.arraycopy(docs, CouchDBConstants.BULK_REQUEST_SIZE, tail, tail.length, 0);
+            
+            final RecursiveBulkTask firstBlock = new RecursiveBulkTask(api, dbName, head);
+            final RecursiveBulkTask remainingBlock = new RecursiveBulkTask(api, dbName, tail);
+            remainingBlock.fork();
+                    
+            final BulkResult[] results = new BulkResult[docs.length];
+            System.arraycopy(firstBlock.compute(), 0, results, head.length, 0);
+            System.arraycopy(remainingBlock.join(), 0, results, tail.length, CouchDBConstants.BULK_REQUEST_SIZE);
+            
+            return results;
+        }
     }
 }
