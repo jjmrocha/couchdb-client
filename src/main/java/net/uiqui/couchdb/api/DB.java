@@ -23,7 +23,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.CompletionException;
-import java.util.concurrent.ForkJoinTask;
 import java.util.concurrent.RecursiveTask;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -221,17 +220,13 @@ public class DB {
     }
 
     private BulkResult[] bulk(final Document[] docs) throws CouchException {
-        return AsyncTask.invoke(new RecursiveBulkTask(api, dbName, docs));
+        return AsyncTask.invoke(new RecursiveBulkTask(docs));
     }
 
-    private static final class RecursiveBulkTask extends RecursiveTask<BulkResult[]> {
-        private final String dbName;
-        private final CouchAPI api;
+    private final class RecursiveBulkTask extends RecursiveTask<BulkResult[]> {
         private final Document[] docs;
         
-        public RecursiveBulkTask(final CouchAPI api, final String dbName, final Document[] docs) {
-            this.api = api;
-            this.dbName = dbName;
+        public RecursiveBulkTask(final Document[] docs) {
             this.docs = docs;
         }
 
@@ -253,8 +248,8 @@ public class DB {
             System.arraycopy(docs, 0, head, 0, headSize);
             System.arraycopy(docs, headSize, tail, 0, tailSize);
             
-            final RecursiveBulkTask firstBlock = new RecursiveBulkTask(api, dbName, head);
-            final RecursiveBulkTask remainingBlock = new RecursiveBulkTask(api, dbName, tail);
+            final RecursiveBulkTask firstBlock = new RecursiveBulkTask(head);
+            final RecursiveBulkTask remainingBlock = new RecursiveBulkTask(tail);
             remainingBlock.fork();
                     
             final BulkResult[] results = new BulkResult[docs.length];
